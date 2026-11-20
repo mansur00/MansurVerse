@@ -81,6 +81,11 @@
 | D-73 | Optional catch binding used in `src/scripts/theme-init.js` to satisfy ESLint `@typescript-eslint/no-unused-vars` | Decided | Verified at setup |
 | D-74 | Font licences (Jersey 20, Stack Sans Notch, Plus Jakarta Sans) confirmed OFL-1.1; installed via Fontsource | Decided | Closes O-02 |
 | D-75 | Pinned pnpm 12.21.0 via corepack; verify and guardrails pass | Decided | Verified at setup |
+| D-76 | Implemented ESLint custom rules `custom/no-arbitrary-values` and `custom/no-hardcoded-copy` in `eslint.config.mjs` and verified with `scripts/test-guardrails.mjs` | Decided | Phase 3 guardrails |
+| D-77 | Added design tokens `logo-primary`, `logo-secondary`, and `superscript` to `tokens.json` to avoid magic pixel numbers in Logo and SuperscriptNumber components | Decided | Matches Rule 1 |
+| D-78 | Added semantic color token `error` mapped to `{palette.coral}` (`#FF9696`) to provide a token for FormField validation states | Decided | Closes unused palette warning |
+| D-79 | Phase 3 components implemented strictly across 4 feature branches: `phase-3/primitives`, `phase-3/layout`, `phase-3/content`, and `phase-3/forms` | Decided | Matches workflow instructions |
+| D-80 | CapabilityRow implemented as accessible accordion rows using `<details>` and `<summary>` paired with `<Divider>` | Decided | Resolves O-15 |
 
 ## Open Items
 
@@ -100,7 +105,7 @@
 | O-12 | Logo font question | Closed | Resolved by D-29 |
 | O-13 | ollyo declares Jersey 25 and Inter as font variables; confirm whether either should be used | Closed | Resolved: three fonts only (Jersey 20, Stack Sans Notch, Plus Jakarta Sans) |
 | O-14 | Process section: simple sequential reveal or pinned stage with a drawn path (needs a stroke exception) | Phase 5 | Default: simple reveal |
-| O-15 | Capabilities layout: accordion rows (prototype) or flowing inline list from the ollyo reference | Phase 3 | Default: accordion rows |
+| O-15 | Capabilities layout: accordion rows (prototype) or flowing inline list from the ollyo reference | Closed | Resolved by D-80 (accordion rows default) |
 | O-16 | Whose time zone does the footer clock show: owner's (site config) or visitor's | Phase 4 | Default: owner's |
 | O-17 | Font self-hosting mechanism and Tailwind minor version | Closed | Fontsource chosen (D-65); the Tailwind minor is pinned at install |
 | O-18 | Route transition mechanism | Closed | Resolved by D-48 |
