@@ -18,6 +18,18 @@ import SectionHeader from '../components/layout/SectionHeader.astro';
 import CTABand from '../components/layout/CTABand.astro';
 import Footer from '../components/layout/Footer.astro';
 import MenuOverlay from '../components/layout/MenuOverlay.astro';
+import ProjectCard from '../components/content/ProjectCard.astro';
+import CapabilityRow from '../components/content/CapabilityRow.astro';
+import ProcessStep from '../components/content/ProcessStep.astro';
+import ValueRow from '../components/content/ValueRow.astro';
+import StatTile from '../components/content/StatTile.astro';
+import JobRow from '../components/content/JobRow.astro';
+import Marquee from '../components/content/Marquee.astro';
+import StatementText from '../components/content/StatementText.astro';
+import EmailDisplay from '../components/content/EmailDisplay.astro';
+import ExperienceRow from '../components/content/ExperienceRow.astro';
+import SkillChips from '../components/content/SkillChips.astro';
+import MetaSidebar from '../components/content/MetaSidebar.astro';
 import { styleguideFixtures } from '../fixtures/styleguide';
 
 const colors = summary.colors;
@@ -290,6 +302,151 @@ const z = Object.entries(summary.z);
               links={styleguideFixtures.layout.navLinks}
               isOpen={true}
               class="relative-overlay"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Content Components (Group 3)</h2>
+      <div class="primitives-grid">
+        <div class="component-demo">
+          <span class="text-label">Project Card (Stack & Grid Variants)</span>
+          <div class="demo-box demo-stack">
+            {styleguideFixtures.content.projects.map((proj, idx) => (
+              <ProjectCard
+                title={proj.title}
+                number={proj.number}
+                description={proj.description}
+                category={proj.category}
+                year={proj.year}
+                href={proj.href}
+                accent={proj.accent}
+                imageAlt={proj.imageAlt}
+                variant={idx === 0 ? 'stack' : 'grid'}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Capability Accordion Rows (O-15 default)</span>
+          <div class="demo-box feature-box">
+            {styleguideFixtures.content.capabilities.map((cap, idx) => (
+              <CapabilityRow
+                title={cap.title}
+                number={cap.number}
+                description={cap.description}
+                tags={cap.tags}
+                isOpen={idx === 0}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Process Steps</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.content.processSteps.map((step) => (
+              <ProcessStep stepNumber={step.stepNumber} title={step.title} text={step.text} />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Value Rows</span>
+          <div class="demo-box feature-box">
+            {styleguideFixtures.content.values.map((val) => (
+              <ValueRow slashLabel={val.slashLabel} text={val.text} variant="on-feature" />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Stat Tiles (Lime & White Variants)</span>
+          <div class="demo-box demo-row" style="padding-bottom: var(--space-8);">
+            {styleguideFixtures.content.stats.map((st) => (
+              <StatTile
+                number={st.number}
+                caption={st.caption}
+                variant={st.variant}
+                staggered={st.staggered}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Job / Open-To Rows</span>
+          <div class="demo-box demo-stack">
+            {styleguideFixtures.content.jobs.map((job) => (
+              <JobRow
+                category={job.category}
+                title={job.title}
+                meta={job.meta}
+                ctaLabel={job.ctaLabel}
+                ctaHref={job.ctaHref}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Marquee (Static)</span>
+          <div class="demo-box">
+            <Marquee items={styleguideFixtures.content.marqueeItems} />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Statement Text</span>
+          <div class="demo-box">
+            <StatementText
+              sentence={styleguideFixtures.content.statement.sentence}
+              words={styleguideFixtures.content.statement.words}
+              highlightIndex={6}
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Email Display</span>
+          <div class="demo-box">
+            <EmailDisplay email={styleguideFixtures.content.email} />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Experience Rows</span>
+          <div class="demo-box demo-stack">
+            {styleguideFixtures.content.experience.map((exp) => (
+              <ExperienceRow
+                period={exp.period}
+                role={exp.role}
+                company={exp.company}
+                location={exp.location}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Skill Chips</span>
+          <div class="demo-box">
+            <SkillChips skills={styleguideFixtures.content.skills} />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Case Study Meta Sidebar</span>
+          <div class="demo-box" style="max-width: 360px;">
+            <MetaSidebar
+              role={styleguideFixtures.content.metaSidebar.role}
+              year={styleguideFixtures.content.metaSidebar.year}
+              tools={styleguideFixtures.content.metaSidebar.tools}
+              links={styleguideFixtures.content.metaSidebar.links}
+              sections={styleguideFixtures.content.metaSidebar.sections}
             />
           </div>
         </div>

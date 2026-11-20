@@ -1,0 +1,28 @@
+---
+import Chip from '../primitives/Chip.astro';
+
+interface Props {
+  skills: Array<{
+    name: string;
+    variant?: 'filled' | 'accent' | 'outlined' | undefined;
+  }>;
+  class?: string | undefined;
+}
+
+const { skills, class: className = '' } = Astro.props;
+---
+
+<div class:list={['skill-chips-container', className]}>
+  {skills.map((skill) => (
+    <Chip variant={skill.variant ?? 'filled'}>{skill.name}</Chip>
+  ))}
+</div>
+
+<style>
+  .skill-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import Divider from '../primitives/Divider.astro';
+
+interface Props {
+  period: string;
+  role: string;
+  company: string;
+  location?: string | undefined;
+  class?: string | undefined;
+}
+
+const { period, role, company, location, class: className = '' } = Astro.props;
+---
+
+<div class:list={['experience-row-wrapper', className]}>
+  <div class="experience-row">
+    <span class="exp-period text-body-small">{period}</span>
+    <div class="exp-role-company">
+      <h3 class="exp-role text-heading-job">{role}</h3>
+      <span class="exp-company text-body">{company}</span>
+    </div>
+    {location && <span class="exp-location text-body-small">{location}</span>}
+  </div>
+  <Divider variant="on-base" />
+</div>
+
+<style>
+  .experience-row-wrapper {
+    width: 100%;
+  }
+
+  .experience-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-5) 0;
+    transition: opacity var(--motion-fast) var(--ease-out);
+  }
+
+  @media (width >= 721px) {
+    .experience-row {
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: baseline;
+      gap: var(--space-5);
+    }
+  }
+
+  .exp-period {
+    color: var(--color-text-muted);
+  }
+
+  .exp-role-company {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .exp-role {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .exp-company {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .exp-location {
+    color: var(--color-text-muted);
+  }
+
+  @media (width >= 721px) {
+    .exp-location {
+      text-align: right;
+    }
+  }
+</style>

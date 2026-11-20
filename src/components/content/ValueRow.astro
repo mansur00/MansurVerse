@@ -1,0 +1,64 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import Divider from '../primitives/Divider.astro';
+
+interface Props {
+  slashLabel: string;
+  text: string;
+  variant?: 'on-light' | 'on-feature' | undefined;
+  class?: string | undefined;
+}
+
+const { slashLabel, text, variant = 'on-feature', class: className = '' } = Astro.props;
+
+const isFeature = variant === 'on-feature';
+---
+
+<div class:list={['value-row-wrapper', `value-${variant}`, className]}>
+  <div class="value-row">
+    <div class="value-label-col">
+      <SlashLabel label={slashLabel} variant={variant} />
+    </div>
+    <p class="value-text-col text-value-text">{text}</p>
+  </div>
+  <Divider variant={isFeature ? 'on-feature' : 'on-base'} />
+</div>
+
+<style>
+  .value-row-wrapper {
+    width: 100%;
+  }
+
+  .value-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+  }
+
+  @media (width >= 721px) {
+    .value-row {
+      grid-template-columns: 1fr 2fr;
+      align-items: baseline;
+      gap: var(--space-6);
+    }
+  }
+
+  .value-label-col {
+    display: flex;
+    align-items: center;
+  }
+
+  .value-text-col {
+    margin: 0;
+    max-width: 34ch;
+  }
+
+  .value-on-feature .value-text-col {
+    color: var(--color-text-on-feature);
+  }
+
+  .value-on-light .value-text-col {
+    color: var(--color-text-primary);
+  }
+</style>

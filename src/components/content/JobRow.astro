@@ -1,0 +1,74 @@
+---
+import Divider from '../primitives/Divider.astro';
+import Button from '../primitives/Button.astro';
+
+interface Props {
+  category: string;
+  title: string;
+  meta: string;
+  ctaLabel: string;
+  ctaHref: string;
+  class?: string | undefined;
+}
+
+const { category, title, meta, ctaLabel, ctaHref, class: className = '' } = Astro.props;
+---
+
+<div class:list={['job-row-wrapper', className]}>
+  <div class="job-row">
+    <div class="job-info">
+      <span class="job-category text-label">{category}</span>
+      <h3 class="job-title text-heading-job">{title}</h3>
+      <span class="job-meta text-body-small">{meta}</span>
+    </div>
+    <div class="job-action">
+      <Button href={ctaHref} variant="outlined" showArrow={true}>
+        {ctaLabel}
+      </Button>
+    </div>
+  </div>
+  <Divider variant="on-base" />
+</div>
+
+<style>
+  .job-row-wrapper {
+    width: 100%;
+  }
+
+  .job-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+  }
+
+  @media (width >= 721px) {
+    .job-row {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .job-info {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .job-category {
+    color: var(--color-text-muted);
+  }
+
+  .job-title {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .job-meta {
+    color: var(--color-text-muted);
+  }
+
+  .job-action {
+    flex-shrink: 0;
+  }
+</style>

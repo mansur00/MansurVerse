@@ -1,0 +1,203 @@
+---
+import Chip from '../primitives/Chip.astro';
+import PixelShape from '../primitives/PixelShape.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+
+interface Props {
+  title: string;
+  number: number | string;
+  description: string;
+  category: string;
+  year: string;
+  href: string;
+  accent?: string | undefined;
+  imageSrc?: string | undefined;
+  imageAlt?: string | undefined;
+  variant?: 'stack' | 'grid' | 'list' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  title,
+  number,
+  description,
+  category,
+  year,
+  href,
+  accent = 'lime',
+  imageSrc,
+  imageAlt = '',
+  variant = 'stack',
+  class: className = '',
+} = Astro.props;
+
+const isList = variant === 'list';
+---
+
+<a
+  href={href}
+  class:list={['project-card', `card-${variant}`, className]}
+  data-cursor="View"
+  data-category={category}
+  style={`--card-accent: var(--color-accent-${accent === 'lime' ? 'primary' : accent});`}
+>
+  <div class="card-content">
+    <div class="card-meta">
+      <SuperscriptNumber number={number} class="card-number" />
+      <div class="card-chips">
+        <Chip variant="accent">{category}</Chip>
+        <Chip variant="outlined">{year}</Chip>
+      </div>
+    </div>
+
+    <h3 class="card-title text-heading-card">{title}</h3>
+    <p class="card-description text-body">{description}</p>
+  </div>
+
+  {!isList && (
+    <div class="card-art" aria-hidden="true">
+      <div class="half-pill-block" />
+      <PixelShape variant="blob" accent="primary" class="card-pixel-blob" />
+      {imageSrc ? (
+        <img src={imageSrc} alt={imageAlt} class="card-image" loading="lazy" />
+      ) : (
+        <div class="image-placeholder">
+          <span class="placeholder-tag">{category}</span>
+        </div>
+      )}
+    </div>
+  )}
+</a>
+
+<style>
+  .project-card {
+    display: grid;
+    background: var(--card-bg);
+    color: var(--card-text);
+    text-decoration: none;
+    border-radius: var(--radius-none);
+    overflow: hidden;
+    position: relative;
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+
+  .card-stack {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  @media (width >= 721px) {
+    .card-stack {
+      grid-template-columns: 1fr 1.15fr;
+      padding: var(--space-7);
+      gap: var(--space-6);
+      align-items: center;
+    }
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-5);
+  }
+
+  .card-list {
+    grid-template-columns: 1fr;
+    padding: var(--space-4) var(--space-5);
+    background: transparent;
+  }
+
+  .card-list:hover {
+    background: var(--color-bg-surface);
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    z-index: var(--z-content);
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .card-chips {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .card-title {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .card-description {
+    margin: 0;
+    color: var(--color-text-muted-on-card);
+    max-width: 45ch;
+  }
+
+  .card-art {
+    position: relative;
+    min-height: 240px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--color-bg-alt);
+  }
+
+  .half-pill-block {
+    position: absolute;
+    right: 0;
+    top: 10%;
+    bottom: 10%;
+    width: 60%;
+    background: var(--card-accent, var(--color-accent-primary));
+    border-radius: var(--shape-half-pill-radius);
+    opacity: 0.85;
+  }
+
+  .card-pixel-blob {
+    position: absolute;
+    left: 15%;
+    bottom: 15%;
+    width: var(--space-9);
+    height: var(--space-9);
+    z-index: 1;
+  }
+
+  .card-image {
+    position: relative;
+    z-index: 2;
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: cover;
+  }
+
+  .image-placeholder {
+    position: relative;
+    z-index: 2;
+    width: 75%;
+    height: 70%;
+    background: var(--color-bg-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-tag {
+    font-family: var(--font-label);
+    font-size: var(--text-chip-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+  }
+</style>

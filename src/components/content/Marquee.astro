@@ -1,0 +1,61 @@
+---
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+
+interface Props {
+  items: Array<{ name: string; number?: number | string | undefined }>;
+  class?: string | undefined;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class:list={['marquee-container', className]} aria-hidden="true">
+  <div class="marquee-track">
+    {[0, 1].map(() => (
+      <div class="marquee-group">
+        {items.map((item) => (
+          <span class="marquee-item text-heading-case">
+            <span class="marquee-name">{item.name}</span>
+            {item.number !== undefined && <SuperscriptNumber number={item.number} />}
+            <span class="marquee-sep">/</span>
+          </span>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    user-select: none;
+    padding: var(--space-4) 0;
+    background: var(--color-bg-base);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+  }
+
+  .marquee-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding-right: var(--space-6);
+  }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  .marquee-sep {
+    color: var(--color-accent-primary);
+    margin-left: var(--space-4);
+  }
+</style>

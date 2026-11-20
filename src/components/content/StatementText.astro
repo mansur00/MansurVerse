@@ -1,0 +1,63 @@
+---
+interface Props {
+  sentence: string;
+  words: string[];
+  highlightIndex?: number | undefined;
+  class?: string | undefined;
+}
+
+const { sentence, words, highlightIndex = 0, class: className = '' } = Astro.props;
+---
+
+<div class:list={['statement-container', className]}>
+  <p class="sr-only">{sentence}</p>
+
+  <p class="statement-words text-statement" aria-hidden="true">
+    {words.map((word, index) => {
+      const isFilled = index <= highlightIndex;
+      return (
+        <span class:list={['word-span', { 'is-filled': isFilled }]} data-word-index={index}>
+          {word}&nbsp;
+        </span>
+      );
+    })}
+  </p>
+</div>
+
+<style>
+  .statement-container {
+    width: 100%;
+    max-width: 22ch;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .statement-words {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .word-span {
+    display: inline;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .word-span.is-filled {
+    color: var(--color-text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word-span {
+      color: var(--color-text-primary);
+    }
+  }
+</style>
