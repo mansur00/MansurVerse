@@ -1,0 +1,162 @@
+---
+import FormField from './FormField.astro';
+import Button from '../primitives/Button.astro';
+
+export interface Props {
+  action?: string | undefined;
+  method?: string | undefined;
+  state?: 'idle' | 'sending' | 'sent' | 'failed' | undefined;
+  nameLabel?: string | undefined;
+  emailLabel?: string | undefined;
+  messageLabel?: string | undefined;
+  nameValue?: string | undefined;
+  emailValue?: string | undefined;
+  messageValue?: string | undefined;
+  submitText?: string | undefined;
+  sendingText?: string | undefined;
+  sentText?: string | undefined;
+  failedText?: string | undefined;
+  fallbackLabel?: string | undefined;
+  fallbackEmail?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  action = '/api/contact',
+  method = 'POST',
+  state = 'idle',
+  nameLabel = 'Name',
+  emailLabel = 'Email',
+  messageLabel = 'Message',
+  nameValue = '',
+  emailValue = '',
+  messageValue = '',
+  submitText = 'Send message',
+  sendingText = 'Sending…',
+  sentText = 'Sent ✓',
+  failedText = 'Message could not be sent. Please retry or contact directly.',
+  fallbackLabel = 'Send via email client instead',
+  fallbackEmail = 'mansur@example.com',
+  class: className = '',
+} = Astro.props;
+
+const isSending = state === 'sending';
+const isSent = state === 'sent';
+const isFailed = state === 'failed';
+---
+
+<form
+  action={action}
+  method={method}
+  class:list={['contact-form', `is-${state}`, className]}
+  data-form-state={state}
+  novalidate
+>
+  <div class="form-fields">
+    <FormField
+      name="name"
+      label={nameLabel}
+      type="text"
+      value={nameValue}
+      required={true}
+      autocomplete="name"
+      disabled={isSending || isSent}
+    />
+    <FormField
+      name="email"
+      label={emailLabel}
+      type="email"
+      value={emailValue}
+      required={true}
+      autocomplete="email"
+      disabled={isSending || isSent}
+    />
+    <FormField
+      name="message"
+      label={messageLabel}
+      as="textarea"
+      value={messageValue}
+      required={true}
+      rows={5}
+      disabled={isSending || isSent}
+    />
+  </div>
+
+  {isFailed && (
+    <div class="form-feedback error-feedback" role="alert">
+      <p class="feedback-text">{failedText}</p>
+      <a href={`mailto:${fallbackEmail}`} class="fallback-link">
+        {fallbackLabel}
+      </a>
+    </div>
+  )}
+
+  <div class="form-actions">
+    {isSent ? (
+      <div class="sent-indicator" role="status">
+        <Button type="button" variant="primary" disabled={true}>
+          {sentText}
+        </Button>
+      </div>
+    ) : isSending ? (
+      <Button type="submit" variant="primary" disabled={true}>
+        {sendingText}
+      </Button>
+    ) : (
+      <Button type="submit" variant="primary" showArrow={true}>
+        {submitText}
+      </Button>
+    )}
+  </div>
+</form>
+
+<style>
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+  }
+
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .form-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    padding: var(--space-sm);
+    background-color: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line);
+  }
+
+  .error-feedback {
+    color: var(--color-error);
+  }
+
+  .feedback-text {
+    margin: 0;
+  }
+
+  .fallback-link {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: opacity var(--motion-fast) var(--ease-out);
+  }
+
+  .fallback-link:hover {
+    opacity: 0.7;
+  }
+</style>

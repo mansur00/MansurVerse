@@ -30,6 +30,8 @@ import EmailDisplay from '../components/content/EmailDisplay.astro';
 import ExperienceRow from '../components/content/ExperienceRow.astro';
 import SkillChips from '../components/content/SkillChips.astro';
 import MetaSidebar from '../components/content/MetaSidebar.astro';
+import FormField from '../components/forms/FormField.astro';
+import Form from '../components/forms/Form.astro';
 import { styleguideFixtures } from '../fixtures/styleguide';
 
 const colors = summary.colors;
@@ -447,6 +449,93 @@ const z = Object.entries(summary.z);
               tools={styleguideFixtures.content.metaSidebar.tools}
               links={styleguideFixtures.content.metaSidebar.links}
               sections={styleguideFixtures.content.metaSidebar.sections}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Forms (Group 4)</h2>
+      <div class="primitives-grid">
+        <div class="component-demo">
+          <span class="text-label">FormField States</span>
+          <div class="demo-box demo-stack" style="max-width: 480px;">
+            <FormField
+              name={styleguideFixtures.content.forms.fields.idle.name}
+              label={styleguideFixtures.content.forms.fields.idle.label}
+            />
+            <FormField
+              name={styleguideFixtures.content.forms.fields.focus.name}
+              label={styleguideFixtures.content.forms.fields.focus.label}
+              state={styleguideFixtures.content.forms.fields.focus.state}
+              value={styleguideFixtures.content.forms.fields.focus.value}
+            />
+            <FormField
+              name={styleguideFixtures.content.forms.fields.filled.name}
+              label={styleguideFixtures.content.forms.fields.filled.label}
+              state={styleguideFixtures.content.forms.fields.filled.state}
+              value={styleguideFixtures.content.forms.fields.filled.value}
+            />
+            <FormField
+              name={styleguideFixtures.content.forms.fields.error.name}
+              label={styleguideFixtures.content.forms.fields.error.label}
+              state={styleguideFixtures.content.forms.fields.error.state}
+              value={styleguideFixtures.content.forms.fields.error.value}
+              errorMessage={styleguideFixtures.content.forms.fields.error.errorMessage}
+            />
+            <FormField
+              name={styleguideFixtures.content.forms.fields.disabled.name}
+              label={styleguideFixtures.content.forms.fields.disabled.label}
+              state={styleguideFixtures.content.forms.fields.disabled.state}
+              value={styleguideFixtures.content.forms.fields.disabled.value}
+              disabled={styleguideFixtures.content.forms.fields.disabled.disabled}
+            />
+            <FormField
+              name={styleguideFixtures.content.forms.fields.textarea.name}
+              label={styleguideFixtures.content.forms.fields.textarea.label}
+              as={styleguideFixtures.content.forms.fields.textarea.as}
+              rows={styleguideFixtures.content.forms.fields.textarea.rows}
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Contact Form States</span>
+          <div class="demo-box demo-stack" style="max-width: 540px;">
+            <span class="text-label muted">Idle State</span>
+            <Form
+              state={styleguideFixtures.content.forms.formStates.idle.state}
+              submitText={styleguideFixtures.content.forms.formStates.idle.submitText}
+            />
+
+            <span class="text-label muted">Sending State</span>
+            <Form
+              state={styleguideFixtures.content.forms.formStates.sending.state}
+              nameValue={styleguideFixtures.content.forms.formStates.sending.nameValue}
+              emailValue={styleguideFixtures.content.forms.formStates.sending.emailValue}
+              messageValue={styleguideFixtures.content.forms.formStates.sending.messageValue}
+              sendingText={styleguideFixtures.content.forms.formStates.sending.sendingText}
+            />
+
+            <span class="text-label muted">Sent State</span>
+            <Form
+              state={styleguideFixtures.content.forms.formStates.sent.state}
+              nameValue={styleguideFixtures.content.forms.formStates.sent.nameValue}
+              emailValue={styleguideFixtures.content.forms.formStates.sent.emailValue}
+              messageValue={styleguideFixtures.content.forms.formStates.sent.messageValue}
+              sentText={styleguideFixtures.content.forms.formStates.sent.sentText}
+            />
+
+            <span class="text-label muted">Failed State</span>
+            <Form
+              state={styleguideFixtures.content.forms.formStates.failed.state}
+              nameValue={styleguideFixtures.content.forms.formStates.failed.nameValue}
+              emailValue={styleguideFixtures.content.forms.formStates.failed.emailValue}
+              messageValue={styleguideFixtures.content.forms.formStates.failed.messageValue}
+              failedText={styleguideFixtures.content.forms.formStates.failed.failedText}
+              fallbackLabel={styleguideFixtures.content.forms.formStates.failed.fallbackLabel}
+              fallbackEmail={styleguideFixtures.content.forms.formStates.failed.fallbackEmail}
             />
           </div>
         </div>
