@@ -76,13 +76,18 @@
 | D-68 | Tailwind `--spacing` is 4px to match the space scale | Assumed | |
 | D-69 | `dev` and `build` run `tokens:build` first; `/styleguide` is stripped from production builds unless `PUBLIC_ENABLE_STYLEGUIDE=true` | Assumed | |
 | D-70 | The token pipeline is dependency-free Node and was tested, including a negative contrast test | Decided | |
+| D-71 | Node pinned to 24.21.0 in `.nvmrc`, engines.node set to `>=22.23.4` in `package.json` for Astro 7 | Decided | Verified at setup |
+| D-72 | TypeScript pinned to 6.0.3 because `@astrojs/check` does not yet support TypeScript 7.0 | Decided | Verified at setup |
+| D-73 | Optional catch binding used in `src/scripts/theme-init.js` to satisfy ESLint `@typescript-eslint/no-unused-vars` | Decided | Verified at setup |
+| D-74 | Font licences (Jersey 20, Stack Sans Notch, Plus Jakarta Sans) confirmed OFL-1.1; installed via Fontsource | Decided | Closes O-02 |
+| D-75 | Pinned pnpm 12.21.0 via corepack; verify and guardrails pass | Decided | Verified at setup |
 
 ## Open Items
 
 | ID | Item | Needed by | Notes |
 |---|---|---|---|
 | O-01 | Verify remaining ollyo tokens: type scale, per-element fonts, spacing, radii, borders, pink/cyan/blue colours | Phase 2 | Colours and font families verified (D-28). Owner can copy computed styles of the hero h1, a section heading, a project card and a keyword tag from DevTools |
-| O-02 | Confirm font licences and self-hosting plan for all three fonts | Phase 2 | To be checked in `typography.md` |
+| O-02 | Confirm font licences and self-hosting plan for all three fonts | Closed | Resolved by D-74 (OFL-1.1 via Fontsource) |
 | O-03 | Hosting: Cloudflare or Vercel | Phase 8 | Compare in `deployment.md` |
 | O-04 | WebGL library: Three.js, OGL or a custom shader | Phase 6 | Digit field is simple; prefer the lightest option |
 | O-05 | Contact form provider and spam protection | Phase 5 | |
@@ -93,7 +98,7 @@
 | O-10 | Real content and images (name, bio, portrait, projects, CV, socials, email) | Phase 4 | Owner supplies; placeholders until then |
 | O-11 | Domain name | Phase 8 | |
 | O-12 | Logo font question | Closed | Resolved by D-29 |
-| O-13 | ollyo declares Jersey 25 and Inter as font variables; confirm whether either should be used | Phase 2 | Default: no, three fonts only |
+| O-13 | ollyo declares Jersey 25 and Inter as font variables; confirm whether either should be used | Closed | Resolved: three fonts only (Jersey 20, Stack Sans Notch, Plus Jakarta Sans) |
 | O-14 | Process section: simple sequential reveal or pinned stage with a drawn path (needs a stroke exception) | Phase 5 | Default: simple reveal |
 | O-15 | Capabilities layout: accordion rows (prototype) or flowing inline list from the ollyo reference | Phase 3 | Default: accordion rows |
 | O-16 | Whose time zone does the footer clock show: owner's (site config) or visitor's | Phase 4 | Default: owner's |

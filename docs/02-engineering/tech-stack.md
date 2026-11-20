@@ -6,20 +6,20 @@
 
 | Area | Choice | Version policy | Why | Status |
 |---|---|---|---|---|
-| Framework | Astro 7.x | Latest 7.x minor (7.4 was released 2026-10-15). Pin exactly | Content-driven site with islands: zero JS by default, JS only where interaction needs it. Astro 7 has a Rust compiler, Vite 8, and agent-friendly dev features (agent detection, background dev server, structured JSON logs) | Decided |
-| Language | TypeScript, strict | Latest stable | Typed props, content schemas and token constants | Decided |
-| Styling | Tailwind CSS 4.x, theme generated from tokens | Pin exactly at install | CSS-first config maps cleanly onto the token pipeline; defaults are disabled so only tokens exist (see `tokens-implementation.md`) | Decided |
-| Animation | GSAP 3.x with ScrollTrigger, Flip, SplitText, Draggable as needed | 3.15.0 was current; pin exactly | GSAP and all its plugins are now free, including commercial use. Import only the plugins used | Decided |
-| Smooth scroll | Lenis | Pin exactly | MIT licence; the chosen scroll engine (D-06). GSAP's ScrollSmoother is also free now, but Lenis stays unless it causes a conflict | Decided |
-| WebGL | OGL by default | Pin exactly | Very small compared with Three.js, enough for a digit-field shader. Final choice stays open (O-04) | Open (default OGL) |
+| Framework | Astro 7.x | 7.4.13 pinned | Content-driven site with islands: zero JS by default, JS only where interaction needs it. Astro 7 has a Rust compiler, Vite 8, and agent-friendly dev features (agent detection, background dev server, structured JSON logs) | Decided |
+| Language | TypeScript, strict | 6.0.3 pinned | Typed props, content schemas and token constants (6.0.3 used as `@astrojs/check` does not yet support 7.0) | Decided |
+| Styling | Tailwind CSS 4.x, theme generated from tokens | 4.3.5 pinned | CSS-first config maps cleanly onto the token pipeline; defaults are disabled so only tokens exist (see `tokens-implementation.md`) | Decided |
+| Animation | GSAP 3.x with ScrollTrigger, Flip, SplitText, Draggable as needed | 3.15.1 pinned | GSAP and all its plugins are now free, including commercial use. Import only the plugins used | Decided |
+| Smooth scroll | Lenis | 1.3.27 pinned | MIT licence; the chosen scroll engine (D-06). GSAP's ScrollSmoother is also free now, but Lenis stays unless it causes a conflict | Decided |
+| WebGL | OGL by default | 1.0.11 pinned | Very small compared with Three.js, enough for a digit-field shader. Final choice stays open (O-04) | Open (default OGL) |
 | Content | Astro content collections with Zod schemas | Built in | Build fails on invalid content, so agents cannot ship broken data | Decided |
-| MDX | `@astrojs/mdx` | Matches Astro 7 | Case-study bodies | Decided |
+| MDX | `@astrojs/mdx` | 8.1.6 pinned | Case-study bodies | Decided |
 | Images | Astro image pipeline (sharp) | Built in | Responsive sizes, modern formats, explicit dimensions | Decided |
-| Fonts | Self-hosted WOFF2 (Astro fonts configuration or Fontsource, chosen in `tokens-implementation.md`) | | No third-party requests; metric-adjusted fallbacks | Open (O-17) |
-| Package manager | pnpm via corepack | Pin in `packageManager` | Fast, strict, lockfile-first | Assumed |
-| Runtime | Node.js Active LTS | Use the minimum Astro 7.x requires or newer; set `engines` and `.nvmrc` | | Assumed |
-| Lint and format | ESLint (with Astro plugin), Prettier, Stylelint | Pin exactly | Stylelint and ESLint carry the guardrails in `code-standards.md` | Assumed |
-| Unit tests | Vitest | | Token pipeline, schemas, utilities | Assumed |
+| Fonts | Self-hosted WOFF2 via Fontsource (`@fontsource/jersey-20`, `@fontsource-variable/stack-sans-notch`, `@fontsource-variable/plus-jakarta-sans`) | 5.3.0 pinned | No third-party requests; all OFL-1.1 | Decided (D-74) |
+| Package manager | pnpm via corepack | 12.21.0 pinned in `packageManager` | Fast, strict, lockfile-first | Decided |
+| Runtime | Node.js | 24.21.0 pinned in `.nvmrc`, `>=22.23.4` in `engines` | Minimum requirement for Astro 7 | Decided |
+| Lint and format | ESLint (with Astro plugin), Prettier, Stylelint | eslint 10.15.0, prettier 3.10.1, stylelint 18.0.0 | Stylelint and ESLint carry the guardrails in `code-standards.md` | Decided |
+| Unit tests | Vitest | 5.1.1 pinned | Token pipeline, schemas, utilities | Decided |
 | E2E and visual | Playwright | | Page flows, route transitions, reduced-motion and touch emulation, screenshots | Assumed |
 | Accessibility | axe-core (through Playwright) | | Automated a11y checks in CI | Assumed |
 | Performance | Lighthouse CI | | Budget enforcement | Assumed |

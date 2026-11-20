@@ -19,97 +19,107 @@ const z = Object.entries(summary.z);
   <main id="main" class="page">
     <header class="top">
       <h1 class="text-display-page">Style guide</h1>
-      <button id="theme-toggle" type="button" class="pill">Toggle theme</button>
+      <button id="theme-toggle" type="button" class="pill">
+        Toggle theme
+      </button>
     </header>
 
     <section>
       <h2 class="text-heading-case">Colour tokens</h2>
-      <p class="text-body-small">Each swatch shows the current theme. Light and dark values are listed underneath.</p>
+      <p class="text-body-small">
+        Each swatch shows the current theme. Light and dark values are listed underneath.
+      </p>
       <ul class="swatches">
-        {
-          colors.map((c) => (
-            <li class="swatch">
-              <div class="chip-color" style={`background: var(--color-${c.name})`} />
-              <span class="text-body-small name">--color-{c.name}</span>
-              <span class="text-body-small muted">{c.light} / {c.dark}</span>
-            </li>
-          ))
-        }
+        {colors.map((c) => (
+          <li class="swatch">
+            <div class="chip-color" style={`background: var(--color-${c.name})`} />
+            <span class="text-body-small name">--color-{c.name}</span>
+            <span class="text-body-small muted">
+              {c.light} / {c.dark}
+            </span>
+          </li>
+        ))}
       </ul>
     </section>
 
     <section>
       <h2 class="text-heading-case">Palette</h2>
       <ul class="swatches">
-        {
-          palette.map(([name, value]) => (
-            <li class="swatch">
-              <div class="chip-color" style={`background: var(--palette-${name})`} />
-              <span class="text-body-small name">--palette-{name}</span>
-              <span class="text-body-small muted">{value}</span>
-            </li>
-          ))
-        }
+        {palette.map(([name, value]) => (
+          <li class="swatch">
+            <div class="chip-color" style={`background: var(--palette-${name})`} />
+            <span class="text-body-small name">--palette-{name}</span>
+            <span class="text-body-small muted">{value}</span>
+          </li>
+        ))}
       </ul>
     </section>
 
     <section>
       <h2 class="text-heading-case">Text roles</h2>
       <ul class="roles">
-        {
-          roles.map((r) => (
-            <li class="role">
-              <span class="text-label">{r.name} ({r.element}, {r.font})</span>
-              <div class={`text-${r.name} sample`}>Aa Sample text</div>
-            </li>
-          ))
-        }
+        {roles.map((r) => (
+          <li class="role">
+            <span class="text-label">
+              {r.name} ({r.element}, {r.font})
+            </span>
+            <div class={`text-${r.name} sample`}>Aa Sample text</div>
+          </li>
+        ))}
       </ul>
     </section>
 
     <section>
       <h2 class="text-heading-case">Spacing</h2>
       <ul class="bars">
-        {
-          space.map(([name, value]) => (
-            <li class="bar-row">
-              <span class="text-body-small name">space-{name} ({value})</span>
-              <div class="bar" style={`width: var(--space-${name})`} />
-            </li>
-          ))
-        }
+        {space.map(([name, value]) => (
+          <li class="bar-row">
+            <span class="text-body-small name">
+              space-{name} ({value})
+            </span>
+            <div class="bar" style={`width: var(--space-${name})`} />
+          </li>
+        ))}
       </ul>
     </section>
 
     <section>
       <h2 class="text-heading-case">Radius and shapes</h2>
       <ul class="swatches">
-        {
-          radius.map(([name, value]) => (
-            <li class="swatch">
-              <div class="chip-color" style={`border-radius: var(--radius-${name})`} />
-              <span class="text-body-small name">radius-{name}</span>
-              <span class="text-body-small muted">{value}</span>
-            </li>
-          ))
-        }
-        {
-          shapes.map(([name]) => (
-            <li class="swatch">
-              <div class="chip-color" style={`clip-path: var(--shape-${name})`} />
-              <span class="text-body-small name">shape-{name}</span>
-            </li>
-          ))
-        }
+        {radius.map(([name, value]) => (
+          <li class="swatch">
+            <div class="chip-color" style={`border-radius: var(--radius-${name})`} />
+            <span class="text-body-small name">radius-{name}</span>
+            <span class="text-body-small muted">{value}</span>
+          </li>
+        ))}
+        {shapes.map(([name]) => (
+          <li class="swatch">
+            <div class="chip-color" style={`clip-path: var(--shape-${name})`} />
+            <span class="text-body-small name">shape-{name}</span>
+          </li>
+        ))}
       </ul>
     </section>
 
     <section>
       <h2 class="text-heading-case">Motion, easing and layers</h2>
       <ul class="plain">
-        {motion.map(([name, value]) => <li class="text-body-small">motion-{name}: {value}</li>)}
-        {ease.map(([name, value]) => <li class="text-body-small">ease-{name}: {value}</li>)}
-        {z.map(([name, value]) => <li class="text-body-small">z-{name}: {value}</li>)}
+        {motion.map(([name, value]) => (
+          <li class="text-body-small">
+            motion-{name}: {value}
+          </li>
+        ))}
+        {ease.map(([name, value]) => (
+          <li class="text-body-small">
+            ease-{name}: {value}
+          </li>
+        ))}
+        {z.map(([name, value]) => (
+          <li class="text-body-small">
+            z-{name}: {value}
+          </li>
+        ))}
       </ul>
     </section>
   </main>

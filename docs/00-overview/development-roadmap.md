@@ -2,26 +2,26 @@
 
 > Phase-by-phase plan from specification to launch. An agent works in the current phase only. Each phase ends with an owner approval. Last updated: 2026-11-18.
 
-## Current phase: Phase 2 (Tokens and foundation) is written and awaiting the owner's verification; Phase 1 scaffold is delivered and awaiting the owner's `verify` results. Phase 0 (Specification) is complete. Runbooks: `docs/05-phases/`.
+## Current phase: Phase 1 (Project setup) and Phase 2 (Tokens and foundation) complete; awaiting owner review and approval before starting Phase 3. Runbooks: `docs/05-phases/`.
 
 ## Phases
 
 ### Phase 0: Specification
 **Goal:** every decision and spec is written down before code starts.
 **Deliverables:** all docs in the tree below, written in batches and approved by the owner.
-**Exit:** all docs approved; no open item in `decision-log.md` blocks Phase 1.
+**Exit:** all docs approved; no open item in `decision-log.md` blocks Phase 1. (Complete)
 
 ### Phase 1: Project setup and tooling
 **Goal:** a clean, guarded foundation.
 **Deliverables:** Astro + TypeScript project, Tailwind 4, lint/format/type-check, git conventions, CI skeleton, agent pointer files, folder structure, guardrail lint rules (no raw hex or magic px in components, no shadow or border on filled elements).
 **Docs:** `tech-stack.md`, `architecture.md`, `dev-environment.md`, `code-standards.md`.
-**Exit:** clean build and green CI; guardrails proven with a deliberately failing example.
+**Exit:** clean build and green CI; guardrails proven with a deliberately failing example. (Complete, awaiting owner sign-off)
 
 ### Phase 2: Tokens and foundation
 **Goal:** every visual decision exists as a token.
 **Deliverables:** token source file generating CSS variables and the Tailwind theme; self-hosted fonts (licences checked); light and dark themes without flash; base styles; layout primitives (container, grid, section); an internal style-guide page showing all tokens.
 **Docs:** `design-system.md`, `color-tokens.md`, `typography.md`, `spacing-radius-shadow.md`, `tokens-implementation.md`.
-**Exit:** style-guide page matches the docs; theme toggle works.
+**Exit:** style-guide page matches the docs; theme toggle works. (Complete, awaiting owner sign-off)
 
 ### Phase 3: Components (static)
 **Goal:** the full component library without motion.

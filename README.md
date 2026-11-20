@@ -9,16 +9,16 @@ UI-design-focused personal portfolio (Astro, TypeScript, Tailwind 4, GSAP, Lenis
 
 ## Where things are
 
-| Path | Content |
-|---|---|
-| `docs/00-overview/` | Project brief, roadmap (current phase), decision log |
-| `docs/01-design/` | Design system, tokens, typography, layout, page specs, interactions, components, style guide |
-| `docs/02-engineering/` | Tech stack, architecture, dev environment, code standards, token pipeline, content schema, routing, animation, forms |
-| `docs/03-quality/` | Performance budget, accessibility, SEO, testing |
-| `docs/04-release/` | Deployment, launch checklist, maintenance |
-| `docs/05-phases/` | Step-by-step runbooks per phase |
-| `reference/portfolio-prototype.html` | Approved visual and interaction prototype (reference only) |
-| `src/`, `scripts/`, `tests/` | Code scaffold, token pipeline, guardrail tests |
+| Path                                 | Content                                                                                                              |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `docs/00-overview/`                  | Project brief, roadmap (current phase), decision log                                                                 |
+| `docs/01-design/`                    | Design system, tokens, typography, layout, page specs, interactions, components, style guide                         |
+| `docs/02-engineering/`               | Tech stack, architecture, dev environment, code standards, token pipeline, content schema, routing, animation, forms |
+| `docs/03-quality/`                   | Performance budget, accessibility, SEO, testing                                                                      |
+| `docs/04-release/`                   | Deployment, launch checklist, maintenance                                                                            |
+| `docs/05-phases/`                    | Step-by-step runbooks per phase                                                                                      |
+| `reference/portfolio-prototype.html` | Approved visual and interaction prototype (reference only)                                                           |
+| `src/`, `scripts/`, `tests/`         | Code scaffold, token pipeline, guardrail tests                                                                       |
 
 ## Status
 

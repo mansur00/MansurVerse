@@ -2,9 +2,11 @@
 (function () {
   try {
     var theme = localStorage.getItem('theme');
-    if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
-    if (localStorage.getItem('motion') === 'reduced') document.documentElement.setAttribute('data-motion', 'reduced');
-  } catch (error) {
+    if (theme === 'light' || theme === 'dark')
+      document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('motion') === 'reduced')
+      document.documentElement.setAttribute('data-motion', 'reduced');
+  } catch {
     // Storage unavailable: the site still works with system defaults.
   }
 })();

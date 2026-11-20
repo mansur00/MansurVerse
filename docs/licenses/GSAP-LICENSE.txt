@@ -1,0 +1,6 @@
+GSAP Standard License
+GreenSock Animation Platform (GSAP)
+https://gsap.com/standard-license
+
+GreenSock's standard "no charge" license allows free commercial use of GSAP and all its plugins.
+Refer to https://gsap.com/standard-license for the full license terms.

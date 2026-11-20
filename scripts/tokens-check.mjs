@@ -9,7 +9,9 @@ const warnings = [];
 
 // 1. Every reference resolves (literal() throws on a missing target) in both themes.
 const refSources = [
-  ...Object.entries(tokens.color).flatMap(([n, e]) => ['light', 'dark'].map((t) => [`color.${n}`, pair(e)[t], t])),
+  ...Object.entries(tokens.color).flatMap(([n, e]) =>
+    ['light', 'dark'].map((t) => [`color.${n}`, pair(e)[t], t]),
+  ),
   ...Object.entries(tokens.component).map(([n, v]) => [`component.${n}`, v, 'light']),
 ];
 for (const [name, value, theme] of refSources) {
@@ -32,7 +34,8 @@ for (const [name, role] of Object.entries(tokens.text)) {
     if (role[key] === undefined) errors.push(`text.${name}: missing ${key}`);
   }
   if (!(role.font in tokens.font)) errors.push(`text.${name}: unknown font ${role.font}`);
-  if (role.element === 'h1' && role.font !== 'display') errors.push(`text.${name}: h1 roles must use the display font`);
+  if (role.element === 'h1' && role.font !== 'display')
+    errors.push(`text.${name}: h1 roles must use the display font`);
   if (/^h[2-6]$/.test(role.element) && role.font !== 'label') {
     errors.push(`text.${name}: h2 to h6 roles must use the label font`);
   }
@@ -42,8 +45,12 @@ for (const [name, role] of Object.entries(tokens.text)) {
 for (const { fg, bg, min } of tokens.contrast) {
   for (const theme of ['light', 'dark']) {
     try {
-      const ratio = contrast(literal(tokens, tokens.color[fg] && pair(tokens.color[fg])[theme], theme), literal(tokens, tokens.color[bg] && pair(tokens.color[bg])[theme], theme));
-      if (ratio < min) errors.push(`contrast ${fg} on ${bg} (${theme}): ${ratio.toFixed(2)} is below ${min}`);
+      const ratio = contrast(
+        literal(tokens, tokens.color[fg] && pair(tokens.color[fg])[theme], theme),
+        literal(tokens, tokens.color[bg] && pair(tokens.color[bg])[theme], theme),
+      );
+      if (ratio < min)
+        errors.push(`contrast ${fg} on ${bg} (${theme}): ${ratio.toFixed(2)} is below ${min}`);
     } catch (error) {
       errors.push(`contrast ${fg} on ${bg}: ${error.message}`);
     }
@@ -58,14 +65,17 @@ const scan = (value) => {
 };
 scan(tokens.color);
 scan(tokens.component);
-for (const name of Object.keys(tokens.palette)) if (!used.has(name)) warnings.push(`palette.${name} is not used by any semantic or component token`);
+for (const name of Object.keys(tokens.palette))
+  if (!used.has(name))
+    warnings.push(`palette.${name} is not used by any semantic or component token`);
 
 // 6. Generated files are present and current.
 const expected = generate(tokens);
 for (const [name, content] of Object.entries(expected)) {
   const path = new URL(name, OUT);
   if (!existsSync(path)) errors.push(`generated/${name} is missing; run pnpm run tokens:build`);
-  else if (readFileSync(path, 'utf8') !== content) errors.push(`generated/${name} is out of date; run pnpm run tokens:build`);
+  else if (readFileSync(path, 'utf8') !== content)
+    errors.push(`generated/${name} is out of date; run pnpm run tokens:build`);
 }
 
 for (const w of warnings) console.warn(`warning: ${w}`);

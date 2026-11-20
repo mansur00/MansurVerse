@@ -2,8 +2,7 @@
 // the good fixture must pass. Run by `pnpm run verify`.
 import { spawnSync } from 'node:child_process';
 
-const run = (file) =>
-  spawnSync('pnpm', ['exec', 'stylelint', file], { encoding: 'utf8' });
+const run = (file) => spawnSync('pnpm', ['exec', 'stylelint', file], { encoding: 'utf8' });
 
 const bad = run('tests/guardrails/fixtures/bad.css');
 const good = run('tests/guardrails/fixtures/good.css');

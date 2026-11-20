@@ -4,9 +4,9 @@
 
 ## 1. Prerequisites
 
-- Node.js Active LTS (version in `.nvmrc` and `engines`)
-- pnpm via corepack (version in `packageManager`)
-- Git; a modern browser; Playwright browsers installed by `pnpm exec playwright install`
+- Node.js 24.21.0 (pinned in `.nvmrc`, `engines.node` `>=22.23.4`)
+- pnpm 12.21.0 via corepack (pinned in `packageManager`)
+- Git 2.50+; modern evergreen browsers
 
 ## 2. Planned Scripts
 
