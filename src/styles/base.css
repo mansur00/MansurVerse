@@ -1,0 +1,60 @@
+/* Base styles. Rules: docs/01-design/design-system.md. The outline below is the focus ring, an allowed stroke (spacing-radius-shadow.md section 4). */
+:root {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+html {
+  scroll-padding-top: calc(var(--layout-nav-height) + env(safe-area-inset-top));
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  letter-spacing: var(--text-body-tracking);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-bold);
+}
+
+:focus-visible {
+  outline: var(--line-focus-ring) solid var(--color-focus);
+  outline-offset: var(--line-focus-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] ::before,
+:root[data-motion='reduced'] ::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

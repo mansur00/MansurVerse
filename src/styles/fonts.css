@@ -1,0 +1,4 @@
+/* Self-hosted through Fontsource packages (decision D-65). Families: Jersey 20 (h1 only), Stack Sans Notch (h2 to h6, labels, stats), Plus Jakarta Sans (body). */
+@import '@fontsource/jersey-20/400.css';
+@import '@fontsource-variable/stack-sans-notch';
+@import '@fontsource-variable/plus-jakarta-sans';

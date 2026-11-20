@@ -1,0 +1,27 @@
+---
+// Minimal in Phase 2. Phase 4 adds SEO tags, nav, footer, cursor and the client router (docs/02-engineering/pages-and-routing.md).
+import '../styles/global.css';
+import themeInit from '../scripts/theme-init.js?raw';
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description = '', noindex = false } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline set:html={themeInit} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex" />}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

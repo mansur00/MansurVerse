@@ -1,0 +1,218 @@
+---
+// Internal style guide: every token in both themes. Generated from the token source, so it cannot drift.
+// Not indexed; removed from production builds unless PUBLIC_ENABLE_STYLEGUIDE=true (scripts/strip-styleguide.mjs).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import summary from '../styles/tokens/generated/tokens.summary.json';
+
+const colors = summary.colors;
+const palette = Object.entries(summary.palette);
+const roles = summary.roles;
+const space = Object.entries(summary.space);
+const radius = Object.entries(summary.radius);
+const shapes = Object.entries(summary.shape).filter(([name]) => name !== 'half-pill-radius');
+const motion = Object.entries(summary.motion);
+const ease = Object.entries(summary.ease);
+const z = Object.entries(summary.z);
+---
+
+<BaseLayout title="Style guide" noindex>
+  <main id="main" class="page">
+    <header class="top">
+      <h1 class="text-display-page">Style guide</h1>
+      <button id="theme-toggle" type="button" class="pill">Toggle theme</button>
+    </header>
+
+    <section>
+      <h2 class="text-heading-case">Colour tokens</h2>
+      <p class="text-body-small">Each swatch shows the current theme. Light and dark values are listed underneath.</p>
+      <ul class="swatches">
+        {
+          colors.map((c) => (
+            <li class="swatch">
+              <div class="chip-color" style={`background: var(--color-${c.name})`} />
+              <span class="text-body-small name">--color-{c.name}</span>
+              <span class="text-body-small muted">{c.light} / {c.dark}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Palette</h2>
+      <ul class="swatches">
+        {
+          palette.map(([name, value]) => (
+            <li class="swatch">
+              <div class="chip-color" style={`background: var(--palette-${name})`} />
+              <span class="text-body-small name">--palette-{name}</span>
+              <span class="text-body-small muted">{value}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Text roles</h2>
+      <ul class="roles">
+        {
+          roles.map((r) => (
+            <li class="role">
+              <span class="text-label">{r.name} ({r.element}, {r.font})</span>
+              <div class={`text-${r.name} sample`}>Aa Sample text</div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Spacing</h2>
+      <ul class="bars">
+        {
+          space.map(([name, value]) => (
+            <li class="bar-row">
+              <span class="text-body-small name">space-{name} ({value})</span>
+              <div class="bar" style={`width: var(--space-${name})`} />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Radius and shapes</h2>
+      <ul class="swatches">
+        {
+          radius.map(([name, value]) => (
+            <li class="swatch">
+              <div class="chip-color" style={`border-radius: var(--radius-${name})`} />
+              <span class="text-body-small name">radius-{name}</span>
+              <span class="text-body-small muted">{value}</span>
+            </li>
+          ))
+        }
+        {
+          shapes.map(([name]) => (
+            <li class="swatch">
+              <div class="chip-color" style={`clip-path: var(--shape-${name})`} />
+              <span class="text-body-small name">shape-{name}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Motion, easing and layers</h2>
+      <ul class="plain">
+        {motion.map(([name, value]) => <li class="text-body-small">motion-{name}: {value}</li>)}
+        {ease.map(([name, value]) => <li class="text-body-small">ease-{name}: {value}</li>)}
+        {z.map(([name, value]) => <li class="text-body-small">z-{name}: {value}</li>)}
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initThemeToggle } from '../scripts/theme-toggle';
+
+  const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
+  if (button) initThemeToggle(button);
+</script>
+
+<style>
+  .page {
+    display: grid;
+    gap: var(--layout-section-y);
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--layout-gap-wide);
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
+    font-family: var(--font-body);
+    font-size: var(--text-chip-size);
+    font-weight: var(--text-chip-weight);
+    cursor: pointer;
+  }
+
+  section {
+    display: grid;
+    gap: var(--layout-gap-wide);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--layout-gap);
+  }
+
+  .swatch {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: var(--color-bg-surface);
+  }
+
+  .chip-color {
+    height: var(--space-8);
+    background: var(--color-text-primary);
+  }
+
+  .muted {
+    color: var(--color-text-muted);
+  }
+
+  .name {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .roles {
+    display: grid;
+    gap: var(--layout-gap-wide);
+  }
+
+  .role {
+    display: grid;
+    gap: var(--space-2);
+    overflow: hidden;
+  }
+
+  .bars {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .bar-row {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .bar {
+    height: var(--space-3);
+    background: var(--color-accent-primary);
+  }
+
+  .plain {
+    display: grid;
+    gap: var(--space-1);
+  }
+</style>

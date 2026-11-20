@@ -1,0 +1,5 @@
+.good {
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
+  font-family: var(--font-body);
+}

@@ -1,0 +1,8 @@
+.bad {
+  color: #ff0000;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 4px black;
+  border: 1px solid black;
+  font-family: Arial;
+  filter: drop-shadow(0 0 2px black);
+}
