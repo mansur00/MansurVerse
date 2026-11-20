@@ -312,6 +312,33 @@
       "line": "1",
       "tracking": "-0.02em",
       "element": "span"
+    },
+    {
+      "name": "logo-primary",
+      "font": "display",
+      "weight": "400",
+      "size": "2.2rem",
+      "line": "1",
+      "tracking": "0",
+      "element": "span"
+    },
+    {
+      "name": "logo-secondary",
+      "font": "label",
+      "weight": "700",
+      "size": "1.5rem",
+      "line": "1",
+      "tracking": "-0.02em",
+      "element": "span"
+    },
+    {
+      "name": "superscript",
+      "font": "label",
+      "weight": "700",
+      "size": "0.75em",
+      "line": "1",
+      "tracking": "0",
+      "element": "span"
     }
   ],
   "space": {

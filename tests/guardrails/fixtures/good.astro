@@ -1,0 +1,15 @@
+---
+interface Props {
+  text: string;
+  href: string;
+  imageSrc: string;
+}
+
+const { text, href, imageSrc } = Astro.props;
+---
+
+<div class="bg-bg-base">
+  <p>{text}</p>
+  <a href={href}><slot /></a>
+  <img src={imageSrc} alt="" />
+</div>

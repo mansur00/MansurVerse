@@ -1,0 +1,47 @@
+---
+interface Props {
+  brandPrimary?: string | undefined;
+  brandSecondary?: string | undefined;
+  href?: string | undefined;
+  ariaLabel?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  brandPrimary = 'Mansur',
+  brandSecondary = 'Verse',
+  href = '/',
+  ariaLabel = 'MansurVerse, home',
+  class: className = '',
+} = Astro.props;
+---
+
+<a href={href} class:list={['logo', className]} aria-label={ariaLabel}>
+  <span class="primary">{brandPrimary}</span>
+  <span class="secondary">{brandSecondary}</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .primary {
+    font-family: var(--font-display);
+    font-size: var(--text-logo-primary-size);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: 0;
+  }
+
+  .secondary {
+    font-family: var(--font-label);
+    font-size: var(--text-logo-secondary-size);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+  }
+</style>

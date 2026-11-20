@@ -1,0 +1,44 @@
+---
+interface Props {
+  label: string;
+  variant?: 'on-light' | 'on-feature' | undefined;
+  as?: 'span' | 'div' | 'p' | undefined;
+  class?: string | undefined;
+}
+
+const { label, variant = 'on-light', as: Element = 'span', class: className = '' } = Astro.props;
+---
+
+<Element class:list={['slash-label', `slash-${variant}`, className]}>
+  <span class="slash" aria-hidden="true">
+    /
+  </span>
+  <span class="label-text">{label}</span>
+</Element>
+
+<style>
+  .slash-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-label);
+    font-size: var(--text-label-size);
+    font-weight: var(--text-label-weight);
+    line-height: var(--text-label-line);
+    letter-spacing: var(--text-label-tracking);
+    text-transform: uppercase;
+  }
+
+  .slash {
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .slash-on-light .label-text {
+    color: var(--color-text-primary);
+  }
+
+  .slash-on-feature .label-text {
+    color: var(--color-text-on-feature);
+  }
+</style>
