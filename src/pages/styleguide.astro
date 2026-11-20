@@ -11,6 +11,13 @@ import SlashLabel from '../components/primitives/SlashLabel.astro';
 import SuperscriptNumber from '../components/primitives/SuperscriptNumber.astro';
 import PixelShape from '../components/primitives/PixelShape.astro';
 import Divider from '../components/primitives/Divider.astro';
+import Nav from '../components/layout/Nav.astro';
+import ThemeToggle from '../components/layout/ThemeToggle.astro';
+import MotionToggle from '../components/layout/MotionToggle.astro';
+import SectionHeader from '../components/layout/SectionHeader.astro';
+import CTABand from '../components/layout/CTABand.astro';
+import Footer from '../components/layout/Footer.astro';
+import MenuOverlay from '../components/layout/MenuOverlay.astro';
 import { styleguideFixtures } from '../fixtures/styleguide';
 
 const colors = summary.colors;
@@ -209,6 +216,87 @@ const z = Object.entries(summary.z);
     </section>
 
     <section>
+      <h2 class="text-heading-case">Layout (Group 2)</h2>
+      <div class="primitives-grid">
+        <div class="component-demo">
+          <span class="text-label">Nav & Theme Toggle</span>
+          <div class="demo-box">
+            <Nav
+              brandPrimary={styleguideFixtures.brand.primary}
+              brandSecondary={styleguideFixtures.brand.secondary}
+              navLinks={styleguideFixtures.layout.navLinks}
+              currentPath="/work"
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Section Headers</span>
+          <div class="demo-box demo-stack">
+            <SectionHeader
+              slashLabel={styleguideFixtures.layout.sectionHeader.slashLabel}
+              title={styleguideFixtures.layout.sectionHeader.title}
+              variant="on-light"
+            />
+            <div class="feature-box">
+              <SectionHeader
+                slashLabel="Capabilities"
+                title="Engineering solutions built for scale and speed."
+                variant="on-feature"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">CTA Band</span>
+          <div class="demo-box">
+            <CTABand
+              slashLabel={styleguideFixtures.layout.cta.slashLabel}
+              heading={styleguideFixtures.layout.cta.heading}
+              text={styleguideFixtures.layout.cta.text}
+              buttonLabel={styleguideFixtures.layout.cta.buttonLabel}
+              buttonHref={styleguideFixtures.layout.cta.buttonHref}
+              variant="on-alt"
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Footer & Motion Toggle</span>
+          <div class="demo-box">
+            <Footer
+              pages={styleguideFixtures.layout.footer.pages}
+              socials={styleguideFixtures.layout.footer.socials}
+              localTimeLabel={styleguideFixtures.layout.footer.localTimeLabel}
+              timeZone={styleguideFixtures.layout.footer.timeZone}
+              copyright={styleguideFixtures.layout.footer.copyright}
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Standalone Theme & Motion Toggles</span>
+          <div class="demo-box demo-row">
+            <ThemeToggle label="Theme" />
+            <MotionToggle />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Menu Overlay (Mobile Dialog Preview)</span>
+          <div class="demo-box" style="position: relative; height: 320px; overflow: hidden;">
+            <MenuOverlay
+              links={styleguideFixtures.layout.navLinks}
+              isOpen={true}
+              class="relative-overlay"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <h2 class="text-heading-case">Motion, easing and layers</h2>
       <ul class="plain">
         {motion.map(([name, value]) => (
@@ -361,6 +449,12 @@ const z = Object.entries(summary.z);
 
   .text-white {
     color: var(--color-text-on-feature);
+  }
+
+  .relative-overlay {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .plain {

@@ -1,0 +1,119 @@
+---
+interface Props {
+  links: Array<{ label: string; href: string }>;
+  closeAriaLabel?: string | undefined;
+  isOpen?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { links, closeAriaLabel = 'Close menu', isOpen = false, class: className = '' } = Astro.props;
+---
+
+<div
+  id="menu-overlay"
+  class:list={['menu-overlay', { 'is-open': isOpen }, className]}
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation menu"
+  aria-hidden={!isOpen ? 'true' : 'false'}
+>
+  <div class="overlay-header">
+    <button type="button" id="menu-close" class="close-button" aria-label={closeAriaLabel}>
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+
+  <nav class="overlay-nav" aria-label="Mobile navigation">
+    <ul class="nav-list">
+      {links.map((link, index) => (
+        <li class="nav-item">
+          <a href={link.href} class="nav-link text-display-page">
+            <span class="nav-number" aria-hidden="true">
+              0{index + 1}
+            </span>
+            <span class="nav-label">{link.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--color-bg-base);
+    z-index: var(--z-nav);
+    display: flex;
+    flex-direction: column;
+    padding: var(--layout-pad);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--motion-base) var(--ease-out),
+      visibility var(--motion-base) var(--ease-out);
+  }
+
+  .menu-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .overlay-header {
+    display: flex;
+    justify-content: flex-end;
+    height: var(--layout-nav-height);
+    align-items: center;
+  }
+
+  .close-button {
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-chip-size);
+    cursor: pointer;
+    padding: var(--space-2);
+  }
+
+  .overlay-nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .nav-item {
+    display: block;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .nav-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .nav-number {
+    font-family: var(--font-label);
+    font-size: var(--text-chip-size);
+    color: var(--color-text-muted);
+  }
+</style>

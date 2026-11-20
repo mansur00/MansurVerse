@@ -11,12 +11,12 @@ export interface StyleguideFixtures {
     buttons: Array<{
       label: string;
       variant: 'primary' | 'inverse' | 'outlined';
-      showArrow?: boolean;
+      showArrow?: boolean | undefined;
     }>;
     chips: Array<{
       label: string;
       variant: 'filled' | 'accent' | 'outlined';
-      active?: boolean;
+      active?: boolean | undefined;
     }>;
     tags: Array<{
       text: string;
@@ -31,6 +31,27 @@ export interface StyleguideFixtures {
       variant: 'blob' | 'corner';
       accent: 'lime' | 'sky' | 'lime-yellow' | 'pink' | 'cyan' | 'blue';
     }>;
+  };
+  layout: {
+    navLinks: Array<{ label: string; href: string }>;
+    sectionHeader: {
+      slashLabel: string;
+      title: string;
+    };
+    cta: {
+      slashLabel: string;
+      heading: string;
+      text: string;
+      buttonLabel: string;
+      buttonHref: string;
+    };
+    footer: {
+      pages: Array<{ label: string; href: string }>;
+      socials: Array<{ label: string; href: string }>;
+      localTimeLabel: string;
+      timeZone: string;
+      copyright: string;
+    };
   };
 }
 
@@ -76,5 +97,40 @@ export const styleguideFixtures: StyleguideFixtures = {
       { variant: 'corner', accent: 'cyan' },
       { variant: 'corner', accent: 'blue' },
     ],
+  },
+  layout: {
+    navLinks: [
+      { label: 'Home', href: '/' },
+      { label: 'Work', href: '/work' },
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+    ],
+    sectionHeader: {
+      slashLabel: 'Selected Work',
+      title: 'Crafting digital experiences with precision and intent.',
+    },
+    cta: {
+      slashLabel: 'Say Hello',
+      heading: 'Let’s work together.',
+      text: 'Available for freelance UI design and frontend engineering projects.',
+      buttonLabel: 'Get In Touch',
+      buttonHref: '/contact',
+    },
+    footer: {
+      pages: [
+        { label: 'Home', href: '/' },
+        { label: 'Work', href: '/work' },
+        { label: 'About', href: '/about' },
+        { label: 'Contact', href: '/contact' },
+      ],
+      socials: [
+        { label: 'GitHub', href: 'https://github.com/mansur00' },
+        { label: 'LinkedIn', href: 'https://linkedin.com' },
+        { label: 'X / Twitter', href: 'https://twitter.com' },
+      ],
+      localTimeLabel: 'Local Time',
+      timeZone: 'Asia/Dhaka',
+      copyright: '© 2026 Mansur. All rights reserved.',
+    },
   },
 };

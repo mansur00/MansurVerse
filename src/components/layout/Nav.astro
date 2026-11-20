@@ -1,0 +1,150 @@
+---
+import Logo from '../primitives/Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  brandPrimary?: string | undefined;
+  brandSecondary?: string | undefined;
+  navLinks: Array<{ label: string; href: string }>;
+  currentPath?: string | undefined;
+  themeToggleAriaLabel?: string | undefined;
+  menuAriaLabel?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  brandPrimary,
+  brandSecondary,
+  navLinks,
+  currentPath = '/',
+  themeToggleAriaLabel,
+  menuAriaLabel = 'Open menu',
+  class: className = '',
+} = Astro.props;
+---
+
+<header class:list={['nav-header', className]}>
+  <div class="nav-container">
+    <div class="nav-logo">
+      <Logo brandPrimary={brandPrimary} brandSecondary={brandSecondary} />
+    </div>
+
+    <nav class="nav-desktop" aria-label="Main navigation">
+      <ul class="nav-links">
+        {navLinks.map((item) => {
+          const isActive = currentPath === item.href;
+          return (
+            <li>
+              <a
+                href={item.href}
+                class:list={['nav-link', { 'is-active': isActive }]}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <ThemeToggle ariaLabel={themeToggleAriaLabel} />
+      <button type="button" id="menu-open-button" class="menu-button" aria-label={menuAriaLabel}>
+        <span class="hamburger" aria-hidden="true">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .nav-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    background: var(--color-bg-base);
+    height: var(--layout-nav-height);
+    width: 100%;
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+
+  .nav-container {
+    height: 100%;
+    padding: 0 var(--layout-pad);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--layout-gap);
+  }
+
+  .nav-desktop {
+    display: none;
+  }
+
+  @media (width >= 721px) {
+    .nav-desktop {
+      display: block;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: var(--text-chip-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .nav-link:hover,
+  .nav-link.is-active {
+    color: var(--color-accent-primary);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--color-text-primary);
+    padding: var(--space-2);
+    cursor: pointer;
+  }
+
+  @media (width >= 721px) {
+    .menu-button {
+      display: none;
+    }
+  }
+
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 20px;
+  }
+
+  .bar {
+    width: 100%;
+    height: var(--line-hairline);
+    background: var(--color-text-primary);
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+
+interface Props {
+  slashLabel: string;
+  title: string;
+  as?: 'h1' | 'h2' | 'h3' | undefined;
+  variant?: 'on-light' | 'on-feature' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  slashLabel,
+  title,
+  as: HeadingTag = 'h2',
+  variant = 'on-light',
+  class: className = '',
+} = Astro.props;
+---
+
+<header class:list={['section-header', `header-${variant}`, className]}>
+  <SlashLabel label={slashLabel} variant={variant} />
+  <HeadingTag class="section-title text-heading-section">{title}</HeadingTag>
+</header>
+
+<style>
+  .section-header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-title {
+    margin: 0;
+    max-width: 24ch;
+  }
+
+  .header-on-light .section-title {
+    color: var(--color-text-primary);
+  }
+
+  .header-on-feature .section-title {
+    color: var(--color-text-on-feature);
+  }
+</style>
