@@ -148,6 +148,11 @@
       "name": "digit-field",
       "light": "rgba(0, 0, 0, 0.4)",
       "dark": "rgba(241, 241, 241, 0.4)"
+    },
+    {
+      "name": "error",
+      "light": "#FF9696",
+      "dark": "#FF9696"
     }
   ],
   "fonts": {
