@@ -1,0 +1,54 @@
+---
+interface Props {
+  stepNumber: number | string;
+  title: string;
+  text: string;
+  class?: string | undefined;
+}
+
+const { stepNumber, title, text, class: className = '' } = Astro.props;
+
+const formattedNum =
+  typeof stepNumber === 'number' && stepNumber < 10 ? `0${stepNumber}` : `${stepNumber}`;
+---
+
+<article class:list={['process-step', className]}>
+  <span class="step-num" aria-hidden="true">
+    {formattedNum}
+  </span>
+  <h3 class="step-title text-heading-step">{title}</h3>
+  <p class="step-text text-body">{text}</p>
+</article>
+
+<style>
+  .process-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-none);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .step-num {
+    font-family: var(--font-label);
+    font-size: var(--text-stat-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent-primary);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+  }
+
+  .step-title {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .step-text {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 36ch;
+  }
+</style>

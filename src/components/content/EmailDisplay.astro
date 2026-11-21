@@ -1,0 +1,44 @@
+---
+interface Props {
+  email: string;
+  class?: string | undefined;
+}
+
+const { email, class: className = '' } = Astro.props;
+const letters = email.split('');
+---
+
+<a
+  href={`mailto:${email}`}
+  class:list={['email-display', 'text-email-display', className]}
+  aria-label={email}
+>
+  {letters.map((char) => (
+    <span class="email-char" aria-hidden="true">
+      {char}
+    </span>
+  ))}
+</a>
+
+<style>
+  .email-display {
+    display: inline-flex;
+    flex-wrap: wrap;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    word-break: break-all;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .email-display:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .email-char {
+    display: inline-block;
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+</style>

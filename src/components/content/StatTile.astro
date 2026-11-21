@@ -1,0 +1,60 @@
+---
+interface Props {
+  number: string;
+  caption: string;
+  variant?: 'lime' | 'white' | undefined;
+  staggered?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { number, caption, variant = 'lime', staggered = false, class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={['stat-tile', `stat-${variant}`, { 'is-staggered': staggered }, className]}
+  aria-label={`${number} ${caption}`}
+>
+  <span class="stat-number text-stat" aria-hidden="true">
+    {number}
+  </span>
+  <span class="stat-caption text-body">{caption}</span>
+</div>
+
+<style>
+  .stat-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-6);
+    min-height: 180px;
+    border-radius: var(--radius-none);
+    overflow: hidden;
+  }
+
+  @media (width >= 721px) {
+    .stat-tile.is-staggered {
+      transform: translateY(var(--space-6));
+    }
+  }
+
+  .stat-lime {
+    background: var(--stat-tile-bg-a);
+    color: var(--stat-tile-text);
+  }
+
+  .stat-white {
+    background: var(--stat-tile-bg-b);
+    color: var(--color-text-on-accent);
+  }
+
+  .stat-number {
+    line-height: 1;
+    margin: 0;
+  }
+
+  .stat-caption {
+    margin: 0;
+    font-weight: var(--font-weight-medium);
+    max-width: 20ch;
+  }
+</style>

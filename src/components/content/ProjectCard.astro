@@ -1,0 +1,238 @@
+---
+import Chip from '../primitives/Chip.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+
+interface Props {
+  title: string;
+  number: number | string;
+  description: string;
+  category: string;
+  year: string;
+  href: string;
+  accent?: string | undefined;
+  imageSrc?: string | undefined;
+  imageAlt?: string | undefined;
+  variant?: 'stack' | 'grid' | 'list' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  title,
+  number,
+  description,
+  category,
+  year,
+  href,
+  accent = 'lime',
+  imageSrc,
+  imageAlt = '',
+  variant = 'stack',
+  class: className = '',
+} = Astro.props;
+
+const isList = variant === 'list';
+const accentToken = `var(--color-accent-${accent === 'lime' ? 'primary' : accent === 'blue' ? 'blue' : accent === 'sky' ? 'secondary-1' : accent === 'lime-yellow' ? 'secondary-2' : accent === 'pink' ? 'secondary-3' : 'secondary-4'})`;
+---
+
+<a
+  href={href}
+  class:list={['project-card', `card-${variant}`, className]}
+  data-cursor="View"
+  data-category={category}
+  style={`--card-accent: ${accentToken};`}
+>
+  <div class="card-left">
+    <div class="card-num">
+      <SuperscriptNumber number={number} pad={true} />
+    </div>
+    <h3 class="card-title text-heading-card">{title}</h3>
+    <p class="card-description text-body">{description}</p>
+    <div class="card-chips">
+      <Chip variant="accent">{category}</Chip>
+      <Chip variant="outlined">{year}</Chip>
+    </div>
+  </div>
+
+  {!isList && (
+    <div class="card-art" aria-hidden="true">
+      <div class="half-pill-block" />
+      <div class="pixel-blob" />
+      <div class="shot">
+        {imageSrc ? (
+          <img src={imageSrc} alt={imageAlt} class="card-image" loading="lazy" />
+        ) : (
+          <div class="shot-lines">
+            <span class="shot-bar shot-bar-header" />
+            <span class="shot-bar shot-bar-main" />
+            <span class="shot-bar shot-bar-footer" />
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</a>
+
+<style>
+  .project-card {
+    background: var(--card-bg);
+    color: var(--card-text);
+    text-decoration: none;
+    border-radius: var(--radius-none);
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+
+  .project-card:hover {
+    transform: translateY(-6px);
+  }
+
+  .card-stack,
+  .card-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+    gap: var(--space-6);
+    min-height: clamp(300px, 44vw, 540px);
+  }
+
+  @media (width >= 721px) {
+    .card-stack,
+    .card-grid {
+      grid-template-columns: 1fr 1.15fr;
+      padding: var(--space-6);
+      column-gap: var(--space-6);
+    }
+  }
+
+  .card-list {
+    grid-template-columns: 1fr;
+    padding: var(--space-4) var(--space-6);
+    background: transparent;
+    min-height: 0;
+  }
+
+  .card-list:hover {
+    background: var(--color-bg-surface);
+  }
+
+  .card-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    z-index: var(--z-content);
+  }
+
+  .card-num {
+    margin-bottom: var(--space-3);
+  }
+
+  .card-title {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-primary);
+  }
+
+  .card-description {
+    margin: 0 0 var(--space-5);
+    color: var(--color-text-muted-on-card);
+    max-width: 32ch;
+  }
+
+  .card-chips {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: auto;
+  }
+
+  .card-art {
+    position: relative;
+    height: 100%;
+    min-height: 240px;
+    margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) 0;
+    overflow: hidden;
+  }
+
+  @media (width < 721px) {
+    .card-art {
+      margin: var(--space-4) calc(-1 * var(--space-6)) calc(-1 * var(--space-6));
+      height: 240px;
+    }
+  }
+
+  .half-pill-block {
+    position: absolute;
+    right: 0;
+    top: 8%;
+    width: 78%;
+    aspect-ratio: 1.5;
+    background: var(--card-accent, var(--color-accent-primary));
+    border-radius: var(--shape-half-pill-radius);
+    opacity: 1;
+  }
+
+  .pixel-blob {
+    position: absolute;
+    left: 0;
+    top: 34%;
+    width: 34%;
+    aspect-ratio: 1;
+    background: var(--card-accent, var(--color-accent-primary));
+    opacity: 0.5;
+    clip-path: var(--shape-pixel-blob);
+  }
+
+  .shot {
+    position: absolute;
+    inset: 16% -8% -6% 14%;
+    background: var(--color-bg-base);
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    transition: transform var(--motion-fast) var(--ease-out);
+    z-index: 2;
+  }
+
+  .project-card:hover .shot {
+    transform: translate(-8px, -8px);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .shot-lines {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+    height: 100%;
+  }
+
+  .shot-bar {
+    display: block;
+    border-radius: var(--radius-none);
+    background: var(--color-bg-alt);
+  }
+
+  .shot-bar-header {
+    width: 40%;
+    height: 14px;
+    background: var(--color-text-primary);
+  }
+
+  .shot-bar-main {
+    width: 100%;
+    height: 64px;
+  }
+
+  .shot-bar-footer {
+    width: 80%;
+    height: 14px;
+  }
+</style>

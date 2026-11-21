@@ -1,0 +1,146 @@
+---
+import Chip from '../primitives/Chip.astro';
+
+interface Props {
+  role: string;
+  year: string;
+  tools: string[];
+  links?: Array<{ label: string; href: string }> | undefined;
+  sections?: Array<{ id: string; label: string }> | undefined;
+  roleTitle?: string | undefined;
+  yearTitle?: string | undefined;
+  toolsTitle?: string | undefined;
+  linksTitle?: string | undefined;
+  sectionsTitle?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  role,
+  year,
+  tools,
+  links = [],
+  sections = [],
+  roleTitle = 'Role',
+  yearTitle = 'Year',
+  toolsTitle = 'Tools & Stack',
+  linksTitle = 'Links',
+  sectionsTitle = 'Contents',
+  class: className = '',
+} = Astro.props;
+---
+
+<aside class:list={['meta-sidebar', className]} aria-label="Project metadata">
+  <div class="sidebar-block">
+    <span class="block-title text-label">{roleTitle}</span>
+    <p class="block-value text-body">{role}</p>
+  </div>
+
+  <div class="sidebar-block">
+    <span class="block-title text-label">{yearTitle}</span>
+    <p class="block-value text-body">{year}</p>
+  </div>
+
+  <div class="sidebar-block">
+    <span class="block-title text-label">{toolsTitle}</span>
+    <div class="tools-chips">
+      {tools.map((tool) => (
+        <Chip variant="filled">{tool}</Chip>
+      ))}
+    </div>
+  </div>
+
+  {links.length > 0 && (
+    <div class="sidebar-block">
+      <span class="block-title text-label">{linksTitle}</span>
+      <ul class="block-links">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="sidebar-link text-body"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {link.label} ↗
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {sections.length > 0 && (
+    <nav class="sidebar-block sections-nav" aria-label={sectionsTitle}>
+      <span class="block-title text-label">{sectionsTitle}</span>
+      <ul class="sections-list">
+        {sections.map((sec) => (
+          <li>
+            <a href={`#${sec.id}`} class="section-link text-body-small">
+              {sec.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+</aside>
+
+<style>
+  .meta-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-none);
+  }
+
+  @media (width >= 1101px) {
+    .meta-sidebar {
+      position: sticky;
+      top: calc(var(--layout-nav-height) + var(--space-6));
+    }
+  }
+
+  .sidebar-block {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .block-title {
+    color: var(--color-text-muted);
+  }
+
+  .block-value {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .tools-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .block-links,
+  .sections-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .sidebar-link,
+  .section-link {
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .sidebar-link:hover,
+  .section-link:hover {
+    color: var(--color-accent-primary);
+  }
+</style>
