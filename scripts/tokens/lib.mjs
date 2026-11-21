@@ -182,11 +182,29 @@ export function generate(tokens) {
     light: literal(tokens, pair(e).light, 'light'),
     dark: literal(tokens, pair(e).dark, 'dark'),
   }));
+  const contrastPairs = (tokens.contrast ?? []).flatMap(({ fg, bg, min }) =>
+    ['light', 'dark'].map((theme) => {
+      const fv = literal(tokens, tokens.color[fg] && pair(tokens.color[fg])[theme], theme);
+      const bv = literal(tokens, tokens.color[bg] && pair(tokens.color[bg])[theme], theme);
+      const ratio = contrast(fv, bv);
+      return {
+        fg,
+        bg,
+        theme,
+        fgValue: fv,
+        bgValue: bv,
+        ratio: Number(ratio.toFixed(2)),
+        min,
+        pass: ratio >= min,
+      };
+    }),
+  );
   const summary = {
     palette: tokens.palette,
     colors,
     fonts: tokens.font,
     roles: Object.entries(tokens.text).map(([name, r]) => ({ name, ...r })),
+    contrast: contrastPairs,
     space: tokens.space,
     radius: tokens.radius,
     line: tokens.line,

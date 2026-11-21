@@ -1,6 +1,7 @@
 ---
-// Internal style guide: every token in both themes. Generated from the token source, so it cannot drift.
-// Not indexed; removed from production builds unless PUBLIC_ENABLE_STYLEGUIDE=true (scripts/strip-styleguide.mjs).
+// Internal style guide & design system catalog.
+// Generated from token source and fixtures; no hardcoded copy or magic numbers.
+// Not indexed; removed from production builds unless PUBLIC_ENABLE_STYLEGUIDE=true.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import summary from '../styles/tokens/generated/tokens.summary.json';
 import Logo from '../components/primitives/Logo.astro';
@@ -34,677 +35,1591 @@ import FormField from '../components/forms/FormField.astro';
 import Form from '../components/forms/Form.astro';
 import { styleguideFixtures } from '../fixtures/styleguide';
 
+const f = styleguideFixtures;
 const colors = summary.colors;
 const palette = Object.entries(summary.palette);
 const roles = summary.roles;
+const contrast = summary.contrast;
 const space = Object.entries(summary.space);
 const radius = Object.entries(summary.radius);
-const shapes = Object.entries(summary.shape).filter(([name]) => name !== 'half-pill-radius');
 const motion = Object.entries(summary.motion);
-const ease = Object.entries(summary.ease);
 const z = Object.entries(summary.z);
+const opacity = Object.entries(summary.opacity);
 ---
 
-<BaseLayout title="Style guide" noindex>
-  <main id="main" class="page">
-    <header class="top">
-      <h1 class="text-display-page">Style guide</h1>
-      <button id="theme-toggle" type="button" class="pill">
-        Toggle theme
-      </button>
+<BaseLayout title={f.pageTitle} noindex>
+  <div class="sg-root">
+    <!-- Header -->
+    <header class="sg-header">
+      <div class="sg-header-top">
+        <div class="sg-header-brand">
+          <Logo />
+          <Chip variant="accent">{f.badge}</Chip>
+        </div>
+        <div class="sg-header-controls">
+          <ThemeToggle />
+          <MotionToggle />
+        </div>
+      </div>
+
+      <div class="sg-header-hero">
+        <SlashLabel label={f.sections.colour.label} />
+        <h1 class="text-display-page sg-title">{f.header.title}</h1>
+        <p class="text-body sg-intro">{f.header.intro}</p>
+      </div>
+
+      <nav class="sg-sticky-nav" aria-label={f.header.title}>
+        <ul class="sg-nav-list">
+          {f.header.navLinks.map((link) => (
+            <li>
+              <a href={link.href} class="sg-nav-link text-label">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </header>
 
-    <section>
-      <h2 class="text-heading-case">Colour tokens</h2>
-      <p class="text-body-small">
-        Each swatch shows the current theme. Light and dark values are listed underneath.
-      </p>
-      <ul class="swatches">
-        {colors.map((c) => (
-          <li class="swatch">
-            <div class="chip-color" style={`background: var(--color-${c.name})`} />
-            <span class="text-body-small name">--color-{c.name}</span>
-            <span class="text-body-small muted">
-              {c.light} / {c.dark}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <main id="main">
+      <!-- 01 COLOUR -->
+      <section id="colour" class="sg-section sg-surface-base">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.colour.label} />
+            <h2 class="text-heading-section sg-section-title">
+              {f.sections.colour.title}
+              <SuperscriptNumber number={f.sections.colour.number} />
+            </h2>
+          </div>
 
-    <section>
-      <h2 class="text-heading-case">Palette</h2>
-      <ul class="swatches">
-        {palette.map(([name, value]) => (
-          <li class="swatch">
-            <div class="chip-color" style={`background: var(--palette-${name})`} />
-            <span class="text-body-small name">--palette-{name}</span>
-            <span class="text-body-small muted">{value}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+          <!-- Core Palette -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.colour.paletteTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.colour.paletteDesc}</p>
+            <div class="palette-grid">
+              {palette.map(([name, value]) => (
+                <div class="palette-card">
+                  <div class="palette-swatch" style={`background: var(--palette-${name})`} />
+                  <div class="palette-meta">
+                    <span class="text-label palette-name">{name}</span>
+                    <span class="text-body-small palette-hex">{value}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-    <section>
-      <h2 class="text-heading-case">Text roles</h2>
-      <ul class="roles">
-        {roles.map((r) => (
-          <li class="role">
-            <span class="text-label">
-              {r.name} ({r.element}, {r.font})
-            </span>
-            <div class={`text-${r.name} sample`}>Aa Sample text</div>
-          </li>
-        ))}
-      </ul>
-    </section>
+          <Divider variant="on-base" />
 
-    <section>
-      <h2 class="text-heading-case">Spacing</h2>
-      <ul class="bars">
-        {space.map(([name, value]) => (
-          <li class="bar-row">
-            <span class="text-body-small name">
-              space-{name} ({value})
-            </span>
-            <div class="bar" style={`width: var(--space-${name})`} />
-          </li>
-        ))}
-      </ul>
-    </section>
+          <!-- Semantic Tokens -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.colour.semanticTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.colour.semanticDesc}</p>
+            <div class="semantic-grid">
+              {colors.map((c) => (
+                <div class="semantic-card">
+                  <div class="semantic-swatches">
+                    <div class="semantic-swatch" style={`background: ${c.light}`}>
+                      <span class="text-body-small swatch-tag">{f.sections.colour.lightLabel}</span>
+                    </div>
+                    <div class="semantic-swatch" style={`background: ${c.dark}`}>
+                      <span class="text-body-small swatch-tag swatch-tag-dark">
+                        {f.sections.colour.darkLabel}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="semantic-meta">
+                    <span class="text-label semantic-name">{c.name}</span>
+                    <span class="text-body-small semantic-vals">
+                      {c.light} / {c.dark}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-    <section>
-      <h2 class="text-heading-case">Radius and shapes</h2>
-      <ul class="swatches">
-        {radius.map(([name, value]) => (
-          <li class="swatch">
-            <div class="chip-color" style={`border-radius: var(--radius-${name})`} />
-            <span class="text-body-small name">radius-{name}</span>
-            <span class="text-body-small muted">{value}</span>
-          </li>
-        ))}
-        {shapes.map(([name]) => (
-          <li class="swatch">
-            <div class="chip-color" style={`clip-path: var(--shape-${name})`} />
-            <span class="text-body-small name">shape-{name}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+          <Divider variant="on-base" />
 
-    <section>
-      <h2 class="text-heading-case">Primitives (Group 1)</h2>
-      <div class="primitives-grid">
-        <div class="component-demo">
-          <span class="text-label">Logo</span>
-          <div class="demo-box">
-            <Logo
-              brandPrimary={styleguideFixtures.brand.primary}
-              brandSecondary={styleguideFixtures.brand.secondary}
-              ariaLabel={styleguideFixtures.brand.homeAriaLabel}
-            />
+          <!-- Contrast Pairs -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.colour.contrastTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.colour.contrastDesc}</p>
+            <div class="contrast-grid">
+              {contrast.map((item) => (
+                <div
+                  class="contrast-card"
+                  style={`background: ${item.bgValue}; color: ${item.fgValue}`}
+                >
+                  <div class="contrast-top">
+                    <span class="text-label contrast-pair-label">
+                      {item.fg} / {item.bg}
+                    </span>
+                    <Chip variant="accent">
+                      {item.pass ? f.sections.colour.statusPass : f.sections.colour.statusFail}
+                    </Chip>
+                  </div>
+                  <div class="contrast-bottom">
+                    <div class="contrast-ratio-row">
+                      <span class="text-heading-job">{item.ratio}:1</span>
+                      <span class="text-body-small contrast-target">
+                        {f.sections.colour.thresholdLabel}: {item.min}:1
+                      </span>
+                    </div>
+                    <span class="text-body-small contrast-theme-pill">{item.theme}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="component-demo">
-          <span class="text-label">Buttons (variants & states)</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.buttons.map((btn) => (
-              <Button
-                variant={btn.variant}
-                showArrow={btn.showArrow}
-                loading={btn.label.includes('Loading')}
-                success={btn.label.includes('Success')}
-                disabled={btn.label.includes('Disabled')}
-              >
-                {btn.label}
-              </Button>
-            ))}
+      <!-- 02 TYPOGRAPHY -->
+      <section id="typography" class="sg-section sg-surface-alt">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.typography.label} />
+            <h2 class="text-heading-section sg-section-title">
+              {f.sections.typography.title}
+              <SuperscriptNumber number={f.sections.typography.number} />
+            </h2>
+            <p class="text-body sg-section-intro">{f.sections.typography.intro}</p>
+          </div>
+
+          <!-- Font Specimens -->
+          <div class="sg-block">
+            <div class="specimens-stack">
+              {f.sections.typography.specimens.map((spec) => (
+                <div class="specimen-card">
+                  <div class="specimen-meta">
+                    <h3 class="text-heading-case specimen-family">{spec.family}</h3>
+                    <Chip variant="outlined">{spec.role}</Chip>
+                  </div>
+                  {spec.isDisplay ? (
+                    <h1 class="text-display-page specimen-sample">{spec.sample}</h1>
+                  ) : (
+                    <p class="text-heading-row specimen-sample">{spec.sample}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Divider variant="on-base" />
+
+          <!-- Rendered Text Roles -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.typography.rolesTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.typography.rolesDesc}</p>
+            <div class="roles-list">
+              {roles.map((r) => (
+                <div class="role-row">
+                  <div class="role-meta">
+                    <div class="role-title-row">
+                      <span class="text-heading-job role-name">{r.name}</span>
+                      <Chip variant="filled">{r.element}</Chip>
+                    </div>
+                    <p class="text-body-small role-specs">
+                      {r.font} · {r.size} · weight {r.weight} · line {r.line}
+                    </p>
+                  </div>
+                  <div class="role-preview">
+                    <div class={`text-${r.name} role-sample-text`}>
+                      {f.sections.typography.sampleText}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="component-demo">
-          <span class="text-label">Chips</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.chips.map((chip) => (
-              <Chip variant={chip.variant} active={chip.active}>
-                {chip.label}
-              </Chip>
-            ))}
+      <!-- 03 SHAPES & SPACING -->
+      <section id="shapes" class="sg-section sg-surface-base">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.shapes.label} />
+            <h2 class="text-heading-section sg-section-title">
+              {f.sections.shapes.title}
+              <SuperscriptNumber number={f.sections.shapes.number} />
+            </h2>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Keyword Tags</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.tags.map((tag) => (
-              <KeywordTag tagIndex={tag.tagIndex}>{tag.text}</KeywordTag>
-            ))}
+          <!-- Pixel Shapes -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.shapes.pixelShapesTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.shapes.pixelShapesDesc}</p>
+            <div class="shapes-row">
+              {f.primitives.pixelShapes.map((shape) => (
+                <div class="shape-item">
+                  <PixelShape variant={shape.variant} accent={shape.accent} />
+                  <span class="text-body-small shape-label">
+                    {shape.variant} / {shape.accent}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Slash Labels</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.slashLabels.map((sl) => (
-              <div class={sl.variant === 'on-feature' ? 'feature-box' : ''}>
-                <SlashLabel label={sl.label} variant={sl.variant} />
+          <Divider variant="on-base" />
+
+          <!-- Half-Pill -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">{f.sections.shapes.halfPillTitle}</h3>
+            <p class="text-body-small sg-block-desc">{f.sections.shapes.halfPillDesc}</p>
+            <div class="half-pill-demo">
+              <div class="half-pill-shape">
+                <span class="text-label half-pill-text">{f.sections.shapes.halfPillLabel}</span>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Superscript Numbers</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.numbers.map((num) => (
-              <span class="text-heading-case">
-                Item
-                <SuperscriptNumber number={num} />
-              </span>
-            ))}
+          <Divider variant="on-base" />
+
+          <!-- Radii & Spacing Grid -->
+          <div class="sg-grid-2">
+            <div class="sg-block">
+              <h3 class="text-heading-case sg-block-title">{f.sections.shapes.radiusTitle}</h3>
+              <div class="radius-list">
+                {radius.map(([name, val]) => (
+                  <div class="scale-item">
+                    <span class="text-label scale-name">--radius-{name}</span>
+                    <span class="text-body-small scale-val">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="sg-block">
+              <h3 class="text-heading-case sg-block-title">{f.sections.shapes.spaceTitle}</h3>
+              <div class="space-list">
+                {space.map(([name, val]) => (
+                  <div class="space-bar-row">
+                    <span class="text-label space-name">{name}</span>
+                    <div class="space-bar-wrap">
+                      <div class="space-bar" style={`width: var(--space-${name})`} />
+                    </div>
+                    <span class="text-body-small space-val">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Pixel Shapes</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.primitives.pixelShapes.map((ps) => (
-              <PixelShape variant={ps.variant} accent={ps.accent} />
-            ))}
-          </div>
-        </div>
+          <Divider variant="on-base" />
 
-        <div class="component-demo">
-          <span class="text-label">Dividers</span>
-          <div class="demo-box demo-stack">
-            <span class="text-body-small">On base:</span>
-            <Divider variant="on-base" />
-            <div class="feature-box">
-              <span class="text-body-small text-white">On feature:</span>
-              <Divider variant="on-feature" />
+          <!-- Z-Index & Opacity -->
+          <div class="sg-grid-2">
+            <div class="sg-block">
+              <h3 class="text-heading-case sg-block-title">{f.sections.shapes.zIndexTitle}</h3>
+              <div class="scale-list">
+                {z.map(([name, val]) => (
+                  <div class="scale-item">
+                    <span class="text-label scale-name">--z-{name}</span>
+                    <span class="text-body-small scale-val">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="sg-block">
+              <h3 class="text-heading-case sg-block-title">{f.sections.shapes.opacityTitle}</h3>
+              <div class="scale-list">
+                {opacity.map(([name, val]) => (
+                  <div class="scale-item">
+                    <span class="text-label scale-name">--opacity-{name}</span>
+                    <span class="text-body-small scale-val">{val}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <h2 class="text-heading-case">Layout (Group 2)</h2>
-      <div class="primitives-grid">
-        <div class="component-demo">
-          <span class="text-label">Nav & Theme Toggle</span>
-          <div class="demo-box">
-            <Nav
-              brandPrimary={styleguideFixtures.brand.primary}
-              brandSecondary={styleguideFixtures.brand.secondary}
-              navLinks={styleguideFixtures.layout.navLinks}
-              currentPath="/work"
-            />
+      <!-- 04 COMPONENTS -->
+      <section id="components" class="sg-section sg-surface-alt">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.components.label} />
+            <h2 class="text-heading-section sg-section-title">
+              {f.sections.components.title}
+              <SuperscriptNumber number={f.sections.components.number} />
+            </h2>
+            <p class="text-body sg-section-intro">{f.sections.components.intro}</p>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Section Headers</span>
-          <div class="demo-box demo-stack">
-            <SectionHeader
-              slashLabel={styleguideFixtures.layout.sectionHeader.slashLabel}
-              title={styleguideFixtures.layout.sectionHeader.title}
-              variant="on-light"
-            />
-            <div class="feature-box">
+          <!-- Group 1: Primitives -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">
+              {f.sections.components.groups.primitives.title}
+            </h3>
+            <p class="text-body-small sg-block-desc">
+              {f.sections.components.groups.primitives.desc}
+            </p>
+
+            <div class="component-showcase-box">
+              <h4 class="text-heading-job showcase-subtitle">
+                {f.sections.components.stateLabels.buttons}
+              </h4>
+              <div class="showcase-row">
+                {f.primitives.buttons.map((btn) => (
+                  <Button
+                    variant={btn.variant}
+                    showArrow={btn.showArrow}
+                    disabled={btn.disabled}
+                    loading={btn.loading}
+                    success={btn.success}
+                  >
+                    {btn.label}
+                  </Button>
+                ))}
+              </div>
+
+              <h4 class="text-heading-job showcase-subtitle">
+                {f.sections.components.stateLabels.chips}
+              </h4>
+              <div class="showcase-row">
+                {f.primitives.chips.map((c) => (
+                  <Chip variant={c.variant} active={c.active}>
+                    {c.label}
+                  </Chip>
+                ))}
+              </div>
+
+              <h4 class="text-heading-job showcase-subtitle">
+                {f.sections.components.stateLabels.tags}
+              </h4>
+              <div class="showcase-row">
+                {f.primitives.tags.map((t) => (
+                  <KeywordTag tagIndex={t.tagIndex}>{t.text}</KeywordTag>
+                ))}
+              </div>
+
+              <h4 class="text-heading-job showcase-subtitle">
+                {f.sections.components.stateLabels.slashLabels}
+              </h4>
+              <div class="showcase-row">
+                {f.primitives.slashLabels.map((s) => (
+                  <SlashLabel label={s.label} variant={s.variant} />
+                ))}
+              </div>
+
+              <h4 class="text-heading-job showcase-subtitle">
+                {f.sections.components.stateLabels.superscripts}
+              </h4>
+              <div class="showcase-row">
+                {f.primitives.numbers.map((n) => (
+                  <span class="text-heading-case">
+                    Item
+                    <SuperscriptNumber number={n} />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <Divider variant="on-base" />
+
+          <!-- Group 2: Layout -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">
+              {f.sections.components.groups.layout.title}
+            </h3>
+            <p class="text-body-small sg-block-desc">{f.sections.components.groups.layout.desc}</p>
+
+            <div class="component-showcase-box">
+              <Nav navLinks={f.layout.navLinks} />
+              <MenuOverlay links={f.layout.navLinks} isOpen={false} />
               <SectionHeader
-                slashLabel="Capabilities"
-                title="Engineering solutions built for scale and speed."
-                variant="on-feature"
+                slashLabel={f.layout.sectionHeader.slashLabel}
+                title={f.layout.sectionHeader.title}
+              />
+              <CTABand
+                slashLabel={f.layout.cta.slashLabel}
+                heading={f.layout.cta.heading}
+                text={f.layout.cta.text}
+                buttonLabel={f.layout.cta.buttonLabel}
+                buttonHref={f.layout.cta.buttonHref}
+                variant="on-alt"
               />
             </div>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">CTA Band</span>
-          <div class="demo-box">
-            <CTABand
-              slashLabel={styleguideFixtures.layout.cta.slashLabel}
-              heading={styleguideFixtures.layout.cta.heading}
-              text={styleguideFixtures.layout.cta.text}
-              buttonLabel={styleguideFixtures.layout.cta.buttonLabel}
-              buttonHref={styleguideFixtures.layout.cta.buttonHref}
-              variant="on-alt"
-            />
-          </div>
-        </div>
+          <Divider variant="on-base" />
 
-        <div class="component-demo">
-          <span class="text-label">Footer & Motion Toggle</span>
-          <div class="demo-box">
-            <Footer
-              pages={styleguideFixtures.layout.footer.pages}
-              socials={styleguideFixtures.layout.footer.socials}
-              localTimeLabel={styleguideFixtures.layout.footer.localTimeLabel}
-              timeZone={styleguideFixtures.layout.footer.timeZone}
-              copyright={styleguideFixtures.layout.footer.copyright}
-            />
-          </div>
-        </div>
+          <!-- Group 3: Content -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">
+              {f.sections.components.groups.content.title}
+            </h3>
+            <p class="text-body-small sg-block-desc">{f.sections.components.groups.content.desc}</p>
 
-        <div class="component-demo">
-          <span class="text-label">Standalone Theme & Motion Toggles</span>
-          <div class="demo-box demo-row">
-            <ThemeToggle label="Theme" />
-            <MotionToggle />
-          </div>
-        </div>
+            <!-- Project Cards -->
+            <h4 class="text-heading-job showcase-subtitle">
+              {f.sections.components.stateLabels.cards}
+            </h4>
+            <div class="projects-stack">
+              {f.content.projects.map((proj) => (
+                <ProjectCard
+                  title={proj.title}
+                  number={proj.number}
+                  description={proj.description}
+                  category={proj.category}
+                  year={proj.year}
+                  href={proj.href}
+                  accent={proj.accent}
+                  imageAlt={proj.imageAlt}
+                />
+              ))}
+            </div>
 
-        <div class="component-demo">
-          <span class="text-label">Menu Overlay (Mobile Dialog Preview)</span>
-          <div class="demo-box" style="position: relative; height: 320px; overflow: hidden;">
-            <MenuOverlay
-              links={styleguideFixtures.layout.navLinks}
-              isOpen={true}
-              class="relative-overlay"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+            <!-- Capabilities -->
+            <div class="content-demos-stack">
+              {f.content.capabilities.map((cap) => (
+                <CapabilityRow
+                  title={cap.title}
+                  number={cap.number}
+                  description={cap.description}
+                  tags={cap.tags}
+                />
+              ))}
+            </div>
 
-    <section>
-      <h2 class="text-heading-case">Content Components (Group 3)</h2>
-      <div class="primitives-grid">
-        <div class="component-demo">
-          <span class="text-label">Project Card (Stack & Grid Variants)</span>
-          <div class="demo-box demo-stack">
-            {styleguideFixtures.content.projects.map((proj, idx) => (
-              <ProjectCard
-                title={proj.title}
-                number={proj.number}
-                description={proj.description}
-                category={proj.category}
-                year={proj.year}
-                href={proj.href}
-                accent={proj.accent}
-                imageAlt={proj.imageAlt}
-                variant={idx === 0 ? 'stack' : 'grid'}
+            <!-- Process Steps -->
+            <div class="process-grid">
+              {f.content.processSteps.map((step) => (
+                <ProcessStep stepNumber={step.stepNumber} title={step.title} text={step.text} />
+              ))}
+            </div>
+
+            <!-- Values -->
+            <div class="content-demos-stack">
+              {f.content.values.map((v) => (
+                <ValueRow slashLabel={v.slashLabel} text={v.text} />
+              ))}
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+              {f.content.stats.map((s) => (
+                <StatTile
+                  number={s.number}
+                  caption={s.caption}
+                  variant={s.variant}
+                  staggered={s.staggered}
+                />
+              ))}
+            </div>
+
+            <!-- Marquee -->
+            <div class="marquee-demo">
+              <Marquee items={f.content.marqueeItems} />
+            </div>
+
+            <!-- Statement Text -->
+            <div class="statement-demo">
+              <StatementText
+                sentence={f.content.statement.sentence}
+                words={f.content.statement.words}
               />
-            ))}
-          </div>
-        </div>
+            </div>
 
-        <div class="component-demo">
-          <span class="text-label">Capability Accordion Rows (O-15 default)</span>
-          <div class="demo-box feature-box">
-            {styleguideFixtures.content.capabilities.map((cap, idx) => (
-              <CapabilityRow
-                title={cap.title}
-                number={cap.number}
-                description={cap.description}
-                tags={cap.tags}
-                isOpen={idx === 0}
+            <!-- Email Display -->
+            <div class="email-demo">
+              <EmailDisplay email={f.content.email} />
+            </div>
+
+            <!-- Experience Rows -->
+            <div class="content-demos-stack">
+              {f.content.experience.map((exp) => (
+                <ExperienceRow
+                  period={exp.period}
+                  role={exp.role}
+                  company={exp.company}
+                  location={exp.location}
+                />
+              ))}
+            </div>
+
+            <!-- Job Rows -->
+            <div class="content-demos-stack">
+              {f.content.jobs.map((job) => (
+                <JobRow
+                  category={job.category}
+                  title={job.title}
+                  meta={job.meta}
+                  ctaLabel={job.ctaLabel}
+                  ctaHref={job.ctaHref}
+                />
+              ))}
+            </div>
+
+            <!-- Meta Sidebar -->
+            <div class="meta-sidebar-demo">
+              <MetaSidebar
+                role={f.content.metaSidebar.role}
+                year={f.content.metaSidebar.year}
+                tools={f.content.metaSidebar.tools}
+                links={f.content.metaSidebar.links}
+                sections={f.content.metaSidebar.sections}
               />
-            ))}
+            </div>
+
+            <!-- Skill Chips -->
+            <div class="chips-demo">
+              <SkillChips skills={f.content.skills} />
+            </div>
+          </div>
+
+          <Divider variant="on-base" />
+
+          <!-- Group 4: Forms -->
+          <div class="sg-block">
+            <h3 class="text-heading-case sg-block-title">
+              {f.sections.components.groups.forms.title}
+            </h3>
+            <p class="text-body-small sg-block-desc">{f.sections.components.groups.forms.desc}</p>
+
+            <div class="forms-demos-grid">
+              <div class="form-demo-col">
+                <h4 class="text-heading-job showcase-subtitle">
+                  {f.sections.components.stateLabels.formIdle}
+                </h4>
+                <FormField
+                  name={f.content.forms.fields.idle.name}
+                  label={f.content.forms.fields.idle.label}
+                />
+                <FormField
+                  name={f.content.forms.fields.focus.name}
+                  label={f.content.forms.fields.focus.label}
+                  state={f.content.forms.fields.focus.state}
+                  value={f.content.forms.fields.focus.value}
+                />
+                <FormField
+                  name={f.content.forms.fields.filled.name}
+                  label={f.content.forms.fields.filled.label}
+                  state={f.content.forms.fields.filled.state}
+                  value={f.content.forms.fields.filled.value}
+                />
+              </div>
+
+              <div class="form-demo-col">
+                <h4 class="text-heading-job showcase-subtitle">
+                  {f.sections.components.stateLabels.formFailed}
+                </h4>
+                <FormField
+                  name={f.content.forms.fields.error.name}
+                  label={f.content.forms.fields.error.label}
+                  state={f.content.forms.fields.error.state}
+                  value={f.content.forms.fields.error.value}
+                  errorMessage={f.content.forms.fields.error.errorMessage}
+                />
+                <FormField
+                  name={f.content.forms.fields.disabled.name}
+                  label={f.content.forms.fields.disabled.label}
+                  state={f.content.forms.fields.disabled.state}
+                  value={f.content.forms.fields.disabled.value}
+                  disabled={f.content.forms.fields.disabled.disabled}
+                />
+                <FormField
+                  name={f.content.forms.fields.textarea.name}
+                  label={f.content.forms.fields.textarea.label}
+                  as={f.content.forms.fields.textarea.as}
+                  rows={f.content.forms.fields.textarea.rows}
+                />
+              </div>
+            </div>
+
+            <!-- Complete Form Lifecycle States -->
+            <div class="form-lifecycle-stack">
+              <div class="form-box">
+                <h4 class="text-heading-job showcase-subtitle">
+                  {f.sections.components.stateLabels.formSending}
+                </h4>
+                <Form
+                  state={f.content.forms.formStates.sending.state}
+                  nameValue={f.content.forms.formStates.sending.nameValue}
+                  emailValue={f.content.forms.formStates.sending.emailValue}
+                  messageValue={f.content.forms.formStates.sending.messageValue}
+                />
+              </div>
+
+              <div class="form-box">
+                <h4 class="text-heading-job showcase-subtitle">
+                  {f.sections.components.stateLabels.formSent}
+                </h4>
+                <Form
+                  state={f.content.forms.formStates.sent.state}
+                  nameValue={f.content.forms.formStates.sent.nameValue}
+                  emailValue={f.content.forms.formStates.sent.emailValue}
+                  messageValue={f.content.forms.formStates.sent.messageValue}
+                />
+              </div>
+
+              <div class="form-box">
+                <h4 class="text-heading-job showcase-subtitle">
+                  {f.sections.components.stateLabels.formFailed}
+                </h4>
+                <Form
+                  state={f.content.forms.formStates.failed.state}
+                  nameValue={f.content.forms.formStates.failed.nameValue}
+                  emailValue={f.content.forms.formStates.failed.emailValue}
+                  messageValue={f.content.forms.formStates.failed.messageValue}
+                />
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="component-demo">
-          <span class="text-label">Process Steps</span>
-          <div class="demo-box demo-row">
-            {styleguideFixtures.content.processSteps.map((step) => (
-              <ProcessStep stepNumber={step.stepNumber} title={step.title} text={step.text} />
-            ))}
+      <!-- 05 MOTION -->
+      <section id="motion" class="sg-section sg-surface-feature">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.motion.label} variant="on-feature" />
+            <h2 class="text-heading-section feature-title">
+              {f.sections.motion.title}
+              <SuperscriptNumber number={f.sections.motion.number} />
+            </h2>
+            <p class="text-body feature-intro">{f.sections.motion.intro}</p>
+          </div>
+
+          <!-- Durations & Easing Curves -->
+          <div class="sg-grid-2">
+            <div class="sg-block">
+              <h3 class="text-heading-case feature-subheading">
+                {f.sections.motion.durationsTitle}
+              </h3>
+              <div class="scale-list">
+                {motion.map(([name, val]) => (
+                  <div class="scale-item feature-item">
+                    <span class="text-label scale-name">--motion-{name}</span>
+                    <span class="text-body-small scale-val">{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="sg-block">
+              <h3 class="text-heading-case feature-subheading">{f.sections.motion.easingsTitle}</h3>
+              <div class="easings-grid">
+                <div class="easing-card">
+                  <div class="easing-svg-box">
+                    <svg viewBox="0 0 100 100" class="easing-svg" aria-hidden="true">
+                      <line x1="0" y1="100" x2="100" y2="0" class="easing-diagonal" />
+                      <path d="M 0 100 C 20 30, 20 0, 100 0" class="easing-curve" />
+                    </svg>
+                  </div>
+                  <span class="text-label easing-name">--ease-out</span>
+                  <span class="text-body-small easing-val">{summary.ease.out}</span>
+                </div>
+
+                <div class="easing-card">
+                  <div class="easing-svg-box">
+                    <svg viewBox="0 0 100 100" class="easing-svg" aria-hidden="true">
+                      <line x1="0" y1="100" x2="100" y2="0" class="easing-diagonal" />
+                      <path d="M 0 100 C 60 100, 20 0, 100 0" class="easing-curve" />
+                    </svg>
+                  </div>
+                  <span class="text-label easing-name">--ease-in-out</span>
+                  <span class="text-body-small easing-val">{summary.ease['in-out']}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Divider variant="on-feature" />
+
+          <!-- Interactions Table -->
+          <div class="sg-block">
+            <h3 class="text-heading-case feature-subheading">
+              {f.sections.motion.interactionsTitle}
+            </h3>
+            <p class="text-body-small feature-desc">{f.sections.motion.interactionsDesc}</p>
+
+            <div class="interactions-list">
+              {f.sections.motion.interactions.map((int) => (
+                <div class="interaction-card">
+                  <div class="interaction-header">
+                    <div class="interaction-id-wrap">
+                      <span class="text-heading-job int-id">{int.id}</span>
+                      <h4 class="text-heading-job int-name">{int.name}</h4>
+                    </div>
+                    <div class="interaction-badges">
+                      <Chip variant="filled">{int.category}</Chip>
+                      <Chip variant="accent">{int.status}</Chip>
+                    </div>
+                  </div>
+                  <p class="text-body-small int-desc">{int.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="component-demo">
-          <span class="text-label">Value Rows</span>
-          <div class="demo-box feature-box">
-            {styleguideFixtures.content.values.map((val) => (
-              <ValueRow slashLabel={val.slashLabel} text={val.text} variant="on-feature" />
-            ))}
+      <!-- 06 COMPOSITION SAMPLES -->
+      <section id="composition" class="sg-section sg-surface-base">
+        <div class="sg-section-content">
+          <div class="sg-section-header">
+            <SlashLabel label={f.sections.composition.label} />
+            <h2 class="text-heading-section sg-section-title">
+              {f.sections.composition.title}
+              <SuperscriptNumber number={f.sections.composition.number} />
+            </h2>
+            <p class="text-body sg-section-intro">{f.sections.composition.intro}</p>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Stat Tiles (Lime & White Variants)</span>
-          <div class="demo-box demo-row" style="padding-bottom: var(--space-8);">
-            {styleguideFixtures.content.stats.map((st) => (
-              <StatTile
-                number={st.number}
-                caption={st.caption}
-                variant={st.variant}
-                staggered={st.staggered}
-              />
-            ))}
+          <!-- Mock Home Hero -->
+          <div class="composition-card">
+            <div class="mock-hero">
+              <SlashLabel label={f.sections.composition.heroEyebrow} />
+              <h1 class="text-display-hero mock-hero-title">{f.sections.composition.heroTitle}</h1>
+              <p class="text-statement mock-hero-sub">{f.sections.composition.heroDescription}</p>
+              <div class="mock-hero-cta">
+                <Button href="#components" variant="primary" showArrow={true}>
+                  {f.sections.composition.heroCtaText}
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="component-demo">
-          <span class="text-label">Job / Open-To Rows</span>
-          <div class="demo-box demo-stack">
-            {styleguideFixtures.content.jobs.map((job) => (
-              <JobRow
-                category={job.category}
-                title={job.title}
-                meta={job.meta}
-                ctaLabel={job.ctaLabel}
-                ctaHref={job.ctaHref}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Marquee (Static)</span>
-          <div class="demo-box">
-            <Marquee items={styleguideFixtures.content.marqueeItems} />
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Statement Text</span>
-          <div class="demo-box">
-            <StatementText
-              sentence={styleguideFixtures.content.statement.sentence}
-              words={styleguideFixtures.content.statement.words}
-              highlightIndex={6}
+          <!-- Mock Values -->
+          <div class="composition-card">
+            <SectionHeader
+              slashLabel={f.sections.composition.valuesSlash}
+              title={f.sections.composition.valuesHeading}
             />
+            <div class="content-demos-stack">
+              {f.content.values.map((v) => (
+                <ValueRow slashLabel={v.slashLabel} text={v.text} />
+              ))}
+            </div>
+          </div>
+
+          <!-- Mock Numbers -->
+          <div class="composition-card">
+            <SectionHeader
+              slashLabel={f.sections.composition.numbersSlash}
+              title={f.sections.composition.numbersHeading}
+            />
+            <div class="stats-grid">
+              {f.content.stats.map((s) => (
+                <StatTile
+                  number={s.number}
+                  caption={s.caption}
+                  variant={s.variant}
+                  staggered={s.staggered}
+                />
+              ))}
+            </div>
           </div>
         </div>
+      </section>
+    </main>
 
-        <div class="component-demo">
-          <span class="text-label">Email Display</span>
-          <div class="demo-box">
-            <EmailDisplay email={styleguideFixtures.content.email} />
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Experience Rows</span>
-          <div class="demo-box demo-stack">
-            {styleguideFixtures.content.experience.map((exp) => (
-              <ExperienceRow
-                period={exp.period}
-                role={exp.role}
-                company={exp.company}
-                location={exp.location}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Skill Chips</span>
-          <div class="demo-box">
-            <SkillChips skills={styleguideFixtures.content.skills} />
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Case Study Meta Sidebar</span>
-          <div class="demo-box" style="max-width: 360px;">
-            <MetaSidebar
-              role={styleguideFixtures.content.metaSidebar.role}
-              year={styleguideFixtures.content.metaSidebar.year}
-              tools={styleguideFixtures.content.metaSidebar.tools}
-              links={styleguideFixtures.content.metaSidebar.links}
-              sections={styleguideFixtures.content.metaSidebar.sections}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <h2 class="text-heading-case">Forms (Group 4)</h2>
-      <div class="primitives-grid">
-        <div class="component-demo">
-          <span class="text-label">FormField States</span>
-          <div class="demo-box demo-stack" style="max-width: 480px;">
-            <FormField
-              name={styleguideFixtures.content.forms.fields.idle.name}
-              label={styleguideFixtures.content.forms.fields.idle.label}
-            />
-            <FormField
-              name={styleguideFixtures.content.forms.fields.focus.name}
-              label={styleguideFixtures.content.forms.fields.focus.label}
-              state={styleguideFixtures.content.forms.fields.focus.state}
-              value={styleguideFixtures.content.forms.fields.focus.value}
-            />
-            <FormField
-              name={styleguideFixtures.content.forms.fields.filled.name}
-              label={styleguideFixtures.content.forms.fields.filled.label}
-              state={styleguideFixtures.content.forms.fields.filled.state}
-              value={styleguideFixtures.content.forms.fields.filled.value}
-            />
-            <FormField
-              name={styleguideFixtures.content.forms.fields.error.name}
-              label={styleguideFixtures.content.forms.fields.error.label}
-              state={styleguideFixtures.content.forms.fields.error.state}
-              value={styleguideFixtures.content.forms.fields.error.value}
-              errorMessage={styleguideFixtures.content.forms.fields.error.errorMessage}
-            />
-            <FormField
-              name={styleguideFixtures.content.forms.fields.disabled.name}
-              label={styleguideFixtures.content.forms.fields.disabled.label}
-              state={styleguideFixtures.content.forms.fields.disabled.state}
-              value={styleguideFixtures.content.forms.fields.disabled.value}
-              disabled={styleguideFixtures.content.forms.fields.disabled.disabled}
-            />
-            <FormField
-              name={styleguideFixtures.content.forms.fields.textarea.name}
-              label={styleguideFixtures.content.forms.fields.textarea.label}
-              as={styleguideFixtures.content.forms.fields.textarea.as}
-              rows={styleguideFixtures.content.forms.fields.textarea.rows}
-            />
-          </div>
-        </div>
-
-        <div class="component-demo">
-          <span class="text-label">Contact Form States</span>
-          <div class="demo-box demo-stack" style="max-width: 540px;">
-            <span class="text-label muted">Idle State</span>
-            <Form
-              state={styleguideFixtures.content.forms.formStates.idle.state}
-              submitText={styleguideFixtures.content.forms.formStates.idle.submitText}
-            />
-
-            <span class="text-label muted">Sending State</span>
-            <Form
-              state={styleguideFixtures.content.forms.formStates.sending.state}
-              nameValue={styleguideFixtures.content.forms.formStates.sending.nameValue}
-              emailValue={styleguideFixtures.content.forms.formStates.sending.emailValue}
-              messageValue={styleguideFixtures.content.forms.formStates.sending.messageValue}
-              sendingText={styleguideFixtures.content.forms.formStates.sending.sendingText}
-            />
-
-            <span class="text-label muted">Sent State</span>
-            <Form
-              state={styleguideFixtures.content.forms.formStates.sent.state}
-              nameValue={styleguideFixtures.content.forms.formStates.sent.nameValue}
-              emailValue={styleguideFixtures.content.forms.formStates.sent.emailValue}
-              messageValue={styleguideFixtures.content.forms.formStates.sent.messageValue}
-              sentText={styleguideFixtures.content.forms.formStates.sent.sentText}
-            />
-
-            <span class="text-label muted">Failed State</span>
-            <Form
-              state={styleguideFixtures.content.forms.formStates.failed.state}
-              nameValue={styleguideFixtures.content.forms.formStates.failed.nameValue}
-              emailValue={styleguideFixtures.content.forms.formStates.failed.emailValue}
-              messageValue={styleguideFixtures.content.forms.formStates.failed.messageValue}
-              failedText={styleguideFixtures.content.forms.formStates.failed.failedText}
-              fallbackLabel={styleguideFixtures.content.forms.formStates.failed.fallbackLabel}
-              fallbackEmail={styleguideFixtures.content.forms.formStates.failed.fallbackEmail}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <h2 class="text-heading-case">Motion, easing and layers</h2>
-      <ul class="plain">
-        {motion.map(([name, value]) => (
-          <li class="text-body-small">
-            motion-{name}: {value}
-          </li>
-        ))}
-        {ease.map(([name, value]) => (
-          <li class="text-body-small">
-            ease-{name}: {value}
-          </li>
-        ))}
-        {z.map(([name, value]) => (
-          <li class="text-body-small">
-            z-{name}: {value}
-          </li>
-        ))}
-      </ul>
-    </section>
-  </main>
+    <!-- Footer -->
+    <Footer
+      pages={f.layout.footer.pages}
+      socials={f.layout.footer.socials}
+      localTimeLabel={f.layout.footer.localTimeLabel}
+      timeZone={f.layout.footer.timeZone}
+      copyright={f.layout.footer.copyright}
+    />
+  </div>
 </BaseLayout>
 
-<script>
-  import { initThemeToggle } from '../scripts/theme-toggle';
-
-  const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
-  if (button) initThemeToggle(button);
-</script>
-
 <style>
-  .page {
-    display: grid;
-    gap: var(--layout-section-y);
-    padding: var(--layout-section-y) var(--layout-pad);
+  .sg-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
   }
 
-  .top {
+  .sg-header {
+    width: 100%;
+    background: var(--color-bg-base);
+    padding: var(--space-6) var(--layout-pad) 0;
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-header-top {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: var(--layout-gap-wide);
-    flex-wrap: wrap;
+    gap: var(--space-4);
   }
 
-  .pill {
-    padding: var(--space-3) var(--space-5);
-    border-radius: var(--radius-pill);
-    background: var(--button-primary-bg);
-    color: var(--button-primary-text);
-    font-family: var(--font-body);
-    font-size: var(--text-chip-size);
-    font-weight: var(--text-chip-weight);
-    cursor: pointer;
-  }
-
-  section {
-    display: grid;
-    gap: var(--layout-gap-wide);
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .swatches {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--layout-gap);
-  }
-
-  .swatch {
-    display: grid;
-    gap: var(--space-1);
-    padding: var(--space-3);
-    background: var(--color-bg-surface);
-  }
-
-  .chip-color {
-    height: var(--space-8);
-    background: var(--color-text-primary);
-  }
-
-  .muted {
-    color: var(--color-text-muted);
-  }
-
-  .name {
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .roles {
-    display: grid;
-    gap: var(--layout-gap-wide);
-  }
-
-  .role {
-    display: grid;
-    gap: var(--space-2);
-    overflow: hidden;
-  }
-
-  .bars {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .bar-row {
-    display: grid;
-    gap: var(--space-1);
-  }
-
-  .bar {
-    height: var(--space-3);
-    background: var(--color-accent-primary);
-  }
-
-  .primitives-grid {
-    display: grid;
-    gap: var(--layout-gap-wide);
-  }
-
-  .component-demo {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .demo-box {
-    padding: var(--space-4);
-    background: var(--color-bg-surface);
-  }
-
-  .demo-row {
+  .sg-header-brand {
     display: flex;
+    align-items: center;
+    gap: var(--space-4);
     flex-wrap: wrap;
+  }
+
+  .sg-header-controls {
+    display: flex;
     align-items: center;
     gap: var(--space-3);
   }
 
-  .demo-stack {
-    display: grid;
-    gap: var(--space-3);
+  .sg-header-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
   }
 
-  .feature-box {
+  .sg-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .sg-sticky-nav {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-base);
+    padding: var(--space-3) 0;
+    z-index: var(--z-header);
+    overflow-x: auto;
+  }
+
+  .sg-nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .sg-nav-link {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .sg-nav-link:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-alt);
+  }
+
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-base {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .sg-surface-alt {
+    background: var(--color-bg-alt);
+    color: var(--color-text-primary);
+  }
+
+  .sg-surface-feature {
     background: var(--color-bg-feature);
-    padding: var(--space-3);
-  }
-
-  .text-white {
     color: var(--color-text-on-feature);
   }
 
-  .relative-overlay {
-    position: absolute !important;
-    width: 100% !important;
-    height: 100% !important;
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
   }
 
-  .plain {
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-section-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .sg-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .palette-grid {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .palette-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .palette-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  .palette-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    overflow: hidden;
+  }
+
+  .palette-swatch {
+    height: 96px;
+    width: 100%;
+  }
+
+  .palette-meta {
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
     gap: var(--space-1);
+  }
+
+  .palette-name {
+    color: var(--color-text-primary);
+  }
+
+  .palette-hex {
+    color: var(--color-text-muted);
+  }
+
+  .semantic-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .semantic-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .semantic-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .semantic-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    overflow: hidden;
+  }
+
+  .semantic-swatches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 80px;
+  }
+
+  .semantic-swatch {
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-2);
+  }
+
+  .swatch-tag {
+    font-size: var(--text-superscript-size);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--palette-white-16);
+    color: var(--color-text-primary);
+  }
+
+  .swatch-tag-dark {
+    background: var(--palette-black-40);
+    color: var(--palette-white);
+  }
+
+  .semantic-meta {
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .semantic-name {
+    color: var(--color-text-primary);
+  }
+
+  .semantic-vals {
+    color: var(--color-text-muted);
+  }
+
+  .contrast-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .contrast-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .contrast-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .contrast-card {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 120px;
+    border-radius: var(--radius-none);
+  }
+
+  .contrast-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .contrast-pair-label {
+    letter-spacing: 0;
+  }
+
+  .contrast-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .contrast-ratio-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .contrast-target {
+    opacity: var(--opacity-shape);
+  }
+
+  .contrast-theme-pill {
+    text-transform: uppercase;
+    font-size: var(--text-superscript-size);
+    opacity: var(--opacity-shape);
+  }
+
+  .specimens-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .specimen-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .specimen-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .specimen-family {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .specimen-sample {
+    color: var(--color-text-primary);
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  .roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .role-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .role-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .role-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .role-name {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .role-specs {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .role-preview {
+    padding-top: var(--space-2);
+    overflow-x: auto;
+  }
+
+  .role-sample-text {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .shapes-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .shape-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .shape-label {
+    color: var(--color-text-muted);
+  }
+
+  .half-pill-demo {
+    width: 100%;
+    padding: var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .half-pill-shape {
+    width: 100%;
+    max-width: 480px;
+    height: 120px;
+    background: var(--color-accent-primary);
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+    display: flex;
+    align-items: center;
+    padding-left: var(--space-6);
+  }
+
+  .half-pill-text {
+    color: var(--color-text-on-accent);
+  }
+
+  .sg-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (width >= 721px) {
+    .sg-grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .radius-list,
+  .scale-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .scale-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .scale-name {
+    color: var(--color-text-primary);
+  }
+
+  .scale-val {
+    color: var(--color-text-muted);
+  }
+
+  .space-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .space-bar-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 64px;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .space-name {
+    color: var(--color-text-primary);
+  }
+
+  .space-bar-wrap {
+    height: 16px;
+    background: var(--color-bg-alt);
+    display: flex;
+    align-items: center;
+  }
+
+  .space-bar {
+    height: 100%;
+    background: var(--color-accent-primary);
+  }
+
+  .space-val {
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+
+  .component-showcase-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .showcase-subtitle {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .showcase-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .projects-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .content-demos-stack {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-base);
+  }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .process-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .process-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width >= 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .marquee-demo,
+  .statement-demo,
+  .email-demo,
+  .meta-sidebar-demo,
+  .chips-demo {
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+  }
+
+  .forms-demos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (width >= 721px) {
+    .forms-demos-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-demo-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+  }
+
+  .form-lifecycle-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .form-box {
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .feature-title {
+    color: var(--color-text-on-feature);
+    margin: 0;
+  }
+
+  .feature-intro {
+    color: var(--color-text-on-feature);
+    opacity: var(--opacity-shape);
+    max-width: 65ch;
+    margin: 0;
+  }
+
+  .feature-subheading {
+    color: var(--color-text-on-feature);
+    margin: 0;
+  }
+
+  .feature-desc {
+    color: var(--color-text-on-feature);
+    opacity: var(--opacity-shape);
+    max-width: 65ch;
+    margin: 0;
+  }
+
+  .feature-item {
+    background: var(--palette-dark-800);
+  }
+
+  .feature-item .scale-name {
+    color: var(--color-text-on-feature);
+  }
+
+  .feature-item .scale-val {
+    color: var(--color-accent-primary);
+  }
+
+  .easings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .easing-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--palette-dark-800);
+    border-radius: var(--radius-none);
+  }
+
+  .easing-svg-box {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--color-bg-feature);
+    padding: var(--space-2);
+  }
+
+  .easing-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .easing-diagonal {
+    stroke: var(--palette-white-16);
+    stroke-dasharray: 4 4;
+  }
+
+  .easing-curve {
+    fill: none;
+    stroke: var(--color-accent-primary);
+  }
+
+  .easing-name {
+    color: var(--color-text-on-feature);
+  }
+
+  .easing-val {
+    color: var(--color-accent-secondary-1);
+  }
+
+  .interactions-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .interactions-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .interactions-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .interaction-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--palette-dark-800);
+    border-radius: var(--radius-none);
+  }
+
+  .interaction-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .interaction-id-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .int-id {
+    color: var(--color-accent-primary);
+    margin: 0;
+  }
+
+  .int-name {
+    color: var(--color-text-on-feature);
+    margin: 0;
+  }
+
+  .interaction-badges {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .int-desc {
+    color: var(--color-text-on-feature);
+    opacity: var(--opacity-shape);
+    margin: 0;
+  }
+
+  .composition-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-8) var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .mock-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .mock-hero-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .mock-hero-sub {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .mock-hero-cta {
+    margin-top: var(--space-2);
   }
 </style>

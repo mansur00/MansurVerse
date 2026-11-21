@@ -2,6 +2,118 @@
 // Rule 1 & Rule 5: No hardcoded copy or raw values in components; fixtures provide sample content.
 
 export interface StyleguideFixtures {
+  pageTitle: string;
+  badge: string;
+  header: {
+    title: string;
+    intro: string;
+    navLinks: Array<{ label: string; href: string }>;
+  };
+  sections: {
+    colour: {
+      number: string;
+      label: string;
+      title: string;
+      paletteTitle: string;
+      paletteDesc: string;
+      semanticTitle: string;
+      semanticDesc: string;
+      contrastTitle: string;
+      contrastDesc: string;
+      lightLabel: string;
+      darkLabel: string;
+      ratioLabel: string;
+      thresholdLabel: string;
+      statusPass: string;
+      statusFail: string;
+    };
+    typography: {
+      number: string;
+      label: string;
+      title: string;
+      intro: string;
+      specimens: Array<{
+        family: string;
+        role: string;
+        element: string;
+        sample: string;
+        isDisplay?: boolean;
+      }>;
+      rolesTitle: string;
+      rolesDesc: string;
+      sampleText: string;
+    };
+    shapes: {
+      number: string;
+      label: string;
+      title: string;
+      pixelShapesTitle: string;
+      pixelShapesDesc: string;
+      halfPillTitle: string;
+      halfPillDesc: string;
+      halfPillLabel: string;
+      radiusTitle: string;
+      spaceTitle: string;
+      zIndexTitle: string;
+      opacityTitle: string;
+    };
+    components: {
+      number: string;
+      label: string;
+      title: string;
+      intro: string;
+      groups: {
+        primitives: { title: string; desc: string };
+        layout: { title: string; desc: string };
+        content: { title: string; desc: string };
+        forms: { title: string; desc: string };
+      };
+      stateLabels: {
+        buttons: string;
+        chips: string;
+        tags: string;
+        slashLabels: string;
+        superscripts: string;
+        dividers: string;
+        cards: string;
+        formIdle: string;
+        formSending: string;
+        formSent: string;
+        formFailed: string;
+      };
+    };
+    motion: {
+      number: string;
+      label: string;
+      title: string;
+      intro: string;
+      durationsTitle: string;
+      easingsTitle: string;
+      interactionsTitle: string;
+      interactionsDesc: string;
+      interactions: Array<{
+        id: string;
+        name: string;
+        category: string;
+        description: string;
+        status: string;
+      }>;
+    };
+    composition: {
+      number: string;
+      label: string;
+      title: string;
+      intro: string;
+      heroEyebrow: string;
+      heroTitle: string;
+      heroDescription: string;
+      heroCtaText: string;
+      valuesHeading: string;
+      valuesSlash: string;
+      numbersHeading: string;
+      numbersSlash: string;
+    };
+  };
   brand: {
     primary: string;
     secondary: string;
@@ -12,6 +124,9 @@ export interface StyleguideFixtures {
       label: string;
       variant: 'primary' | 'inverse' | 'outlined';
       showArrow?: boolean | undefined;
+      disabled?: boolean | undefined;
+      loading?: boolean | undefined;
+      success?: boolean | undefined;
     }>;
     chips: Array<{
       label: string;
@@ -185,6 +300,328 @@ export interface StyleguideFixtures {
 }
 
 export const styleguideFixtures: StyleguideFixtures = {
+  pageTitle: 'MansurVerse — Design System & Style Guide',
+  badge: 'Design System',
+  header: {
+    title: 'Style Guide',
+    intro:
+      'Living specification and component showcase for the MansurVerse portfolio. Every color, font, spacing unit, and motion duration is strictly token-driven with zero raw magic values.',
+    navLinks: [
+      { label: '01 Colour', href: '#colour' },
+      { label: '02 Typography', href: '#typography' },
+      { label: '03 Shapes & Spacing', href: '#shapes' },
+      { label: '04 Components', href: '#components' },
+      { label: '05 Motion', href: '#motion' },
+      { label: '06 Composition', href: '#composition' },
+    ],
+  },
+  sections: {
+    colour: {
+      number: '01',
+      label: 'Tokens',
+      title: 'Colour System',
+      paletteTitle: 'Core Palette Swatches',
+      paletteDesc:
+        'Foundational hex values. Components never consume palette values directly; they reference semantic tokens.',
+      semanticTitle: 'Semantic Tokens (Theme Mapped)',
+      semanticDesc:
+        'Side-by-side values resolving automatically according to the active light or dark theme.',
+      contrastTitle: 'WCAG Contrast Verification',
+      contrastDesc:
+        'Measured contrast ratios computed automatically by the token pipeline against WCAG 2.2 AA requirements.',
+      lightLabel: 'Light',
+      darkLabel: 'Dark',
+      ratioLabel: 'Contrast',
+      thresholdLabel: 'Target',
+      statusPass: 'PASS',
+      statusFail: 'FAIL',
+    },
+    typography: {
+      number: '02',
+      label: 'Type',
+      title: 'Typography System',
+      intro:
+        'Three distinct font families governed by strict element-level rules: Jersey 20 for h1 and wordmark, Stack Sans Notch for headings and labels, Plus Jakarta Sans for body.',
+      specimens: [
+        {
+          family: 'Jersey 20',
+          role: 'Display (h1 and wordmark only)',
+          element: 'h1',
+          sample: 'MANSURVERSE CRAFT 2026',
+          isDisplay: true,
+        },
+        {
+          family: 'Stack Sans Notch Variable',
+          role: 'Headings (h2–h6), Labels, Stat Numbers',
+          element: 'h2',
+          sample: 'Creative Engineering & Systematic Precision',
+        },
+        {
+          family: 'Plus Jakarta Sans Variable',
+          role: 'Body Text, Keyword Tags, Long Reading',
+          element: 'p',
+          sample:
+            'Crafting high-performance digital interfaces where mathematical structure meets playful interaction.',
+        },
+      ],
+      rolesTitle: 'Rendered Text Roles',
+      rolesDesc:
+        'Every text role rendered at its real calculated clamp size with corresponding element semantics and tracking.',
+      sampleText: 'Aa Bb Gg 12345 / Craft & Precision',
+    },
+    shapes: {
+      number: '03',
+      label: 'Geometry',
+      title: 'Shapes & Spacing Scale',
+      pixelShapesTitle: 'Stepped Pixel Shapes',
+      pixelShapesDesc:
+        'Polygon clip-paths rendered at 80% opacity with flat color fills and no strokes or drop-shadows.',
+      halfPillTitle: 'Half-Pill Geometry',
+      halfPillDesc:
+        'Flat left edge with 999px rounded right edge used as visual anchors behind project media.',
+      halfPillLabel: 'Half-Pill Block',
+      radiusTitle: 'Corner Radii',
+      spaceTitle: 'Spacing Scale (4px Base Grid)',
+      zIndexTitle: 'Z-Index Elevation Stack',
+      opacityTitle: 'Opacity Scale',
+    },
+    components: {
+      number: '04',
+      label: 'Catalog',
+      title: 'Static Components Catalog',
+      intro:
+        'All static components across Primitives, Layout, Content, and Forms rendered in both light and dark modes with complete states.',
+      groups: {
+        primitives: {
+          title: '01. Primitives',
+          desc: 'Buttons, chips, keyword tags, slash labels, numbers, pixel shapes, and hairline dividers.',
+        },
+        layout: {
+          title: '02. Layout Components',
+          desc: 'Sticky nav, header branding, theme toggles, section headers, CTA band, and footer.',
+        },
+        content: {
+          title: '03. Content Components',
+          desc: 'Project cards, capability accordions, process steps, values, stats, marquee, and statement text.',
+        },
+        forms: {
+          title: '04. Form Components',
+          desc: 'Interactive form inputs, textarea fields, floating labels, and submit state message banners.',
+        },
+      },
+      stateLabels: {
+        buttons: 'Button Variants & States',
+        chips: 'Chip Variants & Active Filters',
+        tags: 'Keyword Tags (Tag 1–4)',
+        slashLabels: 'Slash Labels (Light & Feature)',
+        superscripts: 'Superscript Indices',
+        dividers: 'Hairline Dividers',
+        cards: 'Project Showcase Cards',
+        formIdle: 'Idle State',
+        formSending: 'Sending State',
+        formSent: 'Sent State (Success)',
+        formFailed: 'Failed State (Fallback)',
+      },
+    },
+    motion: {
+      number: '05',
+      label: 'Interaction',
+      title: 'Motion & Interaction Contracts',
+      intro:
+        'Motion durations, easing curves, and formal interaction specifications (I-01 through I-37) implemented in Phase 5.',
+      durationsTitle: 'Duration Tokens',
+      easingsTitle: 'Easing Curves',
+      interactionsTitle: 'Interaction Specifications (I-01 — I-37)',
+      interactionsDesc:
+        'Formal motion contracts defined in interaction-motion.md. All animations include prefers-reduced-motion fallbacks.',
+      interactions: [
+        {
+          id: 'I-01',
+          name: 'Theme Toggle',
+          category: 'Supporting',
+          description:
+            'Theme flip with view-transition circular expand (600ms) or 200ms color fade. Preserved via localStorage.',
+          status: 'Markup built, script wired',
+        },
+        {
+          id: 'I-02',
+          name: 'Nav Hide & Show',
+          category: 'Supporting',
+          description:
+            'Translates -110% on scroll down past 120px; reveals on scroll up or header focus.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-03',
+          name: 'Nav Rolling Hover & Mobile Menu',
+          category: 'Supporting',
+          description:
+            'Letters roll upward with 20ms stagger. Mobile full-screen overlay with focus trap and 80ms entry stagger.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-04',
+          name: 'Hero Intro Reveal',
+          category: 'Supporting',
+          description:
+            'Heading lines rise from clip masks over 900ms with 120ms stagger. Tags and digit field fade in.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-05',
+          name: 'Digit Field Background',
+          category: 'Signature',
+          description:
+            'Grid of 0 and 1 digits behind hero with distance-based cursor opacity falloff and flip animation.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-06',
+          name: 'Floating Keyword Tags',
+          category: 'Supporting',
+          description:
+            'Floating tags rotate ±2.5° and rise 10px with negative delays. Magnetic cursor offset on hover.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-07',
+          name: 'Smooth Inertial Scroll',
+          category: 'Supporting',
+          description:
+            'Lenis inertial scrolling with 1.1s feel. Pauses during modal or menu overlay activation.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-08',
+          name: 'Scroll Reveal',
+          category: 'Supporting',
+          description:
+            'Elements rise 28px and fade in over motion-slow at 15% intersection threshold.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-09',
+          name: 'Line Reveal',
+          category: 'Supporting',
+          description:
+            'Headings split into lines inside overflow masks sliding up 100% to 0 with 120ms stagger.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-10',
+          name: 'Statement Text Scrub',
+          category: 'Supporting',
+          description:
+            'Words transition from muted to primary color based on scroll progress. Pixel shapes pop on completion.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-11',
+          name: 'Magnetic Custom Cursor',
+          category: 'Supporting',
+          description:
+            '14px lime dot follows fine pointers. Expands to 84px pill with text label over interactive targets.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-12',
+          name: 'Magnetic Buttons',
+          category: 'Supporting',
+          description:
+            'Within 80px radius, button body shifts up to 10px and label shifts 14px toward pointer.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-13',
+          name: 'Project Card Hover',
+          category: 'Signature',
+          description:
+            'Card lifts 6px, artwork shifts (-8px, -8px), and cursor pill shows View label.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-14',
+          name: 'Card to Case Study Transition',
+          category: 'Signature',
+          description:
+            'Shared-element page transition animating card hero media into the case study header.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-15',
+          name: 'Capability Row Hover Expansion',
+          category: 'Supporting',
+          description:
+            'Accordion row expands on hover/focus via grid-template-rows (0fr to 1fr) with lime title highlight.',
+          status: 'Static markup built (Phase 5 script)',
+        },
+        {
+          id: 'I-17',
+          name: 'Animated Counter Numbers',
+          category: 'Supporting',
+          description:
+            'Numbers count up from 0 to target value using tabular numbers on initial scroll intersection.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-18',
+          name: 'Velocity-Driven Marquee',
+          category: 'Supporting',
+          description:
+            'Continuous loop marquee multiplying speed with scroll velocity and easing back smoothly.',
+          status: 'Static layout built (Phase 5 script)',
+        },
+        {
+          id: 'I-19',
+          name: 'Email Letter Repel',
+          category: 'Signature',
+          description:
+            'Letters in email address displace up to 28px away from cursor within 140px proximity.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-20',
+          name: 'Copy to Clipboard',
+          category: 'Supporting',
+          description:
+            'Click copies email or snippet and temporarily updates label to Copied ✓ with aria-live notification.',
+          status: 'Phase 5 Planned',
+        },
+        {
+          id: 'I-33',
+          name: 'Form Floating Labels & Feedback',
+          category: 'Supporting',
+          description:
+            'Floating label transitions on focus/filled. Inline validation on blur. Animated status feedback banners.',
+          status: 'Static states built',
+        },
+        {
+          id: 'I-37',
+          name: 'Motion Toggle',
+          category: 'Supporting',
+          description:
+            'Toggles data-motion="reduced" on root element. Respects OS preference and persists state.',
+          status: 'Markup built, script wired',
+        },
+      ],
+    },
+    composition: {
+      number: '06',
+      label: 'Compositions',
+      title: 'Composition Samples',
+      intro:
+        'Real assembled compositions combining layout, typography, and content components across alternating surface sections.',
+      heroEyebrow: 'Design Systems & Creative Engineering',
+      heroTitle: 'MANSURVERSE',
+      heroDescription:
+        'Obsessively crafted interfaces with mathematical token systems, accessible typography, and motion contracts.',
+      heroCtaText: 'View Selected Work',
+      valuesHeading: 'Core Design Principles',
+      valuesSlash: 'Principles',
+      numbersHeading: 'Key Metrics & Impact',
+      numbersSlash: 'Numbers',
+    },
+  },
   brand: {
     primary: 'Mansur',
     secondary: 'Verse',
@@ -195,9 +632,9 @@ export const styleguideFixtures: StyleguideFixtures = {
       { label: 'Primary Button', variant: 'primary', showArrow: true },
       { label: 'Inverse Button', variant: 'inverse', showArrow: true },
       { label: 'Outlined Button', variant: 'outlined', showArrow: false },
-      { label: 'Loading State', variant: 'primary' },
-      { label: 'Success State', variant: 'primary' },
-      { label: 'Disabled State', variant: 'primary' },
+      { label: 'Loading State', variant: 'primary', loading: true },
+      { label: 'Success State', variant: 'primary', success: true },
+      { label: 'Disabled State', variant: 'primary', disabled: true },
     ],
     chips: [
       { label: 'Filled Chip', variant: 'filled' },

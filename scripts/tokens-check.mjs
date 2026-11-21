@@ -51,6 +51,20 @@ if (tokens.text?.superscript?.font !== 'label') {
   errors.push(`text.superscript: must use font 'label' (Stack Sans Notch)`);
 }
 
+// 3a. Verify Logo font tokens and roles
+if (!tokens.font?.display?.includes('Jersey 20')) {
+  errors.push(`font.display: must include 'Jersey 20'`);
+}
+if (!tokens.font?.label?.includes('Stack Sans Notch')) {
+  errors.push(`font.label: must include 'Stack Sans Notch'`);
+}
+if (tokens.text?.['logo-primary']?.font !== 'display') {
+  errors.push(`text.logo-primary: must use display font (Jersey 20)`);
+}
+if (tokens.text?.['logo-secondary']?.font !== 'label') {
+  errors.push(`text.logo-secondary: must use label font (Stack Sans Notch)`);
+}
+
 // 3b. Verify in component code that Jersey 20 / --font-display is only used in Logo.astro
 try {
   const compDirPath = new URL('../src/components/', import.meta.url);
@@ -71,6 +85,33 @@ try {
     }
   };
   scanDir(compDirPath);
+
+  // Check Logo.astro itself
+  const logoPath = new URL('../src/components/primitives/Logo.astro', import.meta.url);
+  if (existsSync(logoPath)) {
+    const logoContent = readFileSync(logoPath, 'utf-8');
+    if (
+      !logoContent.includes('text-logo-primary') &&
+      !logoContent.includes('var(--text-logo-primary')
+    ) {
+      errors.push(`Logo.astro: primary element must use text-logo-primary token`);
+    }
+    if (
+      !logoContent.includes('text-logo-secondary') &&
+      !logoContent.includes('var(--text-logo-secondary')
+    ) {
+      errors.push(`Logo.astro: secondary element must use text-logo-secondary token`);
+    }
+  }
+
+  // Check BaseLayout.astro preloads Jersey 20
+  const layoutPath = new URL('../src/layouts/BaseLayout.astro', import.meta.url);
+  if (existsSync(layoutPath)) {
+    const layoutContent = readFileSync(layoutPath, 'utf-8');
+    if (!layoutContent.includes('jersey-20') && !layoutContent.includes('jersey20Url')) {
+      errors.push(`BaseLayout.astro: must preload Jersey 20 font for instant above-the-fold paint`);
+    }
+  }
 } catch (error) {
   warnings.push(`Component font-display scan skipped: ${error.message}`);
 }
