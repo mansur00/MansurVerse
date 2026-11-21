@@ -141,14 +141,6 @@ const isFailed = state === 'failed';
     line-height: var(--text-body-line);
   }
 
-  .error-feedback {
-    color: var(--color-error);
-  }
-
-  .feedback-text {
-    margin: 0;
-  }
-
   .fallback-link {
     color: var(--color-text-primary);
     text-decoration: underline;
@@ -158,5 +150,18 @@ const isFailed = state === 'failed';
 
   .fallback-link:hover {
     opacity: 0.7;
+  }
+
+  .error-feedback {
+    background-color: var(--color-error);
+    color: var(--color-text-on-accent);
+  }
+
+  .error-feedback .fallback-link {
+    color: var(--color-text-on-accent);
+  }
+
+  .feedback-text {
+    margin: 0;
   }
 </style>

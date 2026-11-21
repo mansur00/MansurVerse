@@ -174,7 +174,8 @@ const messageId = `${id}-message`;
   }
 
   .has-error .field-label {
-    color: var(--color-error);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
   }
 
   .field-input:focus ~ .field-label,
@@ -189,7 +190,7 @@ const messageId = `${id}-message`;
 
   .required-mark {
     margin-left: var(--space-3xs);
-    color: var(--color-error);
+    color: var(--color-text-primary);
   }
 
   .field-message {
@@ -203,7 +204,10 @@ const messageId = `${id}-message`;
   }
 
   .field-message.error-message {
-    color: var(--color-error);
+    background-color: var(--color-error);
+    color: var(--color-text-on-accent);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-none);
   }
 
   .field-message.hint-message {
