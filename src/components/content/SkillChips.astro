@@ -6,15 +6,18 @@ interface Props {
     name: string;
     variant?: 'filled' | 'accent' | 'outlined' | undefined;
   }>;
+  surface?: 'base' | 'feature' | undefined;
   class?: string | undefined;
 }
 
-const { skills, class: className = '' } = Astro.props;
+const { skills, surface = 'base', class: className = '' } = Astro.props;
 ---
 
 <div class:list={['skill-chips-container', className]}>
   {skills.map((skill) => (
-    <Chip variant={skill.variant ?? 'filled'}>{skill.name}</Chip>
+    <Chip variant={skill.variant ?? 'filled'} surface={surface}>
+      {skill.name}
+    </Chip>
   ))}
 </div>
 

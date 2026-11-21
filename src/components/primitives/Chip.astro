@@ -2,6 +2,7 @@
 interface Props {
   as?: 'span' | 'button' | 'a' | undefined;
   variant?: 'filled' | 'accent' | 'outlined' | undefined;
+  surface?: 'base' | 'feature' | undefined;
   active?: boolean | undefined;
   href?: string | undefined;
   type?: 'button' | 'submit' | undefined;
@@ -12,6 +13,7 @@ interface Props {
 const {
   as: Tag = 'span',
   variant = 'filled',
+  surface = 'base',
   active = false,
   href,
   type = 'button',
@@ -22,22 +24,26 @@ const {
 const isLink = Tag === 'a' || Boolean(href);
 const isButton = Tag === 'button';
 const Element = isLink ? 'a' : isButton ? 'button' : 'span';
+const surfaceClass = surface === 'feature' ? 'chip-on-feature' : '';
 ---
 
 {Element === 'a' ? (
-  <a href={href} class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}>
+  <a
+    href={href}
+    class:list={['chip', `chip-${variant}`, surfaceClass, { 'is-active': active }, className]}
+  >
     <slot />
   </a>
 ) : Element === 'button' ? (
   <button
     type={type}
-    class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}
+    class:list={['chip', `chip-${variant}`, surfaceClass, { 'is-active': active }, className]}
     aria-pressed={ariaPressed !== undefined ? ariaPressed : active}
   >
     <slot />
   </button>
 ) : (
-  <span class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}>
+  <span class:list={['chip', `chip-${variant}`, surfaceClass, { 'is-active': active }, className]}>
     <slot />
   </span>
 )}
@@ -77,6 +83,12 @@ const Element = isLink ? 'a' : isButton ? 'button' : 'span';
     background: transparent;
     color: var(--color-text-primary);
     border: var(--line-hairline) solid var(--chip-outline-stroke);
+  }
+
+  .chip-on-feature.chip-outlined,
+  [data-surface='feature'] .chip-outlined {
+    color: var(--chip-outline-text-on-feature);
+    border-color: var(--chip-outline-stroke-on-feature);
   }
 
   .chip-outlined.is-active,

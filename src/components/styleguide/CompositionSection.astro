@@ -1,0 +1,152 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import Button from '../primitives/Button.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import ValueRow from '../content/ValueRow.astro';
+import StatTile from '../content/StatTile.astro';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures;
+---
+
+<section id="composition" class="sg-section sg-surface-base">
+  <div class="sg-section-content">
+    <div class="sg-section-header">
+      <SlashLabel label={f.sections.composition.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.sections.composition.title}
+        <SuperscriptNumber number={f.sections.composition.number} />
+      </h2>
+      <p class="text-body sg-section-intro">{f.sections.composition.intro}</p>
+    </div>
+
+    <!-- Mock Home Hero -->
+    <div class="composition-card">
+      <div class="mock-hero">
+        <SlashLabel label={f.sections.composition.heroEyebrow} />
+        <h1 class="text-display-hero mock-hero-title">{f.sections.composition.heroTitle}</h1>
+        <p class="text-statement mock-hero-sub">{f.sections.composition.heroDescription}</p>
+        <div class="mock-hero-cta">
+          <Button href="#components" variant="primary" showArrow={true}>
+            {f.sections.composition.heroCtaText}
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mock Values -->
+    <div class="composition-card">
+      <SectionHeader
+        slashLabel={f.sections.composition.valuesSlash}
+        title={f.sections.composition.valuesHeading}
+      />
+      <div class="content-demos-stack">
+        {f.content.values.map((v) => (
+          <ValueRow slashLabel={v.slashLabel} text={v.text} />
+        ))}
+      </div>
+    </div>
+
+    <!-- Mock Numbers -->
+    <div class="composition-card">
+      <SectionHeader
+        slashLabel={f.sections.composition.numbersSlash}
+        title={f.sections.composition.numbersHeading}
+      />
+      <div class="stats-grid">
+        {f.content.stats.map((s) => (
+          <StatTile
+            number={s.number}
+            caption={s.caption}
+            variant={s.variant}
+            staggered={s.staggered}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-base {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-section-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .composition-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-8) var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .mock-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .mock-hero-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .mock-hero-sub {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .mock-hero-cta {
+    margin-top: var(--space-2);
+  }
+
+  .content-demos-stack {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-base);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width >= 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

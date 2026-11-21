@@ -13,12 +13,13 @@
     "format:check": "prettier --check .",
     "tokens:build": "node scripts/tokens-build.mjs",
     "tokens:check": "node scripts/tokens-check.mjs",
+    "check:conventions": "node scripts/check-conventions.mjs",
     "test": "vitest run --passWithNoTests",
     "test:guardrails": "node scripts/test-guardrails.mjs",
     "test:e2e": "echo \"test:e2e arrives in Phase 4\"",
     "test:a11y": "echo \"test:a11y arrives in Phase 4\"",
     "lighthouse": "echo \"lighthouse arrives in Phase 7\"",
-    "verify": "pnpm run tokens:check && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build",
+    "verify": "pnpm run tokens:check && pnpm run check:conventions && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build",
     "prepare": "test -d .git && husky || true"
   },
   "lint-staged": {

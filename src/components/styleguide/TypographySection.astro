@@ -1,0 +1,201 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import Chip from '../primitives/Chip.astro';
+import Divider from '../primitives/Divider.astro';
+import summary from '../../styles/tokens/generated/tokens.summary.json';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures.sections.typography;
+const roles = summary.roles;
+---
+
+<section id="typography" class="sg-section sg-surface-alt">
+  <div class="sg-section-content">
+    <div class="sg-section-header">
+      <SlashLabel label={f.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.title}
+        <SuperscriptNumber number={f.number} />
+      </h2>
+      <p class="text-body sg-section-intro">{f.intro}</p>
+    </div>
+
+    <!-- Font Specimens -->
+    <div class="sg-block">
+      <div class="specimens-stack">
+        {f.specimens.map((spec) => (
+          <div class="specimen-card">
+            <div class="specimen-meta">
+              <h3 class="text-heading-case specimen-family">{spec.family}</h3>
+              <Chip variant="outlined">{spec.role}</Chip>
+            </div>
+            {spec.isDisplay ? (
+              <h1 class="text-display-page specimen-sample">{spec.sample}</h1>
+            ) : (
+              <p class="text-heading-row specimen-sample">{spec.sample}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Rendered Text Roles (Looped dynamically from summary.roles) -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.rolesTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.rolesDesc}</p>
+      <div class="roles-list">
+        {roles.map((r) => (
+          <div class="role-row">
+            <div class="role-meta">
+              <div class="role-title-row">
+                <span class="text-heading-job role-name">{r.name}</span>
+                <Chip variant="filled">{r.element}</Chip>
+              </div>
+              <p class="text-body-small role-specs">
+                {r.font} · {r.size} · {f.weightLabel} {r.weight} · {f.lineLabel} {r.line}
+              </p>
+            </div>
+            <div class="role-preview">
+              <div class={`text-${r.name} role-sample-text`}>{f.sampleText}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-alt {
+    background: var(--color-bg-alt);
+    color: var(--color-text-primary);
+  }
+
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-section-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .sg-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .specimens-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .specimen-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .specimen-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .specimen-family {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .specimen-sample {
+    color: var(--color-text-primary);
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  .roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .role-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .role-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .role-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .role-name {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .role-specs {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .role-preview {
+    padding-top: var(--space-2);
+    overflow-x: auto;
+  }
+
+  .role-sample-text {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+</style>
