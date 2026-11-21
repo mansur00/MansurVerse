@@ -1,0 +1,21 @@
+{
+  "label": "Open to",
+  "items": [
+    {
+      "category": "Product",
+      "title": "Senior UI Designer",
+      "meta": "Remote / Full time / Open"
+    },
+    {
+      "category": "Engineering",
+      "title": "Frontend Engineer",
+      "meta": "Remote / Contract / Open"
+    },
+    {
+      "category": "Freelance",
+      "title": "Interface Projects",
+      "meta": "Remote / Project / Open"
+    }
+  ],
+  "placeholder": true
+}

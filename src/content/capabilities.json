@@ -1,0 +1,30 @@
+{
+  "label": "Core Capabilities",
+  "items": [
+    {
+      "title": "Interface Design",
+      "description": "Systems, layouts and interactions designed with intent."
+    },
+    {
+      "title": "Frontend Engineering",
+      "description": "Fast, accessible, token-driven code."
+    },
+    {
+      "title": "Motion & Interaction",
+      "description": "Details that make an interface feel alive."
+    },
+    {
+      "title": "Design Systems",
+      "description": "One source of truth for every decision."
+    },
+    {
+      "title": "Prototyping",
+      "description": "Ideas made clickable before they are built."
+    },
+    {
+      "title": "Creative Coding",
+      "description": "WebGL and canvas experiments."
+    }
+  ],
+  "placeholder": true
+}

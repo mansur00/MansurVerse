@@ -1,0 +1,24 @@
+{
+  "name": "Frontend Designer & Engineer",
+  "role": "Senior Frontend Designer",
+  "bio": [
+    "Designer and frontend engineer building calm, high-performance interfaces with a system behind every detail.",
+    "Focused on design systems, typography hierarchy, token architecture, and accessible micro-interactions that make digital products feel clear and intentional."
+  ],
+  "portrait": {
+    "image": "/assets/profile/portrait.svg",
+    "alt": "Portrait placeholder showing design craft and engineering discipline"
+  },
+  "email": "hello@example.com",
+  "availability": {
+    "status": "open",
+    "label": "Available for new work"
+  },
+  "socials": [
+    { "label": "GitHub", "url": "https://github.com" },
+    { "label": "LinkedIn", "url": "https://linkedin.com" },
+    { "label": "Dribbble", "url": "https://dribbble.com" }
+  ],
+  "cvUrl": "/cv.pdf",
+  "placeholder": true
+}

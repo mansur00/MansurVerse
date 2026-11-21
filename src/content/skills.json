@@ -1,0 +1,14 @@
+{
+  "items": [
+    "Figma",
+    "Astro",
+    "TypeScript",
+    "Tailwind CSS",
+    "GSAP",
+    "WebGL",
+    "Design systems",
+    "Accessibility",
+    "Semantic HTML"
+  ],
+  "placeholder": true
+}

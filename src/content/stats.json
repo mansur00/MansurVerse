@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "value": 24,
+      "suffix": "+",
+      "label": "Projects shipped",
+      "tone": "lime"
+    },
+    {
+      "value": 6,
+      "suffix": "+",
+      "label": "Years of craft",
+      "tone": "white"
+    },
+    {
+      "value": 12,
+      "suffix": "+",
+      "label": "Clients",
+      "tone": "lime"
+    },
+    {
+      "value": 100,
+      "suffix": "%",
+      "label": "Token-driven",
+      "tone": "white"
+    }
+  ],
+  "placeholder": true
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" fill="none">
+  <rect width="800" height="1000" fill="#2B2B2B"/>
+  <circle cx="400" cy="380" r="160" fill="#3D3D3D"/>
+  <rect x="220" y="580" width="360" height="420" rx="40" fill="#3D3D3D"/>
+  <rect x="340" y="320" width="120" height="20" fill="#9FFA62"/>
+  <rect x="280" y="440" width="240" height="12" fill="#9FFA62" opacity="0.6"/>
+  <text x="400" y="940" text-anchor="middle" font-family="'Stack Sans Notch', sans-serif" font-weight="700" font-size="28" fill="#FFFFFF">PORTRAIT PLACEHOLDER</text>
+</svg>
