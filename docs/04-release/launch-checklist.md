@@ -23,7 +23,11 @@
 
 ## SEO and Sharing
 - [ ] Titles, descriptions, canonical URLs, Open Graph images, structured data
-- [ ] `sitemap.xml` and `robots.txt` correct; `/styleguide` not indexed or deployed
+- [ ] Set `PUBLIC_SITE_STAGE=production` in Vercel environment variables
+- [ ] Set `PUBLIC_ENABLE_STYLEGUIDE` to false or remove it from Vercel environment variables
+- [ ] Confirm `robots.txt` allows crawling in production and `sitemap-index.xml` is declared
+- [ ] Confirm `/styleguide` is stripped from the production build (`dist/styleguide` does not exist)
+- [ ] Confirm the temporary Phase 3 build preview home page is gone and replaced by the production Home page
 - [ ] Share previews tested on the main social platforms
 - [ ] Favicons and manifest present
 

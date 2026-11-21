@@ -91,6 +91,11 @@
 | D-83 | `Footer` implements three columns: Pages, Elsewhere, Local time, followed by hairline divider and copyright row with `MotionToggle` | Decided | Matches component-specs |
 | D-84 | `Marquee` uses `/` separators and `SuperscriptNumber` per prototype and `component-specs.md` (no pixel shapes) | Decided | Matches component-specs |
 | D-85 | SVG icon exceptions approved: ThemeToggle uses SVG icons for sun and moon (with accessible button labels and theme-toggle script), and FormField uses an SVG exclamation circle icon (ensuring validation errors use text plus an icon, never colour alone) | Decided | Spec exception approval |
+| D-86 | Hosting platform decided as Vercel (resolves O-03). Vercel connects to the GitHub repository; pushes to `main` deploy to production, and pushes to feature branches deploy to preview | Decided | Closes O-03 |
+| D-87 | Added `PUBLIC_SITE_STAGE` ("development" or "production", default "development"). While "development", all pages receive `<meta name="robots" content="noindex, nofollow">` in BaseLayout and robots.txt disallows all crawling. At public launch, setting to "production" enables crawling and sitemap declaration | Decided | Safe public build phase |
+| D-88 | Added `PUBLIC_ENABLE_STYLEGUIDE` flag. When "true", `/styleguide` is retained in `dist/`. In production when false or unset, `scripts/strip-styleguide.mjs` strips it from output | Decided | Styleguide control |
+| D-89 | Temporary "Build preview" landing page implemented on `src/pages/index.astro` using components, tokens, and copy from `src/fixtures/preview.ts`, safely presenting Phase 3 components and links on Vercel preview until replaced in Phase 4 | Decided | Replaces Phase 1 placeholder |
+| D-90 | Vercel compatibility hardened in `package.json`: prepare script updated to `test -d .git && husky || true`, `packageManager` pins pnpm 12.21.0 via Corepack, and Node matches `.nvmrc` (24.21.0) | Decided | Vercel build compatibility |
 
 ## Open Items
 
@@ -98,7 +103,7 @@
 |---|---|---|---|
 | O-01 | Verify remaining ollyo tokens: type scale, per-element fonts, spacing, radii, borders, pink/cyan/blue colours | Phase 2 | Colours and font families verified (D-28). Owner can copy computed styles of the hero h1, a section heading, a project card and a keyword tag from DevTools |
 | O-02 | Confirm font licences and self-hosting plan for all three fonts | Closed | Resolved by D-74 (OFL-1.1 via Fontsource) |
-| O-03 | Hosting: Cloudflare or Vercel | Phase 8 | Compare in `deployment.md` |
+| O-03 | Hosting: Cloudflare or Vercel | Closed | Resolved by D-86 (Vercel chosen) |
 | O-04 | WebGL library: Three.js, OGL or a custom shader | Phase 6 | Digit field is simple; prefer the lightest option |
 | O-05 | Contact form provider and spam protection | Phase 5 | |
 | O-06 | Analytics: none or a privacy-friendly option | Phase 8 | |
