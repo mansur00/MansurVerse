@@ -2,16 +2,25 @@
 interface Props {
   number: number | string;
   pad?: boolean | undefined;
+  surface?: 'base' | 'feature' | 'card' | undefined;
   class?: string | undefined;
 }
 
-const { number, pad = true, class: className = '' } = Astro.props;
+const { number, pad = true, surface = 'base', class: className = '' } = Astro.props;
 
 const formatted =
   pad && typeof number === 'number' ? (number < 10 ? `0${number}` : `${number}`) : `${number}`;
 ---
 
-<span class:list={['superscript-number', className]} aria-hidden="true">
+<span
+  class:list={[
+    'superscript-number',
+    surface === 'feature' ? 'superscript-on-feature' : '',
+    surface === 'card' ? 'superscript-on-card' : '',
+    className,
+  ]}
+  aria-hidden="true"
+>
   {formatted}
 </span>
 
@@ -24,5 +33,13 @@ const formatted =
     vertical-align: super;
     line-height: 1;
     margin-left: 2px;
+  }
+
+  .superscript-on-feature {
+    color: var(--color-text-muted-on-feature);
+  }
+
+  .superscript-on-card {
+    color: var(--color-text-muted-on-card);
   }
 </style>

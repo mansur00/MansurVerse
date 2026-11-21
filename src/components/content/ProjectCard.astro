@@ -43,13 +43,15 @@ const accentToken = `var(--color-accent-${accent === 'lime' ? 'primary' : accent
 >
   <div class="card-left">
     <div class="card-num">
-      <SuperscriptNumber number={number} pad={true} />
+      <SuperscriptNumber number={number} pad={true} surface="card" />
     </div>
     <h3 class="card-title text-heading-card">{title}</h3>
     <p class="card-description text-body">{description}</p>
     <div class="card-chips">
       <Chip variant="accent">{category}</Chip>
-      <Chip variant="outlined">{year}</Chip>
+      <Chip variant="outlined" surface="card">
+        {year}
+      </Chip>
     </div>
   </div>
 
@@ -130,7 +132,7 @@ const accentToken = `var(--color-accent-${accent === 'lime' ? 'primary' : accent
 
   .card-title {
     margin: 0 0 var(--space-4);
-    color: var(--color-text-primary);
+    color: var(--card-text);
   }
 
   .card-description {

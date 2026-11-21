@@ -136,19 +136,19 @@ const messageId = `${id}-message`;
     font-family: var(--font-body);
     font-size: var(--text-body-size);
     line-height: var(--text-body-line);
-    padding: var(--space-md) var(--space-sm) var(--space-2xs) var(--space-sm);
+    padding: var(--space-4) var(--space-3) var(--space-1) var(--space-3);
   }
 
   .field-textarea {
     resize: vertical;
     min-height: 120px;
-    padding-top: var(--space-lg);
+    padding-top: var(--space-6);
   }
 
   .field-label {
     position: absolute;
-    left: var(--space-sm);
-    top: var(--space-xs);
+    left: var(--space-3);
+    top: var(--space-2);
     font-family: var(--font-label);
     font-size: var(--text-label-size);
     line-height: var(--text-label-line);
@@ -157,7 +157,7 @@ const messageId = `${id}-message`;
     color: var(--color-text-muted);
     pointer-events: none;
     transform-origin: left top;
-    transform: translateY(var(--space-2xs));
+    transform: translateY(var(--space-1));
     transition:
       transform var(--motion-fast) var(--ease-out),
       color var(--motion-fast) var(--ease-out);
@@ -189,15 +189,15 @@ const messageId = `${id}-message`;
   }
 
   .required-mark {
-    margin-left: var(--space-3xs);
+    margin-left: var(--space-1);
     color: var(--color-text-primary);
   }
 
   .field-message {
     display: flex;
     align-items: center;
-    gap: var(--space-3xs);
-    margin-top: var(--space-3xs);
+    gap: var(--space-1);
+    margin-top: var(--space-1);
     font-family: var(--font-body);
     font-size: var(--text-label-size);
     line-height: var(--text-label-line);
@@ -206,7 +206,7 @@ const messageId = `${id}-message`;
   .field-message.error-message {
     background-color: var(--color-error);
     color: var(--color-text-on-accent);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-none);
   }
 

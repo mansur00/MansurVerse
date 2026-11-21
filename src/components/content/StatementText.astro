@@ -16,9 +16,11 @@ const { sentence, words, highlightIndex = 0, class: className = '' } = Astro.pro
     {words.map((word, index) => {
       const isFilled = index <= highlightIndex;
       return (
-        <span class:list={['word-span', { 'is-filled': isFilled }]} data-word-index={index}>
-          {word}&nbsp;
-        </span>
+        <>
+          <span class:list={['word-span', { 'is-filled': isFilled }]} data-word-index={index}>
+            {word}
+          </span>{' '}
+        </>
       );
     })}
   </p>

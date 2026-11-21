@@ -9,7 +9,6 @@ interface Props {
 const {
   pauseLabel = 'Pause motion',
   playLabel = 'Play motion',
-  ariaLabel = 'Toggle animations',
   class: className = '',
 } = Astro.props;
 ---
@@ -18,7 +17,6 @@ const {
   type="button"
   id="motion-toggle"
   class:list={['motion-toggle', className]}
-  aria-label={ariaLabel}
   data-motion-toggle
 >
   <span class="motion-icon" aria-hidden="true">
