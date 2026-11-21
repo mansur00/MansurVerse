@@ -2,6 +2,7 @@
 interface Props {
   as?: 'button' | 'a' | undefined;
   variant?: 'primary' | 'inverse' | 'outlined' | undefined;
+  surface?: 'base' | 'feature' | undefined;
   href?: string | undefined;
   type?: 'button' | 'submit' | 'reset' | undefined;
   disabled?: boolean | undefined;
@@ -16,6 +17,7 @@ interface Props {
 const {
   as: Tag = 'button',
   variant = 'primary',
+  surface = 'base',
   href,
   type = 'button',
   disabled = false,
@@ -29,6 +31,7 @@ const {
 
 const isLink = Tag === 'a' || Boolean(href);
 const arrowChar = arrowDirection === 'up-right' ? '↗' : '→';
+const surfaceClass = surface === 'feature' ? 'btn-on-feature' : '';
 ---
 
 {isLink ? (
@@ -37,6 +40,7 @@ const arrowChar = arrowDirection === 'up-right' ? '↗' : '→';
     class:list={[
       'btn',
       `btn-${variant}`,
+      surfaceClass,
       { 'is-loading': loading, 'is-success': success, 'is-disabled': disabled },
       className,
     ]}
@@ -60,6 +64,7 @@ const arrowChar = arrowDirection === 'up-right' ? '↗' : '→';
     class:list={[
       'btn',
       `btn-${variant}`,
+      surfaceClass,
       { 'is-loading': loading, 'is-success': success },
       className,
     ]}
@@ -133,6 +138,12 @@ const arrowChar = arrowDirection === 'up-right' ? '↗' : '→';
     background: transparent;
     color: var(--color-text-primary);
     border: var(--line-hairline) solid var(--color-divider);
+  }
+
+  .btn-on-feature.btn-outlined,
+  [data-surface='feature'] .btn-outlined {
+    color: var(--color-text-on-feature);
+    border-color: var(--color-divider-on-feature);
   }
 
   .btn-outlined:hover:not(:disabled) {

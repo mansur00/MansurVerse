@@ -42,6 +42,8 @@ export interface StyleguideFixtures {
       rolesTitle: string;
       rolesDesc: string;
       sampleText: string;
+      weightLabel: string;
+      lineLabel: string;
     };
     shapes: {
       number: string;
@@ -56,6 +58,11 @@ export interface StyleguideFixtures {
       spaceTitle: string;
       zIndexTitle: string;
       opacityTitle: string;
+      shapePrefix: string;
+      radiusPrefix: string;
+      spacePrefix: string;
+      zIndexPrefix: string;
+      opacityPrefix: string;
     };
     components: {
       number: string;
@@ -74,6 +81,7 @@ export interface StyleguideFixtures {
         tags: string;
         slashLabels: string;
         superscripts: string;
+        superscriptItemPrefix: string;
         dividers: string;
         cards: string;
         formIdle: string;
@@ -91,6 +99,9 @@ export interface StyleguideFixtures {
       easingsTitle: string;
       interactionsTitle: string;
       interactionsDesc: string;
+      motionPrefix: string;
+      easeOutLabel: string;
+      easeInOutLabel: string;
       interactions: Array<{
         id: string;
         name: string;
@@ -368,6 +379,8 @@ export const styleguideFixtures: StyleguideFixtures = {
       rolesDesc:
         'Every text role rendered at its real calculated clamp size with corresponding element semantics and tracking.',
       sampleText: 'Aa Bb Gg 12345 / Craft & Precision',
+      weightLabel: 'weight',
+      lineLabel: 'line',
     },
     shapes: {
       number: '03',
@@ -378,12 +391,17 @@ export const styleguideFixtures: StyleguideFixtures = {
         'Polygon clip-paths rendered at 80% opacity with flat color fills and no strokes or drop-shadows.',
       halfPillTitle: 'Half-Pill Geometry',
       halfPillDesc:
-        'Flat left edge with 999px rounded right edge used as visual anchors behind project media.',
+        'Rounded left edge (999px 0 0 999px) with flat right edge used as visual anchors behind project media.',
       halfPillLabel: 'Half-Pill Block',
       radiusTitle: 'Corner Radii',
       spaceTitle: 'Spacing Scale (4px Base Grid)',
       zIndexTitle: 'Z-Index Elevation Stack',
       opacityTitle: 'Opacity Scale',
+      shapePrefix: '--shape-',
+      radiusPrefix: '--radius-',
+      spacePrefix: '--space-',
+      zIndexPrefix: '--z-',
+      opacityPrefix: '--opacity-',
     },
     components: {
       number: '04',
@@ -415,6 +433,7 @@ export const styleguideFixtures: StyleguideFixtures = {
         tags: 'Keyword Tags (Tag 1–4)',
         slashLabels: 'Slash Labels (Light & Feature)',
         superscripts: 'Superscript Indices',
+        superscriptItemPrefix: 'Item',
         dividers: 'Hairline Dividers',
         cards: 'Project Showcase Cards',
         formIdle: 'Idle State',
@@ -434,6 +453,9 @@ export const styleguideFixtures: StyleguideFixtures = {
       interactionsTitle: 'Interaction Specifications (I-01 — I-37)',
       interactionsDesc:
         'Formal motion contracts defined in interaction-motion.md. All animations include prefers-reduced-motion fallbacks.',
+      motionPrefix: '--motion-',
+      easeOutLabel: '--ease-out',
+      easeInOutLabel: '--ease-in-out',
       interactions: [
         {
           id: 'I-01',

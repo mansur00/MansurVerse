@@ -104,14 +104,14 @@ import { previewFixtures } from '../fixtures/preview';
         </div>
       </section>
 
-      <section class="section-feature">
+      <section class="section-feature" data-surface="feature">
         <div class="section-content">
           <div class="section-header-block">
             <SlashLabel label={previewFixtures.techStackLabel} variant="on-feature" />
             <h2 class="text-heading-case feature-heading">{previewFixtures.techStackTitle}</h2>
           </div>
           <div class="feature-chips">
-            <SkillChips skills={previewFixtures.techStack} />
+            <SkillChips skills={previewFixtures.techStack} surface="feature" />
           </div>
           <p class="text-body-small feature-notice">{previewFixtures.notice}</p>
         </div>
@@ -319,8 +319,7 @@ import { previewFixtures } from '../fixtures/preview';
   }
 
   .feature-notice {
-    color: var(--color-text-on-feature);
-    opacity: var(--opacity-shape);
+    color: var(--color-text-muted-on-feature);
     margin: 0;
     max-width: 65ch;
   }

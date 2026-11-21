@@ -1,0 +1,507 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import Button from '../primitives/Button.astro';
+import Chip from '../primitives/Chip.astro';
+import KeywordTag from '../primitives/KeywordTag.astro';
+import Divider from '../primitives/Divider.astro';
+import Nav from '../layout/Nav.astro';
+import MenuOverlay from '../layout/MenuOverlay.astro';
+import SectionHeader from '../layout/SectionHeader.astro';
+import CTABand from '../layout/CTABand.astro';
+import ProjectCard from '../content/ProjectCard.astro';
+import CapabilityRow from '../content/CapabilityRow.astro';
+import ProcessStep from '../content/ProcessStep.astro';
+import ValueRow from '../content/ValueRow.astro';
+import StatTile from '../content/StatTile.astro';
+import JobRow from '../content/JobRow.astro';
+import Marquee from '../content/Marquee.astro';
+import StatementText from '../content/StatementText.astro';
+import EmailDisplay from '../content/EmailDisplay.astro';
+import ExperienceRow from '../content/ExperienceRow.astro';
+import SkillChips from '../content/SkillChips.astro';
+import MetaSidebar from '../content/MetaSidebar.astro';
+import FormField from '../forms/FormField.astro';
+import Form from '../forms/Form.astro';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures;
+---
+
+<section id="components" class="sg-section sg-surface-alt">
+  <div class="sg-section-content">
+    <div class="sg-section-header">
+      <SlashLabel label={f.sections.components.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.sections.components.title}
+        <SuperscriptNumber number={f.sections.components.number} />
+      </h2>
+      <p class="text-body sg-section-intro">{f.sections.components.intro}</p>
+    </div>
+
+    <!-- Group 1: Primitives -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">
+        {f.sections.components.groups.primitives.title}
+      </h3>
+      <p class="text-body-small sg-block-desc">{f.sections.components.groups.primitives.desc}</p>
+
+      <div class="component-showcase-box">
+        <h4 class="text-heading-job showcase-subtitle">
+          {f.sections.components.stateLabels.buttons}
+        </h4>
+        <div class="showcase-row">
+          {f.primitives.buttons.map((btn) => (
+            <Button
+              variant={btn.variant}
+              showArrow={btn.showArrow}
+              disabled={btn.disabled}
+              loading={btn.loading}
+              success={btn.success}
+            >
+              {btn.label}
+            </Button>
+          ))}
+        </div>
+
+        <h4 class="text-heading-job showcase-subtitle">
+          {f.sections.components.stateLabels.chips}
+        </h4>
+        <div class="showcase-row">
+          {f.primitives.chips.map((c) => (
+            <Chip variant={c.variant} active={c.active}>
+              {c.label}
+            </Chip>
+          ))}
+        </div>
+
+        <h4 class="text-heading-job showcase-subtitle">{f.sections.components.stateLabels.tags}</h4>
+        <div class="showcase-row">
+          {f.primitives.tags.map((t) => (
+            <KeywordTag tagIndex={t.tagIndex}>{t.text}</KeywordTag>
+          ))}
+        </div>
+
+        <h4 class="text-heading-job showcase-subtitle">
+          {f.sections.components.stateLabels.slashLabels}
+        </h4>
+        <div class="showcase-row">
+          {f.primitives.slashLabels.map((s) => (
+            <SlashLabel label={s.label} variant={s.variant} />
+          ))}
+        </div>
+
+        <h4 class="text-heading-job showcase-subtitle">
+          {f.sections.components.stateLabels.superscripts}
+        </h4>
+        <div class="showcase-row">
+          {f.primitives.numbers.map((n) => (
+            <span class="text-heading-case">
+              {f.sections.components.stateLabels.superscriptItemPrefix}
+              <SuperscriptNumber number={n} />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Group 2: Layout -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.sections.components.groups.layout.title}</h3>
+      <p class="text-body-small sg-block-desc">{f.sections.components.groups.layout.desc}</p>
+
+      <div class="component-showcase-box">
+        <Nav navLinks={f.layout.navLinks} />
+        <MenuOverlay links={f.layout.navLinks} isOpen={false} />
+        <SectionHeader
+          slashLabel={f.layout.sectionHeader.slashLabel}
+          title={f.layout.sectionHeader.title}
+        />
+        <CTABand
+          slashLabel={f.layout.cta.slashLabel}
+          heading={f.layout.cta.heading}
+          text={f.layout.cta.text}
+          buttonLabel={f.layout.cta.buttonLabel}
+          buttonHref={f.layout.cta.buttonHref}
+          variant="on-alt"
+        />
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Group 3: Content -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.sections.components.groups.content.title}</h3>
+      <p class="text-body-small sg-block-desc">{f.sections.components.groups.content.desc}</p>
+
+      <!-- Project Cards -->
+      <h4 class="text-heading-job showcase-subtitle">{f.sections.components.stateLabels.cards}</h4>
+      <div class="projects-stack">
+        {f.content.projects.map((proj) => (
+          <ProjectCard
+            title={proj.title}
+            number={proj.number}
+            description={proj.description}
+            category={proj.category}
+            year={proj.year}
+            href={proj.href}
+            accent={proj.accent}
+            imageAlt={proj.imageAlt}
+          />
+        ))}
+      </div>
+
+      <!-- Capabilities -->
+      <div class="content-demos-stack">
+        {f.content.capabilities.map((cap) => (
+          <CapabilityRow
+            title={cap.title}
+            number={cap.number}
+            description={cap.description}
+            tags={cap.tags}
+          />
+        ))}
+      </div>
+
+      <!-- Process Steps -->
+      <div class="process-grid">
+        {f.content.processSteps.map((step) => (
+          <ProcessStep stepNumber={step.stepNumber} title={step.title} text={step.text} />
+        ))}
+      </div>
+
+      <!-- Values -->
+      <div class="content-demos-stack">
+        {f.content.values.map((v) => (
+          <ValueRow slashLabel={v.slashLabel} text={v.text} />
+        ))}
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        {f.content.stats.map((s) => (
+          <StatTile
+            number={s.number}
+            caption={s.caption}
+            variant={s.variant}
+            staggered={s.staggered}
+          />
+        ))}
+      </div>
+
+      <!-- Job Rows -->
+      <div class="content-demos-stack">
+        {f.content.jobs.map((job) => (
+          <JobRow
+            category={job.category}
+            title={job.title}
+            meta={job.meta}
+            ctaLabel={job.ctaLabel}
+            ctaHref={job.ctaHref}
+          />
+        ))}
+      </div>
+
+      <!-- Marquee -->
+      <div class="marquee-demo">
+        <Marquee items={f.content.marqueeItems} />
+      </div>
+
+      <!-- Statement Text -->
+      <div class="statement-demo">
+        <StatementText sentence={f.content.statement.sentence} words={f.content.statement.words} />
+      </div>
+
+      <!-- Email Display -->
+      <div class="email-demo">
+        <EmailDisplay email={f.content.email} />
+      </div>
+
+      <!-- Experience Rows -->
+      <div class="content-demos-stack">
+        {f.content.experience.map((exp) => (
+          <ExperienceRow
+            period={exp.period}
+            role={exp.role}
+            company={exp.company}
+            location={exp.location}
+          />
+        ))}
+      </div>
+
+      <!-- Meta Sidebar -->
+      <div class="meta-sidebar-demo">
+        <MetaSidebar
+          role={f.content.metaSidebar.role}
+          year={f.content.metaSidebar.year}
+          tools={f.content.metaSidebar.tools}
+          links={f.content.metaSidebar.links}
+          sections={f.content.metaSidebar.sections}
+        />
+      </div>
+
+      <!-- Skill Chips -->
+      <div class="chips-demo">
+        <SkillChips skills={f.content.skills} />
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Group 4: Forms -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.sections.components.groups.forms.title}</h3>
+      <p class="text-body-small sg-block-desc">{f.sections.components.groups.forms.desc}</p>
+
+      <div class="forms-demos-grid">
+        <div class="form-demo-col">
+          <h4 class="text-heading-job showcase-subtitle">
+            {f.sections.components.stateLabels.formIdle}
+          </h4>
+          <FormField
+            name={f.content.forms.fields.idle.name}
+            label={f.content.forms.fields.idle.label}
+          />
+          <FormField
+            name={f.content.forms.fields.focus.name}
+            label={f.content.forms.fields.focus.label}
+            state={f.content.forms.fields.focus.state}
+            value={f.content.forms.fields.focus.value}
+          />
+          <FormField
+            name={f.content.forms.fields.filled.name}
+            label={f.content.forms.fields.filled.label}
+            state={f.content.forms.fields.filled.state}
+            value={f.content.forms.fields.filled.value}
+          />
+        </div>
+
+        <div class="form-demo-col">
+          <h4 class="text-heading-job showcase-subtitle">
+            {f.sections.components.stateLabels.formFailed}
+          </h4>
+          <FormField
+            name={f.content.forms.fields.error.name}
+            label={f.content.forms.fields.error.label}
+            state={f.content.forms.fields.error.state}
+            value={f.content.forms.fields.error.value}
+            errorMessage={f.content.forms.fields.error.errorMessage}
+          />
+          <FormField
+            name={f.content.forms.fields.disabled.name}
+            label={f.content.forms.fields.disabled.label}
+            state={f.content.forms.fields.disabled.state}
+            value={f.content.forms.fields.disabled.value}
+            disabled={f.content.forms.fields.disabled.disabled}
+          />
+          <FormField
+            name={f.content.forms.fields.textarea.name}
+            label={f.content.forms.fields.textarea.label}
+            as={f.content.forms.fields.textarea.as}
+            rows={f.content.forms.fields.textarea.rows}
+          />
+        </div>
+      </div>
+
+      <!-- Complete Form Lifecycle States -->
+      <div class="form-lifecycle-stack">
+        <div class="form-box">
+          <h4 class="text-heading-job showcase-subtitle">
+            {f.sections.components.stateLabels.formSending}
+          </h4>
+          <Form
+            state={f.content.forms.formStates.sending.state}
+            nameValue={f.content.forms.formStates.sending.nameValue}
+            emailValue={f.content.forms.formStates.sending.emailValue}
+            messageValue={f.content.forms.formStates.sending.messageValue}
+          />
+        </div>
+
+        <div class="form-box">
+          <h4 class="text-heading-job showcase-subtitle">
+            {f.sections.components.stateLabels.formSent}
+          </h4>
+          <Form
+            state={f.content.forms.formStates.sent.state}
+            nameValue={f.content.forms.formStates.sent.nameValue}
+            emailValue={f.content.forms.formStates.sent.emailValue}
+            messageValue={f.content.forms.formStates.sent.messageValue}
+          />
+        </div>
+
+        <div class="form-box">
+          <h4 class="text-heading-job showcase-subtitle">
+            {f.sections.components.stateLabels.formFailed}
+          </h4>
+          <Form
+            state={f.content.forms.formStates.failed.state}
+            nameValue={f.content.forms.formStates.failed.nameValue}
+            emailValue={f.content.forms.formStates.failed.emailValue}
+            messageValue={f.content.forms.formStates.failed.messageValue}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-alt {
+    background: var(--color-bg-alt);
+    color: var(--color-text-primary);
+  }
+
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-section-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .sg-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .component-showcase-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .showcase-subtitle {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .showcase-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .projects-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .content-demos-stack {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-base);
+  }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .process-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .process-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width >= 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .marquee-demo,
+  .statement-demo,
+  .email-demo,
+  .meta-sidebar-demo,
+  .chips-demo {
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+  }
+
+  .forms-demos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (width >= 721px) {
+    .forms-demos-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-demo-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+  }
+
+  .form-lifecycle-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .form-box {
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+</style>

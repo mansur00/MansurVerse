@@ -75,6 +75,11 @@
       "dark": "#FFFFFF"
     },
     {
+      "name": "text-muted-on-feature",
+      "light": "#E6E6E6",
+      "dark": "#E6E6E6"
+    },
+    {
       "name": "text-on-accent",
       "light": "#000000",
       "dark": "#000000"
@@ -131,6 +136,16 @@
     },
     {
       "name": "divider-on-feature",
+      "light": "rgba(255, 255, 255, 0.18)",
+      "dark": "rgba(255, 255, 255, 0.18)"
+    },
+    {
+      "name": "chip-outline-text-on-feature",
+      "light": "#FFFFFF",
+      "dark": "#FFFFFF"
+    },
+    {
+      "name": "chip-outline-stroke-on-feature",
       "light": "rgba(255, 255, 255, 0.18)",
       "dark": "rgba(255, 255, 255, 0.18)"
     },
@@ -528,6 +543,46 @@
       "pass": true
     },
     {
+      "fg": "text-muted-on-feature",
+      "bg": "bg-feature",
+      "theme": "light",
+      "fgValue": "#E6E6E6",
+      "bgValue": "#3D3D3D",
+      "ratio": 8.7,
+      "min": 4.5,
+      "pass": true
+    },
+    {
+      "fg": "text-muted-on-feature",
+      "bg": "bg-feature",
+      "theme": "dark",
+      "fgValue": "#E6E6E6",
+      "bgValue": "#2B2B2B",
+      "ratio": 11.34,
+      "min": 4.5,
+      "pass": true
+    },
+    {
+      "fg": "chip-outline-text-on-feature",
+      "bg": "bg-feature",
+      "theme": "light",
+      "fgValue": "#FFFFFF",
+      "bgValue": "#3D3D3D",
+      "ratio": 10.86,
+      "min": 4.5,
+      "pass": true
+    },
+    {
+      "fg": "chip-outline-text-on-feature",
+      "bg": "bg-feature",
+      "theme": "dark",
+      "fgValue": "#FFFFFF",
+      "bgValue": "#2B2B2B",
+      "ratio": 14.16,
+      "min": 4.5,
+      "pass": true
+    },
+    {
       "fg": "text-on-accent",
       "bg": "accent-primary",
       "theme": "light",
@@ -813,6 +868,8 @@
     "chip-filled-bg": "{color.bg-alt}",
     "chip-filled-text": "{color.text-primary}",
     "chip-outline-stroke": "{color.divider}",
+    "chip-outline-text-on-feature": "{color.chip-outline-text-on-feature}",
+    "chip-outline-stroke-on-feature": "{color.chip-outline-stroke-on-feature}",
     "button-primary-bg": "{color.accent-primary}",
     "button-primary-text": "{color.text-on-accent}",
     "button-inverse-bg": "{color.button-inverse-bg}",
