@@ -2,21 +2,51 @@
 
 > Hosting, CI/CD, domain, headers, rollback. Details marked "verify" must be re-checked against current provider docs at setup. Last updated: 2026-11-19.
 
-## 1. Hosting Decision (O-03)
+## 1. Hosting Decision (O-03 - Decided: Vercel)
 
-The site is static, so any static host works. Default recommendation: **Cloudflare Workers static assets**. Reasons: Astro's own guide says Cloudflare recommends Workers over Pages for new projects; a pre-rendered Astro site needs no adapter or Worker code; static asset requests are free and unlimited, with generous file limits (verify current limits). Alternative: Vercel. The owner makes the final choice before Phase 8.
+The site is deployed on **Vercel** connected directly to the GitHub repository (decision D-86). Pushes to `main` deploy to production; pushes to any feature branch or pull request create isolated preview deployments with unique URLs.
 
-| Criterion | Cloudflare Workers static assets | Vercel |
-|---|---|---|
-| Static Astro without an adapter | Yes (Wrangler config points at `dist`) | Yes |
-| Preview deploys per PR | Via Workers Builds or CI (verify) | Built in |
-| Custom headers and redirects | `_headers` and `_redirects` files (verify limits) | Config file |
-| Cost at portfolio scale | Expected near zero (verify) | Expected near zero (verify) |
-| Serverless function for the form, if needed | Workers | Functions |
+| Criterion | Implementation on Vercel |
+|---|---|
+| Static Astro without an adapter | Yes: Astro builds static HTML to `dist`, served via Vercel's Edge Network |
+| Preview deploys per PR | Built-in: automatic per-branch/PR preview deployment |
+| Environment variables | Configured per environment (Production, Preview, Development) in the Vercel dashboard |
+| Node & Package Manager | Automatic: Corepack honors `packageManager` (pnpm 12.21.0); Node version from `.nvmrc` (24.x) |
+| Rollback | Instant rollback to any previous deployment via the Vercel dashboard |
 
-Cloudflare configuration notes: `wrangler.jsonc` with `assets.directory` set to `./dist` and `not_found_handling` set to `404-page` so unknown URLs serve the built 404 page; set `compatibility_date` to the first deploy date.
+## 2. Vercel Configuration & Settings
 
-## 2. Environments
+No `vercel.json` file is required; Astro's static build output is auto-detected and zero-config on Vercel.
+
+### Project Settings
+- **Framework Preset:** Astro
+- **Build Command:** `pnpm run build` (executes `tokens:build && astro build && node scripts/strip-styleguide.mjs`)
+- **Output Directory:** `dist`
+- **Install Command:** `pnpm install`
+- **Node.js Version:** 24.x (inferred from `.nvmrc`)
+
+### Environment Variables per Environment
+
+| Variable | Preview | Production (Build Phase) | Production (Launch) | Purpose |
+|---|---|---|---|---|
+| `PUBLIC_SITE_STAGE` | `development` | `development` | `production` | When `development`: every page gets `<meta name="robots" content="noindex, nofollow">` and `robots.txt` disallows all crawling |
+| `PUBLIC_ENABLE_STYLEGUIDE` | `true` | `true` | `false` (or unset) | Preserves `/styleguide` in `dist` during build phase review; strips it before launch |
+| `PUBLIC_SITE_URL` | Auto (or unset) | `http://localhost:4321` (preview) | `https://mansurverse.dev` | Canonical site URL for sitemaps and SEO metadata |
+
+### How to Find Preview URLs
+1. **In GitHub:** Each push to a feature branch or open PR triggers a Vercel build check. Click the "Details" link in the GitHub checks list to jump directly to the preview deployment.
+2. **In Vercel Dashboard:** Open the project dashboard $\rightarrow$ navigate to the **Deployments** tab. The latest deployment for the branch is shown with its active preview URL (e.g. `https://mansurverse-<hash>-mansurs-projects.vercel.app`).
+
+### How to Roll Back
+1. **Instant Rollback via Vercel Dashboard:**
+   - Go to Project $\rightarrow$ **Deployments**.
+   - Locate the last known good production deployment.
+   - Click the three dots menu (`...`) and select **Promote to Production** or **Instant Rollback**.
+2. **Git Revert:**
+   - Revert the problematic commit on `main` (`git revert <commit>`).
+   - Push to `main`; Vercel will immediately build and deploy the reverted state.
+
+## 3. Environments
 
 | Environment | Source | Purpose |
 |---|---|---|

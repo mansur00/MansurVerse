@@ -1,16 +1,327 @@
 ---
-// Phase 1 placeholder so the build has a page. Replaced in Phase 4 by the real Home page driven by content files.
+// Temporary Phase 3 Build Preview landing page.
+// Replaced in Phase 4 by the production Home page driven by content collections.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/primitives/Logo.astro';
+import ThemeToggle from '../components/layout/ThemeToggle.astro';
+import Chip from '../components/primitives/Chip.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import Button from '../components/primitives/Button.astro';
+import Divider from '../components/primitives/Divider.astro';
+import SkillChips from '../components/content/SkillChips.astro';
+import { previewFixtures } from '../fixtures/preview';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MansurVerse</title>
-  </head>
-  <body>
+<BaseLayout title={previewFixtures.pageTitle}>
+  <div class="preview-root">
+    <header class="preview-header">
+      <div class="header-inner">
+        <div class="header-brand">
+          <Logo />
+          <Chip variant="accent">{previewFixtures.badge}</Chip>
+        </div>
+        <ThemeToggle />
+      </div>
+    </header>
+
     <main id="main">
-      <h1>MansurVerse</h1>
+      <section class="section-hero">
+        <div class="section-content">
+          <SlashLabel label={previewFixtures.phaseLabel} />
+          <h1 class="text-display-page hero-title">{previewFixtures.heading}</h1>
+          <div class="badge-row">
+            <Chip variant="filled">{previewFixtures.phaseName}</Chip>
+          </div>
+          <p class="text-body hero-desc">{previewFixtures.description}</p>
+          <div class="hero-actions">
+            <Button href={previewFixtures.componentsLinkHref} variant="primary" showArrow={true}>
+              {previewFixtures.componentsLinkText}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <Divider variant="on-base" />
+
+      <section class="section-pages">
+        <div class="section-content">
+          <div class="section-header-block">
+            <SlashLabel label={previewFixtures.pagesSectionLabel} />
+            <h2 class="text-heading-case section-heading">{previewFixtures.pagesSectionTitle}</h2>
+          </div>
+          <div class="pages-grid">
+            {previewFixtures.pages.map((p) => (
+              <div class="page-card">
+                <div class="page-card-top">
+                  <h3 class="text-heading-job page-card-title">{p.title}</h3>
+                  <Chip variant="outlined">{p.badge}</Chip>
+                </div>
+                <p class="text-body-small page-card-desc">{p.description}</p>
+                <div class="page-card-action">
+                  <Button href={p.href} variant="outlined" showArrow={true}>
+                    {p.title}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Divider variant="on-base" />
+
+      <section class="section-components">
+        <div class="section-content">
+          <div class="section-header-block">
+            <SlashLabel label={previewFixtures.componentsSectionLabel} />
+            <h2 class="text-heading-case section-heading">
+              {previewFixtures.componentsSectionTitle}
+            </h2>
+            <p class="text-body section-intro">{previewFixtures.componentsIntro}</p>
+          </div>
+
+          <div class="groups-grid">
+            {previewFixtures.componentGroups.map((group) => (
+              <div class="group-card">
+                <div class="group-top">
+                  <h3 class="text-heading-job group-title">{group.name}</h3>
+                  <p class="text-body-small group-desc">{group.description}</p>
+                </div>
+                <div class="chips-wrap">
+                  {group.components.map((comp) => (
+                    <Chip variant="outlined">{comp}</Chip>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div class="section-cta">
+            <Button href={previewFixtures.componentsLinkHref} variant="primary" showArrow={true}>
+              {previewFixtures.componentsLinkText}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-feature">
+        <div class="section-content">
+          <div class="section-header-block">
+            <SlashLabel label={previewFixtures.techStackLabel} variant="on-feature" />
+            <h2 class="text-heading-case feature-heading">{previewFixtures.techStackTitle}</h2>
+          </div>
+          <div class="feature-chips">
+            <SkillChips skills={previewFixtures.techStack} />
+          </div>
+          <p class="text-body-small feature-notice">{previewFixtures.notice}</p>
+        </div>
+      </section>
     </main>
-  </body>
-</html>
+  </div>
+</BaseLayout>
+
+<style>
+  .preview-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .preview-header {
+    width: 100%;
+    padding: var(--space-4) var(--layout-pad);
+    background: var(--color-bg-base);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .section-hero {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+    background: var(--color-bg-base);
+  }
+
+  .section-pages {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+    background: var(--color-bg-alt);
+  }
+
+  .section-components {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+    background: var(--color-bg-base);
+  }
+
+  .section-feature {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+    background: var(--color-bg-feature);
+    color: var(--color-text-on-feature);
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .hero-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .badge-row {
+    margin-top: var(--space-1);
+  }
+
+  .hero-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .hero-actions {
+    margin-top: var(--space-2);
+  }
+
+  .section-header-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .section-heading {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .section-intro {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .pages-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  @media (width >= 721px) {
+    .pages-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .page-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-bg-base);
+    border-radius: var(--radius-none);
+  }
+
+  .page-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .page-card-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .page-card-desc {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .page-card-action {
+    margin-top: auto;
+  }
+
+  .groups-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  @media (width >= 721px) {
+    .groups-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .group-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .group-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .group-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .group-desc {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .section-cta {
+    margin-top: var(--space-2);
+  }
+
+  .feature-heading {
+    color: var(--color-text-on-feature);
+    margin: 0;
+  }
+
+  .feature-chips {
+    margin-top: var(--space-2);
+  }
+
+  .feature-notice {
+    color: var(--color-text-on-feature);
+    opacity: var(--opacity-shape);
+    margin: 0;
+    max-width: 65ch;
+  }
+</style>

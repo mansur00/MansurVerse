@@ -91,6 +91,14 @@
 | D-83 | `Footer` implements three columns: Pages, Elsewhere, Local time, followed by hairline divider and copyright row with `MotionToggle` | Decided | Matches component-specs |
 | D-84 | `Marquee` uses `/` separators and `SuperscriptNumber` per prototype and `component-specs.md` (no pixel shapes) | Decided | Matches component-specs |
 | D-85 | SVG icon exceptions approved: ThemeToggle uses SVG icons for sun and moon (with accessible button labels and theme-toggle script), and FormField uses an SVG exclamation circle icon (ensuring validation errors use text plus an icon, never colour alone) | Decided | Spec exception approval |
+| D-86 | Hosting platform decided as Vercel (resolves O-03). Vercel connects to the GitHub repository; pushes to `main` deploy to production, and pushes to feature branches deploy to preview | Decided | Closes O-03 |
+| D-87 | Added `PUBLIC_SITE_STAGE` ("development" or "production", default "development"). While "development", all pages receive `<meta name="robots" content="noindex, nofollow">` in BaseLayout and robots.txt disallows all crawling. At public launch, setting to "production" enables crawling and sitemap declaration | Decided | Safe public build phase |
+| D-88 | Added `PUBLIC_ENABLE_STYLEGUIDE` flag. When "true", `/styleguide` is retained in `dist/`. In production when false or unset, `scripts/strip-styleguide.mjs` strips it from output | Decided | Styleguide control |
+| D-89 | Temporary "Build preview" landing page implemented on `src/pages/index.astro` using components, tokens, and copy from `src/fixtures/preview.ts`, safely presenting Phase 3 components and links on Vercel preview until replaced in Phase 4 | Decided | Replaces Phase 1 placeholder |
+| D-90 | Vercel compatibility hardened in `package.json`: prepare script updated to `test -d .git && husky || true`, `packageManager` pins pnpm 12.21.0 via Corepack, and Node matches `.nvmrc` (24.21.0) | Decided | Vercel build compatibility |
+| D-91 | Styleguide page `/styleguide` completely redesigned to showcase the design system across 6 full-bleed alternating sections (01 Colour with palette, semantic swatches, and automated WCAG contrast verification; 02 Typography with font specimens and rendered roles; 03 Shapes & Spacing with pixel shapes, half-pill demo, and scales; 04 Components with all variants/states; 05 Motion with SVG bezier curves and I-01..I-37 interaction contracts; 06 Composition samples with mock Hero, Values, and Numbers sections) | Decided | Matches design system spec |
+| D-92 | Build preview landing page (`src/pages/index.astro`) redesigned with full-bleed alternating surface sections (`--color-bg-base`, `--color-bg-alt`, `--color-bg-feature`) and structured card/chip grids for component groups (Primitives, Layout, Content, Forms) replacing narrow column and single paragraph | Decided | Matches UI layout spec |
+| D-93 | Logo and font rendering fix: `Logo.astro` primary and secondary spans directly bound to `text-logo-primary` (Jersey 20 display role) and `text-logo-secondary` (Stack Sans Notch label role) tokens; font preloading links added to `BaseLayout.astro` for Jersey 20, Stack Sans Notch, and Plus Jakarta Sans woff2 files to guarantee zero-FOUT instant paint; automated checks added in `scripts/tokens-check.mjs` verifying Jersey 20 usage, role bindings, and preloads | Decided | Resolves logo font rendering |
 
 ## Open Items
 
@@ -98,7 +106,7 @@
 |---|---|---|---|
 | O-01 | Verify remaining ollyo tokens: type scale, per-element fonts, spacing, radii, borders, pink/cyan/blue colours | Phase 2 | Colours and font families verified (D-28). Owner can copy computed styles of the hero h1, a section heading, a project card and a keyword tag from DevTools |
 | O-02 | Confirm font licences and self-hosting plan for all three fonts | Closed | Resolved by D-74 (OFL-1.1 via Fontsource) |
-| O-03 | Hosting: Cloudflare or Vercel | Phase 8 | Compare in `deployment.md` |
+| O-03 | Hosting: Cloudflare or Vercel | Closed | Resolved by D-86 (Vercel chosen) |
 | O-04 | WebGL library: Three.js, OGL or a custom shader | Phase 6 | Digit field is simple; prefer the lightest option |
 | O-05 | Contact form provider and spam protection | Phase 5 | |
 | O-06 | Analytics: none or a privacy-friendly option | Phase 8 | |
