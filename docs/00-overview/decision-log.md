@@ -106,6 +106,8 @@
 | D-98 | Generic placeholder content created in English for all 6 projects, capabilities, process, values, stats, experience, skills, open-to, profile, and home copy with `placeholder: true`. `site.timezone` set to temporary placeholder UTC until owner provides IANA timezone (O-16) | Decided | Phase 4 placeholder content |
 | D-99 | Flat-fill vector placeholder assets created in `public/assets/` for projects, compare before/after, profile portrait, and default social share OG image | Decided | Media asset placeholders |
 | D-100 | Full BaseLayout implemented per `pages-and-routing.md` and `seo-and-metadata.md`: strict head order, Jersey 20 and Plus Jakarta Sans font preloads, inline theme script, canonical URL, Open Graph, Twitter metadata, theme-color, skip link, and layout persistence for Nav and Footer | Decided | Full BaseLayout implementation |
+| D-101 | Reused blocks implemented as single parameterised components in `src/components/blocks/` (`CapabilitiesBlock`, `ProcessBlock`, `ValuesBlock`, `NumbersBlock`, `OpenToBlock`) per `page-specs.md` | Decided | Parameterised shared blocks |
+| D-102 | All Phase 4 pages implemented using components and content collections strictly without hardcoding: Home (`index.astro`, H1 to H11), Work (`work/index.astro`, W1 to W6), Case Study (`work/[slug].astro`, C1 to C7 with `getStaticPaths`), About (`about.astro`, A1 to A7), Contact (`contact.astro`, K1 to K4), and 404 (`404.astro`, N1) | Decided | Phase 4 page implementations |
 
 ## Open Items
 

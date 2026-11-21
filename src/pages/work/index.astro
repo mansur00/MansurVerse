@@ -1,0 +1,143 @@
+---
+// Work catalog index page (/work) per docs/01-design/page-specs.md.
+// Shows all projects with category filter chips, grid view, shared blocks and CTA band.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SlashLabel from '../../components/primitives/SlashLabel.astro';
+import SuperscriptNumber from '../../components/primitives/SuperscriptNumber.astro';
+import Chip from '../../components/primitives/Chip.astro';
+import ProjectCard from '../../components/content/ProjectCard.astro';
+import CapabilitiesBlock from '../../components/blocks/CapabilitiesBlock.astro';
+import ProcessBlock from '../../components/blocks/ProcessBlock.astro';
+import CTABand from '../../components/layout/CTABand.astro';
+import { siteConfig } from '../../config/site';
+
+const allProjects = await getCollection('projects');
+const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
+const categories = ['All', ...siteConfig.categories];
+---
+
+<BaseLayout title={`Work | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
+  <!-- W1: Header -->
+  <section class="work-header-section" aria-label="Work Catalog">
+    <div class="work-header-container">
+      <SlashLabel label="Work" variant="on-light" />
+      <h1 class="work-title text-display-page">
+        Work
+        <span class="count-wrapper">
+          <SuperscriptNumber number={sortedProjects.length} />
+        </span>
+      </h1>
+
+      <!-- W2: Toolbar -->
+      <div class="work-toolbar" role="toolbar" aria-label="Project filter">
+        <div class="filter-chips">
+          {categories.map((cat, idx) => (
+            <Chip variant={idx === 0 ? 'accent' : 'outlined'}>{cat}</Chip>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- W3: Projects Grid -->
+  <section class="projects-grid-section" aria-label="Projects">
+    <div class="projects-grid-container">
+      <div class="projects-grid">
+        {sortedProjects.map((project, idx) => (
+          <ProjectCard
+            title={project.data.title}
+            number={idx + 1}
+            description={project.data.summary}
+            category={project.data.category}
+            year={String(project.data.year)}
+            href={`/work/${project.id}`}
+            accent={project.data.accent}
+            imageSrc={project.data.cover.image}
+            imageAlt={project.data.cover.alt}
+            variant="grid"
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- W4: Capabilities Block -->
+  <CapabilitiesBlock />
+
+  <!-- W5: Process Block -->
+  <ProcessBlock surface="alt" />
+
+  <!-- W6: CTA Band -->
+  <CTABand
+    slashLabel={siteConfig.cta.label}
+    heading={siteConfig.cta.heading}
+    text={siteConfig.cta.text}
+    buttonLabel={siteConfig.cta.button.label}
+    buttonHref={siteConfig.cta.button.href}
+    variant="on-alt"
+  />
+</BaseLayout>
+
+<style>
+  .work-header-section {
+    padding: var(--space-12) var(--layout-page-gutter) var(--space-6);
+    background: var(--color-bg-base);
+  }
+
+  .work-header-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .work-title {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .count-wrapper {
+    display: inline-flex;
+  }
+
+  .work-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-top: var(--space-4);
+  }
+
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .projects-grid-section {
+    padding: var(--space-6) var(--layout-page-gutter) var(--space-12);
+    background: var(--color-bg-base);
+  }
+
+  .projects-grid-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (width < 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

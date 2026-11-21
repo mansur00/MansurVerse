@@ -1,0 +1,191 @@
+---
+// Contact page (/contact) per docs/01-design/page-specs.md.
+// Renders sections K1 to K4: Header & Form, Availability, Process, Open to.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import Form from '../components/forms/Form.astro';
+import ProcessBlock from '../components/blocks/ProcessBlock.astro';
+import OpenToBlock from '../components/blocks/OpenToBlock.astro';
+import Button from '../components/primitives/Button.astro';
+import profileData from '../content/profile.json';
+import { siteConfig } from '../config/site';
+---
+
+<BaseLayout
+  title={`Contact | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}
+  description="Get in touch for UI design and frontend engineering projects."
+>
+  <!-- K1 & K2: Header, Form & Availability -->
+  <section class="contact-hero-section" aria-label="Contact Form & Details">
+    <div class="contact-hero-container">
+      <div class="contact-main-col">
+        <SlashLabel label="Contact" variant="on-light" />
+        <h1 class="contact-title text-display-page">Let’s talk.</h1>
+
+        <div class="contact-form-wrapper">
+          <Form
+            nameLabel={siteConfig.form.labels.name}
+            emailLabel={siteConfig.form.labels.email}
+            messageLabel={siteConfig.form.labels.message}
+            submitText={siteConfig.form.labels.submit}
+            sendingText={siteConfig.form.sending}
+            sentText={siteConfig.form.sent}
+            failedText={siteConfig.form.failed}
+            fallbackEmail={profileData.email}
+          />
+        </div>
+      </div>
+
+      <div class="contact-info-col">
+        <div class="availability-card">
+          <div class="status-indicator">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text text-label">{profileData.availability.label}</span>
+          </div>
+
+          <p class="availability-desc text-body">
+            Available for remote contracts, design systems, and frontend architecture.
+          </p>
+
+          <div class="direct-email-row">
+            <Button href={`mailto:${profileData.email}`} variant="primary">
+              {profileData.email}
+            </Button>
+          </div>
+        </div>
+
+        <div class="social-links-block">
+          <span class="social-heading text-label">Elsewhere</span>
+          <div class="social-links-list">
+            {profileData.socials.map((social) => (
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-link text-body"
+              >
+                {social.label} ↗
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- K3: Process Block -->
+  <ProcessBlock surface="alt" />
+
+  <!-- K4: Open To Block -->
+  <OpenToBlock surface="base" />
+</BaseLayout>
+
+<style>
+  .contact-hero-section {
+    padding: var(--space-12) var(--layout-page-gutter);
+    background: var(--color-bg-base);
+  }
+
+  .contact-hero-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .contact-main-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .contact-title {
+    margin: 0;
+  }
+
+  .contact-form-wrapper {
+    margin-top: var(--space-4);
+  }
+
+  .contact-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding-top: var(--space-12);
+  }
+
+  .availability-card {
+    background: var(--color-bg-alt);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .status-dot {
+    width: var(--space-3);
+    height: var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-accent-primary);
+  }
+
+  .status-text {
+    color: var(--color-text-primary);
+  }
+
+  .availability-desc {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .direct-email-row {
+    margin-top: var(--space-2);
+    display: flex;
+  }
+
+  .social-links-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .social-heading {
+    color: var(--color-text-muted);
+  }
+
+  .social-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .social-link {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--motion-fast) var(--ease-out);
+  }
+
+  .social-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  @media (width < 900px) {
+    .contact-hero-container {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+
+    .contact-info-col {
+      padding-top: 0;
+    }
+  }
+</style>

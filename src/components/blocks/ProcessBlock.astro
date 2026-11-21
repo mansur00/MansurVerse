@@ -1,0 +1,84 @@
+---
+// Shared Block: Process (used on Home, Work, Case study, and Contact)
+// 4-step sequential reveal layout per docs/01-design/page-specs.md
+import SlashLabel from '../primitives/SlashLabel.astro';
+import ProcessStep from '../content/ProcessStep.astro';
+import processData from '../../content/process.json';
+
+interface Item {
+  title: string;
+  text: string;
+}
+
+interface Props {
+  label?: string | undefined;
+  items?: Item[] | undefined;
+  surface?: 'base' | 'alt' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  label = processData.label,
+  items = processData.items,
+  surface = 'base',
+  class: className = '',
+} = Astro.props;
+
+const isAlt = surface === 'alt';
+---
+
+<section class:list={['process-block', { 'is-alt': isAlt }, className]} data-surface={surface}>
+  <div class="block-container">
+    <div class="block-header">
+      <SlashLabel label={label} variant="on-light" />
+    </div>
+
+    <div class="process-grid">
+      {items.map((item, index) => (
+        <ProcessStep stepNumber={index + 1} title={item.title} text={item.text} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .process-block {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+    padding: var(--space-12) var(--layout-page-gutter);
+  }
+
+  .process-block.is-alt {
+    background: var(--color-bg-alt);
+  }
+
+  .block-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .block-header {
+    margin-bottom: var(--space-2);
+  }
+
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width < 900px) {
+    .process-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width < 600px) {
+    .process-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

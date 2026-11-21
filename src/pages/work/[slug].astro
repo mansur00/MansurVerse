@@ -1,0 +1,326 @@
+---
+// Case Study page template (/work/[slug]) per docs/01-design/page-specs.md.
+// Static paths generated from MDX content collection; renders sections C1 to C7.
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SlashLabel from '../../components/primitives/SlashLabel.astro';
+import Chip from '../../components/primitives/Chip.astro';
+import MetaSidebar from '../../components/content/MetaSidebar.astro';
+import ProjectCard from '../../components/content/ProjectCard.astro';
+import CompareSlider from '../../components/motion/CompareSlider.astro';
+import ProcessBlock from '../../components/blocks/ProcessBlock.astro';
+import NumbersBlock from '../../components/blocks/NumbersBlock.astro';
+import CTABand from '../../components/layout/CTABand.astro';
+import Button from '../../components/primitives/Button.astro';
+import { siteConfig } from '../../config/site';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project, allProjects: projects },
+  }));
+}
+
+const { project, allProjects } = Astro.props;
+const { Content, headings } = await render(project);
+
+// Nearest 2 projects by order for "More work"
+const otherProjects = allProjects
+  .filter((p) => p.id !== project.id)
+  .sort(
+    (a, b) =>
+      Math.abs(a.data.order - project.data.order) - Math.abs(b.data.order - project.data.order),
+  )
+  .slice(0, 2);
+
+// Next project by order (wrapping to first)
+const sortedAll = [...allProjects].sort((a, b) => a.data.order - b.data.order);
+const currentIndex = sortedAll.findIndex((p) => p.id === project.id);
+const nextProject = sortedAll[(currentIndex + 1) % sortedAll.length];
+
+const sidebarSections = headings.map((h) => ({
+  id: h.slug,
+  label: h.text,
+}));
+
+const sidebarLinks = (project.data.links ?? []).map((l) => ({
+  label: l.label,
+  href: l.url,
+}));
+---
+
+<BaseLayout
+  title={`${project.data.title} | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}
+  description={project.data.summary}
+  ogImage={project.data.cover.image}
+  ogType="article"
+>
+  <!-- C1: Header -->
+  <header class="case-header-section">
+    <div class="case-header-container">
+      <SlashLabel label="Case study" variant="on-light" />
+      <h1 class="case-title text-display-page">{project.data.title}</h1>
+
+      <div class="case-meta-chips">
+        <Chip variant="accent">{project.data.category}</Chip>
+        <Chip variant="outlined">{String(project.data.year)}</Chip>
+        <Chip variant="filled">{project.data.role}</Chip>
+      </div>
+
+      <div class="case-hero-art">
+        <img
+          src={project.data.cover.image}
+          alt={project.data.cover.alt}
+          class="case-cover-image"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- C2: Body Section with MetaSidebar & MDX Body -->
+  <section class="case-body-section" aria-label="Case Study Details">
+    <div class="case-body-container">
+      <aside class="case-sidebar">
+        <MetaSidebar
+          role={project.data.role}
+          year={String(project.data.year)}
+          tools={project.data.tools}
+          links={sidebarLinks}
+          sections={sidebarSections}
+        />
+      </aside>
+
+      <article class="case-content">
+        <Content />
+      </article>
+    </div>
+  </section>
+
+  <!-- C3: Compare Slider (if project has compare images) -->
+  {project.data.compare && (
+    <section class="case-compare-section" aria-label="Before and After Comparison">
+      <div class="case-compare-container">
+        <SlashLabel label="Comparison" variant="on-light" />
+        <h2 class="compare-heading text-heading-section">Before and After</h2>
+        <CompareSlider
+          beforeLabel={project.data.compare.before.alt}
+          afterLabel={project.data.compare.after.alt}
+        />
+      </div>
+    </section>
+  )}
+
+  <!-- C4: Results Section -->
+  <NumbersBlock
+    headingLines={['Measured results', 'and outcomes']}
+    lead="Key performance metrics and business impact delivered through this project."
+    stats={project.data.results}
+  />
+
+  <!-- C5: Process Block -->
+  <ProcessBlock surface="alt" />
+
+  <!-- C6: More Work -->
+  <section class="case-more-section" aria-label="More Work">
+    <div class="case-more-container">
+      <SlashLabel label="More work" variant="on-light" />
+      <h2 class="more-heading text-heading-section">Selected Projects</h2>
+      <div class="more-projects-grid">
+        {otherProjects.map((p, idx) => (
+          <ProjectCard
+            title={p.data.title}
+            number={idx + 1}
+            description={p.data.summary}
+            category={p.data.category}
+            year={String(p.data.year)}
+            href={`/work/${p.id}`}
+            accent={p.data.accent}
+            imageSrc={p.data.cover.image}
+            imageAlt={p.data.cover.alt}
+            variant="grid"
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- C7: Next Project Navigation & CTA Band -->
+  {nextProject && (
+    <section class="case-next-section" aria-label="Next Project">
+      <div class="case-next-container">
+        <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
+          Next project: {nextProject.data.title}
+        </Button>
+      </div>
+    </section>
+  )}
+
+  <CTABand
+    slashLabel={siteConfig.cta.label}
+    heading={siteConfig.cta.heading}
+    text={siteConfig.cta.text}
+    buttonLabel={siteConfig.cta.button.label}
+    buttonHref={siteConfig.cta.button.href}
+    variant="on-alt"
+  />
+</BaseLayout>
+
+<style>
+  /* C1: Header */
+  .case-header-section {
+    padding: var(--space-12) var(--layout-page-gutter) var(--space-8);
+    background: var(--color-bg-base);
+  }
+
+  .case-header-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .case-title {
+    margin: 0;
+  }
+
+  .case-meta-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .case-hero-art {
+    margin-top: var(--space-6);
+    background: var(--color-bg-surface);
+    overflow: hidden;
+  }
+
+  .case-cover-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  /* C2: Body */
+  .case-body-section {
+    padding: var(--space-8) var(--layout-page-gutter) var(--space-12);
+    background: var(--color-bg-base);
+  }
+
+  .case-body-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--space-10);
+    align-items: start;
+  }
+
+  .case-sidebar {
+    position: sticky;
+    top: calc(var(--layout-nav-height) + var(--space-6));
+  }
+
+  .case-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 65ch;
+  }
+
+  /* C3: Compare */
+  .case-compare-section {
+    padding: var(--space-12) var(--layout-page-gutter);
+    background: var(--color-bg-alt);
+  }
+
+  .case-compare-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .compare-heading {
+    margin: 0;
+  }
+
+  /* C6: More Work */
+  .case-more-section {
+    padding: var(--space-12) var(--layout-page-gutter);
+    background: var(--color-bg-base);
+  }
+
+  .case-more-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .more-heading {
+    margin: 0;
+  }
+
+  .more-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  /* C7: Next Project */
+  .case-next-section {
+    padding: var(--space-8) var(--layout-page-gutter);
+    background: var(--color-bg-base);
+    display: flex;
+    justify-content: center;
+  }
+
+  .case-next-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (width < 900px) {
+    .case-body-container {
+      grid-template-columns: 1fr;
+    }
+
+    .case-sidebar {
+      position: static;
+    }
+
+    .more-projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<style is:global>
+  .case-content h2 {
+    font-family: var(--font-label);
+    font-weight: 700;
+    font-size: var(--text-heading-case-size);
+    line-height: var(--text-heading-case-line);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-2);
+    color: var(--color-text-primary);
+  }
+
+  .case-content p {
+    font-family: var(--font-body);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+</style>
