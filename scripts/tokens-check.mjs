@@ -65,6 +65,59 @@ if (tokens.text?.['logo-secondary']?.font !== 'label') {
   errors.push(`text.logo-secondary: must use label font (Stack Sans Notch)`);
 }
 
+// 3b. Validate layout tokens (layout-system.md)
+const requiredLayout = [
+  'pad',
+  'section-y',
+  'section-y-compact',
+  'gap',
+  'gap-wide',
+  'nav-height',
+  'columns',
+];
+for (const key of requiredLayout) {
+  if (!tokens.layout?.[key]) errors.push(`layout.${key}: missing required layout token`);
+}
+
+// 3c. Validate stack tokens
+const requiredStack = ['tight', 'base', 'loose', 'section'];
+for (const key of requiredStack) {
+  if (!tokens.stack?.[key]) errors.push(`stack.${key}: missing required stack token`);
+}
+
+// 3d. Validate measure tokens
+const requiredMeasure = ['body', 'narrow', 'statement'];
+for (const key of requiredMeasure) {
+  if (!tokens.measure?.[key]) errors.push(`measure.${key}: missing required measure token`);
+}
+
+// 3e. Validate placement tokens
+const requiredPlacement = [
+  'full',
+  'statement',
+  'intro',
+  'label',
+  'text',
+  'half-a',
+  'half-b',
+  'meta',
+  'body',
+];
+for (const key of requiredPlacement) {
+  const p = tokens.placement?.[key];
+  if (!p) {
+    errors.push(`placement.${key}: missing required placement entry`);
+  } else {
+    if (typeof p.start !== 'number' || typeof p.span !== 'number') {
+      errors.push(`placement.${key}: start and span must be numbers`);
+    } else if (p.start < 1 || p.span < 1 || p.start + p.span > 13) {
+      errors.push(
+        `placement.${key}: start (${p.start}) and span (${p.span}) must fit within a 12-column grid`,
+      );
+    }
+  }
+}
+
 // 4. Contrast pairs in both themes.
 for (const { fg, bg, min } of tokens.contrast) {
   for (const theme of ['light', 'dark']) {

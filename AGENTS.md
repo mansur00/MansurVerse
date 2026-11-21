@@ -13,7 +13,8 @@ Approved visual reference: the prototype at https://claude.ai/artifact/93aQ1n1oA
 1. `docs/00-overview/project-brief.md` (scope, pages, sections, features)
 2. `docs/00-overview/development-roadmap.md` (find the current phase and which docs exist)
 3. `docs/00-overview/decision-log.md` (what is decided, assumed or open)
-4. The specs for the task at hand (`docs/01-design/*`, `docs/02-engineering/*`, ...)
+4. `docs/01-design/layout-system.md` (global layout, spacing and primitives)
+5. The specs for the task at hand (`docs/01-design/*`, `docs/02-engineering/*`, ...)
 
 If a spec you need does not exist yet, stop and ask the owner. If you must proceed, record the assumption in `decision-log.md` as "Assumed".
 
@@ -29,6 +30,7 @@ If a spec you need does not exist yet, stop and ask the owner. If you must proce
 8. **Dependencies.** Only those listed in `docs/02-engineering/tech-stack.md`. Adding one needs a decision-log entry.
 9. **Specs are the source of truth.** If code and spec disagree, fix the code, or update the spec in the same change and log the decision.
 10. **Do not invent.** Missing or ambiguous spec means ask, not guess.
+11. **Layout and spacing.** Layout and spacing come only from the tokens and primitives in `docs/01-design/layout-system.md`. No page, block or component decides its own outer spacing or width.
 
 ## 4. Workflow
 

@@ -1,0 +1,159 @@
+---
+// Cell primitive per docs/01-design/layout-system.md section 4.2.
+// Column placement within a 12-column Grid. Placements are semantic names, not literals.
+export type Placement =
+  'full' | 'statement' | 'intro' | 'label' | 'text' | 'half-a' | 'half-b' | 'meta' | 'body';
+
+export type FromBreakpoint = 'mobile' | 'tablet' | 'desktop';
+
+interface Props {
+  placement?: Placement | undefined;
+  from?: FromBreakpoint | undefined;
+  as?: string | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  placement = 'full',
+  from = 'desktop',
+  as: Component = 'div',
+  id,
+  class: className = '',
+} = Astro.props;
+---
+
+<Component
+  id={id}
+  class:list={[
+    'layout-cell',
+    `cell-${placement}`,
+    from === 'tablet'
+      ? 'cell-from-tablet'
+      : from === 'mobile'
+        ? 'cell-from-mobile'
+        : 'cell-from-desktop',
+    className,
+  ]}
+>
+  <slot />
+</Component>
+
+<style>
+  .layout-cell {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .cell-from-mobile.cell-full {
+    grid-column: var(--placement-full-start) / span var(--placement-full-span);
+  }
+
+  .cell-from-mobile.cell-statement {
+    grid-column: var(--placement-statement-start) / span var(--placement-statement-span);
+  }
+
+  .cell-from-mobile.cell-intro {
+    grid-column: var(--placement-intro-start) / span var(--placement-intro-span);
+  }
+
+  .cell-from-mobile.cell-label {
+    grid-column: var(--placement-label-start) / span var(--placement-label-span);
+  }
+
+  .cell-from-mobile.cell-text {
+    grid-column: var(--placement-text-start) / span var(--placement-text-span);
+  }
+
+  .cell-from-mobile.cell-half-a {
+    grid-column: var(--placement-half-a-start) / span var(--placement-half-a-span);
+  }
+
+  .cell-from-mobile.cell-half-b {
+    grid-column: var(--placement-half-b-start) / span var(--placement-half-b-span);
+  }
+
+  .cell-from-mobile.cell-meta {
+    grid-column: var(--placement-meta-start) / span var(--placement-meta-span);
+  }
+
+  .cell-from-mobile.cell-body {
+    grid-column: var(--placement-body-start) / span var(--placement-body-span);
+  }
+
+  @media (width >= 721px) {
+    .cell-from-tablet.cell-full {
+      grid-column: var(--placement-full-start) / span var(--placement-full-span);
+    }
+
+    .cell-from-tablet.cell-statement {
+      grid-column: var(--placement-statement-start) / span var(--placement-statement-span);
+    }
+
+    .cell-from-tablet.cell-intro {
+      grid-column: var(--placement-intro-start) / span var(--placement-intro-span);
+    }
+
+    .cell-from-tablet.cell-label {
+      grid-column: var(--placement-label-start) / span var(--placement-label-span);
+    }
+
+    .cell-from-tablet.cell-text {
+      grid-column: var(--placement-text-start) / span var(--placement-text-span);
+    }
+
+    .cell-from-tablet.cell-half-a {
+      grid-column: var(--placement-half-a-start) / span var(--placement-half-a-span);
+    }
+
+    .cell-from-tablet.cell-half-b {
+      grid-column: var(--placement-half-b-start) / span var(--placement-half-b-span);
+    }
+
+    .cell-from-tablet.cell-meta {
+      grid-column: var(--placement-meta-start) / span var(--placement-meta-span);
+    }
+
+    .cell-from-tablet.cell-body {
+      grid-column: var(--placement-body-start) / span var(--placement-body-span);
+    }
+  }
+
+  @media (width >= 1101px) {
+    .cell-from-desktop.cell-full {
+      grid-column: var(--placement-full-start) / span var(--placement-full-span);
+    }
+
+    .cell-from-desktop.cell-statement {
+      grid-column: var(--placement-statement-start) / span var(--placement-statement-span);
+    }
+
+    .cell-from-desktop.cell-intro {
+      grid-column: var(--placement-intro-start) / span var(--placement-intro-span);
+    }
+
+    .cell-from-desktop.cell-label {
+      grid-column: var(--placement-label-start) / span var(--placement-label-span);
+    }
+
+    .cell-from-desktop.cell-text {
+      grid-column: var(--placement-text-start) / span var(--placement-text-span);
+    }
+
+    .cell-from-desktop.cell-half-a {
+      grid-column: var(--placement-half-a-start) / span var(--placement-half-a-span);
+    }
+
+    .cell-from-desktop.cell-half-b {
+      grid-column: var(--placement-half-b-start) / span var(--placement-half-b-span);
+    }
+
+    .cell-from-desktop.cell-meta {
+      grid-column: var(--placement-meta-start) / span var(--placement-meta-span);
+    }
+
+    .cell-from-desktop.cell-body {
+      grid-column: var(--placement-body-start) / span var(--placement-body-span);
+    }
+  }
+</style>

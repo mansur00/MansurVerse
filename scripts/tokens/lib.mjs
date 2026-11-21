@@ -12,6 +12,8 @@ const PREFIX = {
   weight: 'font-weight',
   space: 'space',
   layout: 'layout',
+  stack: 'stack',
+  measure: 'measure',
   radius: 'radius',
   line: 'line',
   shape: 'shape',
@@ -74,6 +76,8 @@ export function generate(tokens) {
     'weight',
     'space',
     'layout',
+    'stack',
+    'measure',
     'radius',
     'line',
     'shape',
@@ -83,6 +87,10 @@ export function generate(tokens) {
     'motion',
     'ease',
   ].forEach(addGroup);
+  for (const [name, p] of Object.entries(tokens.placement ?? {})) {
+    root.push(decl(`--placement-${name}-start`, String(p.start)));
+    root.push(decl(`--placement-${name}-span`, String(p.span)));
+  }
   for (const [name, entry] of Object.entries(tokens.color)) {
     root.push(decl(varName('color', name), cssValue(pair(entry).light)));
   }
@@ -94,10 +102,21 @@ export function generate(tokens) {
     darkNames
       .map(([name, e]) => decl(varName('color', name), cssValue(pair(e).dark), indent))
       .join('\n');
+
+  const placementClasses = [];
+  for (const name of Object.keys(tokens.placement ?? {})) {
+    placementClasses.push(
+      `.cell-${name} {\n  grid-column: 1 / -1;\n}\n` +
+        `@media (width >= ${tokens.breakpoint.desktop}) {\n  .cell-${name} {\n    grid-column: var(--placement-${name}-start) / span var(--placement-${name}-span);\n  }\n}\n` +
+        `@media (width >= ${tokens.breakpoint.tablet}) {\n  .cell-from-tablet.cell-${name} {\n    grid-column: var(--placement-${name}-start) / span var(--placement-${name}-span);\n  }\n}`,
+    );
+  }
+
   files['tokens.css'] =
     `${header}:root {\n  color-scheme: light;\n${root.join('\n')}\n}\n\n` +
     `:root[data-theme='dark'] {\n  color-scheme: dark;\n${dark(2)}\n}\n\n` +
-    `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme='light']) {\n    color-scheme: dark;\n${dark(4)}\n  }\n}\n`;
+    `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme='light']) {\n    color-scheme: dark;\n${dark(4)}\n  }\n}\n\n` +
+    `/* Placement utility classes (section 2 of layout-system.md) */\n${placementClasses.join('\n\n')}\n`;
 
   // text-roles.css
   const vars = [];
@@ -215,6 +234,10 @@ export function generate(tokens) {
     ease: tokens.ease,
     breakpoint: tokens.breakpoint,
     components: tokens.component,
+    layout: tokens.layout,
+    stack: tokens.stack,
+    measure: tokens.measure,
+    placement: tokens.placement,
   };
   files['tokens.summary.json'] = `${JSON.stringify(summary, null, 2)}\n`;
 

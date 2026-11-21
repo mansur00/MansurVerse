@@ -1,0 +1,43 @@
+---
+// Stack primitive per docs/01-design/layout-system.md section 4.3.
+// Vertical layout flow with strict stack token gaps.
+export type StackGap = 'tight' | 'base' | 'loose' | 'section';
+
+interface Props {
+  gap?: StackGap | undefined;
+  as?: string | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const { gap = 'base', as: Component = 'div', id, class: className = '' } = Astro.props;
+---
+
+<Component id={id} class:list={['layout-stack', `stack-gap-${gap}`, className]}>
+  <slot />
+</Component>
+
+<style>
+  .layout-stack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .stack-gap-tight {
+    gap: var(--stack-tight);
+  }
+
+  .stack-gap-base {
+    gap: var(--stack-base);
+  }
+
+  .stack-gap-loose {
+    gap: var(--stack-loose);
+  }
+
+  .stack-gap-section {
+    gap: var(--stack-section);
+  }
+</style>

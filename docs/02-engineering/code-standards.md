@@ -18,6 +18,7 @@
 | No `border` or `outline` outside the allowed exceptions (`spacing-radius-shadow.md`) | Stylelint with an allow-list of token-based declarations |
 | No literal `font-family` or `font-size` | Stylelint; text roles only |
 | No magic pixel values for spacing, radius or z-index | Stylelint unit and value rules with a token allow-list |
+| Layout and spacing come only from tokens and layout primitives (`layout-system.md`) | Stylelint property rule, ESLint custom rule, `check-conventions.mjs` |
 | No Tailwind arbitrary values | ESLint (Tailwind plugin) |
 | No hardcoded visible copy, links or image paths in components | ESLint custom rule; review |
 | Inline `style` only to pass a token reference, such as `--a: var(--color-accent-secondary-2)` | ESLint |
