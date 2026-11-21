@@ -75,6 +75,7 @@ export interface SiteConfig {
   notFound: NotFoundConfig;
   form: FormConfig;
   categories: string[];
+  skipLink: string;
 }
 
 export const siteConfig: SiteConfig = {
@@ -144,4 +145,5 @@ export const siteConfig: SiteConfig = {
     privacyNote: 'Your email is only used to reply to your message.',
   },
   categories: ['Web', 'App', 'Brand'],
+  skipLink: 'Skip to main content',
 };

@@ -1,0 +1,176 @@
+---
+// About page (/about) per docs/01-design/page-specs.md.
+// Renders sections A1 to A7: Intro, Skills, Experience, Values, Numbers, Open to, CTA band.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import SkillChips from '../components/content/SkillChips.astro';
+import ExperienceRow from '../components/content/ExperienceRow.astro';
+import ValuesBlock from '../components/blocks/ValuesBlock.astro';
+import NumbersBlock from '../components/blocks/NumbersBlock.astro';
+import OpenToBlock from '../components/blocks/OpenToBlock.astro';
+import CTABand from '../components/layout/CTABand.astro';
+import profileData from '../content/profile.json';
+import skillsData from '../content/skills.json';
+import experienceData from '../content/experience.json';
+import { siteConfig } from '../config/site';
+
+const formattedSkills = skillsData.items.map((skill, idx) => ({
+  name: skill,
+  variant: idx === 0 ? ('accent' as const) : ('filled' as const),
+}));
+---
+
+<BaseLayout
+  title={`About | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}
+  description={profileData.bio[0]}
+  ogImage={profileData.portrait.image}
+>
+  <!-- A1: Intro Section (Portrait & Bio) -->
+  <section class="about-intro-section" aria-label="About Intro">
+    <div class="about-intro-container">
+      <div class="about-portrait-wrapper">
+        <img
+          src={profileData.portrait.image}
+          alt={profileData.portrait.alt}
+          class="about-portrait"
+          loading="eager"
+        />
+      </div>
+
+      <div class="about-bio-column">
+        <SlashLabel label="About" variant="on-light" />
+        <h1 class="about-title text-display-page">Designer who codes.</h1>
+
+        <div class="bio-paragraphs">
+          {profileData.bio.map((paragraph) => (
+            <p class="bio-text text-body">{paragraph}</p>
+          ))}
+        </div>
+
+        <!-- A2: Skills -->
+        <div class="about-skills-block">
+          <SkillChips skills={formattedSkills} surface="base" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- A3: Experience Section -->
+  <section class="experience-section" aria-label="Experience">
+    <div class="experience-container">
+      <SlashLabel label="Experience" variant="on-light" />
+      <h2 class="experience-heading text-heading-section">Experience</h2>
+
+      <div class="experience-list">
+        {experienceData.items.map((exp) => (
+          <ExperienceRow period={exp.period} role={exp.role} company={exp.place} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- A4: Values Block -->
+  <ValuesBlock />
+
+  <!-- A5: Numbers Block -->
+  <NumbersBlock />
+
+  <!-- A6: Open To Block -->
+  <OpenToBlock surface="alt" />
+
+  <!-- A7: CTA Band -->
+  <CTABand
+    slashLabel={siteConfig.cta.label}
+    heading={siteConfig.cta.heading}
+    text={siteConfig.cta.text}
+    buttonLabel={siteConfig.cta.button.label}
+    buttonHref={siteConfig.cta.button.href}
+    variant="on-alt"
+  />
+</BaseLayout>
+
+<style>
+  /* A1: Intro */
+  .about-intro-section {
+    padding: var(--space-12) var(--layout-page-gutter);
+    background: var(--color-bg-base);
+  }
+
+  .about-intro-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .about-portrait-wrapper {
+    background: var(--color-bg-surface);
+    overflow: hidden;
+  }
+
+  .about-portrait {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .about-bio-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .about-title {
+    margin: 0;
+  }
+
+  .bio-paragraphs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 50ch;
+  }
+
+  .bio-text {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .about-skills-block {
+    margin-top: var(--space-4);
+  }
+
+  /* A3: Experience */
+  .experience-section {
+    padding: var(--space-12) var(--layout-page-gutter);
+    background: var(--color-bg-alt);
+  }
+
+  .experience-container {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .experience-heading {
+    margin: 0;
+  }
+
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (width < 900px) {
+    .about-intro-container {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

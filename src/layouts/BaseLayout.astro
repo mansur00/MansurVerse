@@ -1,38 +1,154 @@
 ---
-// Minimal in Phase 2. Phase 4 adds SEO tags, nav, footer, cursor and the client router (docs/02-engineering/pages-and-routing.md).
+// Full BaseLayout per docs/02-engineering/pages-and-routing.md and docs/03-quality/seo-and-metadata.md.
+// Strictly manages head order, Open Graph, Twitter metadata, theme-color, font preloads, skip-link, Nav and Footer.
+// Route transitions (<ClientRouter />) and custom cursor arrive in Phase 5 per project roadmap.
 import '../styles/global.css';
 import themeInit from '../scripts/theme-init.js?raw';
 import jersey20Url from '@fontsource/jersey-20/files/jersey-20-latin-400-normal.woff2?url';
 import jakartaUrl from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
+import Nav from '../components/layout/Nav.astro';
+import Footer from '../components/layout/Footer.astro';
+import { siteConfig } from '../config/site';
+import profileData from '../content/profile.json';
 
 interface Props {
   title: string;
   description?: string | undefined;
+  ogImage?: string | undefined;
+  ogType?: 'website' | 'article' | undefined;
   noindex?: boolean | undefined;
+  nav?: boolean | undefined;
+  footer?: boolean | undefined;
 }
 
-const { title, description = '', noindex = false } = Astro.props;
+const {
+  title,
+  description = siteConfig.seo.description,
+  ogImage = siteConfig.seo.ogImage,
+  ogType = 'website',
+  noindex = false,
+  nav = true,
+  footer = true,
+} = Astro.props;
 
 const siteStage = import.meta.env.PUBLIC_SITE_STAGE ?? 'development';
 const isDevelopment = siteStage !== 'production';
+
+// Canonical and OG URL generation from configured site origin
+const canonicalUrl = new URL(Astro.url.pathname, siteConfig.url).href;
+const fullOgImageUrl = ogImage.startsWith('http') ? ogImage : new URL(ogImage, siteConfig.url).href;
+const formattedTitle = title.includes('|')
+  ? title
+  : siteConfig.seo.titleTemplate.replace('%s', title);
 ---
 
+<!doctype html>
 <html lang="en">
   <head>
+    <!-- 1. Charset and Viewport -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- 2. Inline Theme Script (executed before paint to prevent FOUC) -->
+    <script is:inline set:html={themeInit} />
+    <!-- 3. Title, Description, Canonical and Open Graph Tags -->
+    <title>{formattedTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Theme colour per system preference and active tokens -->
+    <meta name="theme-color" content="#F1F1F1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph & Social sharing -->
+    <meta
+      property="og:site_name"
+      content={`${siteConfig.brand.primary}${siteConfig.brand.secondary}`}
+    />
+    <meta property="og:title" content={formattedTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={fullOgImageUrl} />
+    <meta property="og:image:alt" content={formattedTitle} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={formattedTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullOgImageUrl} />
+
+    <!-- Crawling control: development or explicit noindex disallows indexing -->
+    {isDevelopment || noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow" />
+    )}
+
+    <!-- 4. Font Preloads (Jersey 20 display and Plus Jakarta Sans body strictly per tokens-implementation.md) -->
     <link rel="preload" href={jersey20Url} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={jakartaUrl} as="font" type="font/woff2" crossorigin />
-    <script is:inline set:html={themeInit} />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
-    {isDevelopment ? (
-      <meta name="robots" content="noindex, nofollow" />
-    ) : noindex ? (
-      <meta name="robots" content="noindex" />
-    ) : null}
   </head>
   <body>
-    <slot />
+    <!-- Accessible Skip Link -->
+    <a href="#main" class="skip-link">
+      {siteConfig.skipLink}
+    </a>
+
+    {nav && (
+      <Nav
+        navLinks={siteConfig.nav}
+        currentPath={Astro.url.pathname}
+        brandPrimary={siteConfig.brand.primary}
+        brandSecondary={siteConfig.brand.secondary}
+      />
+    )}
+
+    {nav ? (
+      <main id="main" class="main-content">
+        <slot />
+      </main>
+    ) : (
+      <slot />
+    )}
+
+    {footer && (
+      <Footer
+        pages={siteConfig.nav}
+        socials={profileData.socials.map((s) => ({ label: s.label, href: s.url }))}
+        localTimeLabel={siteConfig.footer.timeLabel}
+        timeZone={siteConfig.timezone}
+        copyright={siteConfig.footer.copyright}
+        pagesTitle={siteConfig.footer.pagesLabel}
+        elsewhereTitle={siteConfig.footer.elsewhereLabel}
+      />
+    )}
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: -999px;
+    left: var(--space-4);
+    z-index: var(--z-nav);
+    background: var(--color-accent-primary);
+    color: var(--color-text-on-accent);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-decoration: none;
+    transition: top var(--motion-fast) var(--ease-out);
+  }
+
+  .skip-link:focus-visible {
+    top: var(--space-4);
+  }
+
+  .main-content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+</style>

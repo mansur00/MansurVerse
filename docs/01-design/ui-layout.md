@@ -1,6 +1,6 @@
 # UI Layout
 
-> Layout patterns copied in spirit from ollyo.com. Offsets and breakpoints are **Assumed** from the prototype and screenshots until verified (O-01). Last updated: 2026-11-18.
+> Layout patterns copied in spirit from ollyo.com. Governed globally by `docs/01-design/layout-system.md`. Offsets and breakpoints are **Assumed** from the prototype and screenshots until verified (O-01). Last updated: 2026-11-21.
 
 ## 1. Breakpoints and Grid
 

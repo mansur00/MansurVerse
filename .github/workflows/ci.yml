@@ -19,6 +19,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm run verify
       - run: pnpm audit --audit-level=high
 # Later phases add: Playwright e2e and a11y (Phase 4), Lighthouse and size checks (Phase 7), preview deploys (Phase 8).

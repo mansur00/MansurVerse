@@ -1,6 +1,6 @@
 # Component Specs
 
-> Anatomy, variants, states, token bindings and rules for every component. Components consume layer 2 and 3 tokens only (`design-system.md`). Sizes marked Assumed come from the prototype. Last updated: 2026-11-18.
+> Anatomy, variants, states, token bindings and rules for every component. Components consume layer 2 and 3 tokens only (`design-system.md`). Outer placement and spacing are governed strictly by `docs/01-design/layout-system.md`. Sizes marked Assumed come from the prototype. Last updated: 2026-11-21.
 
 ## 1. Conventions
 

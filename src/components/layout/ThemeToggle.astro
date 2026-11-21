@@ -50,6 +50,14 @@ const { ariaLabel = 'Toggle theme', label, class: className = '' } = Astro.props
   {label && <span class="toggle-text">{label}</span>}
 </button>
 
+<script>
+  import { initThemeToggle } from '../../scripts/theme-toggle';
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    initThemeToggle(btn);
+  });
+</script>
+
 <style>
   .theme-toggle {
     display: inline-flex;

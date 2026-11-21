@@ -1,0 +1,77 @@
+---
+// Section primitive per docs/01-design/layout-system.md section 4.1.
+// The ONLY element that sets page padding.
+interface Props {
+  surface?: 'base' | 'alt' | 'feature' | 'feature-dots' | undefined;
+  size?: 'default' | 'compact' | 'none' | undefined;
+  as?: 'section' | 'div' | 'header' | 'footer' | 'nav' | 'aside' | 'main' | undefined;
+  id?: string | undefined;
+  'aria-label'?: string | undefined;
+  'aria-labelledby'?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  surface = 'base',
+  size = 'default',
+  as: Component = 'section',
+  id,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledby,
+  class: className = '',
+} = Astro.props;
+
+const isFeature = surface === 'feature' || surface === 'feature-dots';
+---
+
+<Component
+  id={id}
+  class:list={['layout-section', `section-surface-${surface}`, `section-size-${size}`, className]}
+  data-surface={isFeature ? 'feature' : surface}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabelledby}
+>
+  <slot />
+</Component>
+
+<style>
+  .layout-section {
+    width: 100%;
+    box-sizing: border-box;
+    padding-inline: var(--layout-pad);
+    position: relative;
+  }
+
+  .section-size-default {
+    padding-block: var(--layout-section-y);
+  }
+
+  .section-size-compact {
+    padding-block: var(--layout-section-y-compact);
+  }
+
+  .section-size-none {
+    padding-block: 0;
+  }
+
+  .section-surface-base {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .section-surface-alt {
+    background-color: var(--color-bg-alt);
+    color: var(--color-text-primary);
+  }
+
+  .section-surface-feature,
+  .section-surface-feature-dots {
+    background-color: var(--color-bg-feature);
+    color: var(--color-text-on-feature);
+  }
+
+  .section-surface-feature-dots {
+    background-image: radial-gradient(var(--palette-white-18) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+</style>

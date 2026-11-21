@@ -1,0 +1,25 @@
+---
+// Grid primitive per docs/01-design/layout-system.md section 4.2.
+// 12-column grid with standard column gutter and row gap.
+interface Props {
+  as?: string | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const { as: Component = 'div', id, class: className = '' } = Astro.props;
+---
+
+<Component id={id} class:list={['layout-grid', className]}>
+  <slot />
+</Component>
+
+<style>
+  .layout-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--layout-columns, 12), minmax(0, 1fr));
+    gap: var(--layout-gap) var(--layout-gap-wide);
+    width: 100%;
+    box-sizing: border-box;
+  }
+</style>

@@ -2,7 +2,7 @@
 interface Props {
   as?: 'span' | 'button' | 'a' | undefined;
   variant?: 'filled' | 'accent' | 'outlined' | undefined;
-  surface?: 'base' | 'feature' | undefined;
+  surface?: 'base' | 'feature' | 'card' | undefined;
   active?: boolean | undefined;
   href?: string | undefined;
   type?: 'button' | 'submit' | undefined;
@@ -24,7 +24,8 @@ const {
 const isLink = Tag === 'a' || Boolean(href);
 const isButton = Tag === 'button';
 const Element = isLink ? 'a' : isButton ? 'button' : 'span';
-const surfaceClass = surface === 'feature' ? 'chip-on-feature' : '';
+const surfaceClass =
+  surface === 'feature' ? 'chip-on-feature' : surface === 'card' ? 'chip-on-card' : '';
 ---
 
 {Element === 'a' ? (
@@ -89,6 +90,12 @@ const surfaceClass = surface === 'feature' ? 'chip-on-feature' : '';
   [data-surface='feature'] .chip-outlined {
     color: var(--chip-outline-text-on-feature);
     border-color: var(--chip-outline-stroke-on-feature);
+  }
+
+  .chip-on-card.chip-outlined,
+  [data-surface='card'] .chip-outlined {
+    color: var(--card-text);
+    border-color: var(--palette-black-14);
   }
 
   .chip-outlined.is-active,

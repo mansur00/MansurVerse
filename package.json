@@ -17,10 +17,10 @@
     "check:content": "node scripts/check-content.mjs",
     "test": "vitest run --passWithNoTests",
     "test:guardrails": "node scripts/test-guardrails.mjs",
-    "test:e2e": "echo \"test:e2e arrives in Phase 4\"",
-    "test:a11y": "echo \"test:a11y arrives in Phase 4\"",
+    "test:e2e": "playwright test tests/e2e",
+    "test:a11y": "playwright test tests/a11y",
     "lighthouse": "echo \"lighthouse arrives in Phase 7\"",
-    "verify": "pnpm run tokens:check && pnpm run check:conventions && pnpm run check:content && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build",
+    "verify": "pnpm run tokens:check && pnpm run check:conventions && pnpm run check:content && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build && pnpm run test:e2e && pnpm run test:a11y",
     "prepare": "test -d .git && husky || true"
   },
   "lint-staged": {
@@ -54,6 +54,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "eslint": "^10.15.0",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
