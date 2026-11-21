@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <rect width="1200" height="630" fill="#101010"/>
+  <rect x="80" y="80" width="1040" height="470" rx="0" fill="#181818"/>
+  <text x="140" y="240" font-family="'Jersey 20', monospace" font-size="120" fill="#9FFA62">Mansur<tspan font-family="'Stack Sans Notch', sans-serif" font-size="80" fill="#FFFFFF">Verse</tspan></text>
+  <text x="140" y="340" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="36" fill="#FFFFFF">Frontend Designer &amp; Engineer</text>
+  <text x="140" y="400" font-family="'Plus Jakarta Sans', sans-serif" font-weight="400" font-size="24" fill="#9A9A9A">UI Design · Design Systems · Creative Code</text>
+  <path d="M960 140 H1060 V240 H960 Z" fill="#9FFA62" opacity="0.8"/>
+  <path d="M1000 240 H1080 V320 H1000 Z" fill="#2F5BFF" opacity="0.8"/>
+</svg>

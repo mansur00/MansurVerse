@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "label": "Saving time where it matters",
+      "text": "Interfaces that remove steps so people reach outcomes faster."
+    },
+    {
+      "label": "Reducing complexity",
+      "text": "Clear layouts, logical flows and fewer decisions to make."
+    },
+    {
+      "label": "Built to last",
+      "text": "Systems and tokens that stay consistent as the product grows."
+    }
+  ],
+  "placeholder": true
+}

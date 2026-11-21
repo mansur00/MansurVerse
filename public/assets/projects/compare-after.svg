@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" fill="none">
+  <rect width="800" height="500" fill="#181818"/>
+  <rect x="40" y="40" width="720" height="420" fill="#2B2B2B"/>
+  <rect x="80" y="80" width="240" height="28" fill="#9FFA62"/>
+  <rect x="80" y="140" width="640" height="60" fill="#3D3D3D"/>
+  <rect x="80" y="220" width="310" height="140" fill="#3D3D3D"/>
+  <rect x="410" y="220" width="310" height="140" fill="#3D3D3D"/>
+  <text x="400" y="420" text-anchor="middle" font-family="'Stack Sans Notch', sans-serif" font-weight="700" font-size="24" fill="#9FFA62">AFTER: REDESIGNED INTERFACE (800x500)</text>
+</svg>

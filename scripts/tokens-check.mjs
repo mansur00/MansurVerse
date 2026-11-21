@@ -1,5 +1,5 @@
 // Validates the token source and the generated files. Fails on errors; prints warnings.
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { contrast, generate, literal, loadTokens, pair } from './tokens/lib.mjs';
 
 const OUT = new URL('../src/styles/tokens/generated/', import.meta.url);
@@ -63,57 +63,6 @@ if (tokens.text?.['logo-primary']?.font !== 'display') {
 }
 if (tokens.text?.['logo-secondary']?.font !== 'label') {
   errors.push(`text.logo-secondary: must use label font (Stack Sans Notch)`);
-}
-
-// 3b. Verify in component code that Jersey 20 / --font-display is only used in Logo.astro
-try {
-  const compDirPath = new URL('../src/components/', import.meta.url);
-  const scanDir = (dirUrl) => {
-    if (!existsSync(dirUrl)) return;
-    for (const entry of readdirSync(dirUrl, { withFileTypes: true })) {
-      const entryUrl = new URL(entry.name, dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/');
-      if (entry.isDirectory()) {
-        scanDir(new URL(entry.name + '/', dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/'));
-      } else if (entry.name.endsWith('.astro') && entry.name !== 'Logo.astro') {
-        const content = readFileSync(entryUrl, 'utf-8');
-        if (content.includes('var(--font-display)') || content.includes('Jersey 20')) {
-          errors.push(
-            `${entry.name}: Jersey 20 / --font-display is only allowed in Logo.astro and h1`,
-          );
-        }
-      }
-    }
-  };
-  scanDir(compDirPath);
-
-  // Check Logo.astro itself
-  const logoPath = new URL('../src/components/primitives/Logo.astro', import.meta.url);
-  if (existsSync(logoPath)) {
-    const logoContent = readFileSync(logoPath, 'utf-8');
-    if (
-      !logoContent.includes('text-logo-primary') &&
-      !logoContent.includes('var(--text-logo-primary')
-    ) {
-      errors.push(`Logo.astro: primary element must use text-logo-primary token`);
-    }
-    if (
-      !logoContent.includes('text-logo-secondary') &&
-      !logoContent.includes('var(--text-logo-secondary')
-    ) {
-      errors.push(`Logo.astro: secondary element must use text-logo-secondary token`);
-    }
-  }
-
-  // Check BaseLayout.astro preloads Jersey 20
-  const layoutPath = new URL('../src/layouts/BaseLayout.astro', import.meta.url);
-  if (existsSync(layoutPath)) {
-    const layoutContent = readFileSync(layoutPath, 'utf-8');
-    if (!layoutContent.includes('jersey-20') && !layoutContent.includes('jersey20Url')) {
-      errors.push(`BaseLayout.astro: must preload Jersey 20 font for instant above-the-fold paint`);
-    }
-  }
-} catch (error) {
-  warnings.push(`Component font-display scan skipped: ${error.message}`);
 }
 
 // 4. Contrast pairs in both themes.

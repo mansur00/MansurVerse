@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "period": "2024 — Now",
+      "role": "Senior Frontend Designer",
+      "place": "Studio placeholder"
+    },
+    {
+      "period": "2021 — 2024",
+      "role": "UI Engineer",
+      "place": "Company placeholder"
+    },
+    {
+      "period": "2019 — 2021",
+      "role": "Web Designer",
+      "place": "Agency placeholder"
+    }
+  ],
+  "placeholder": true
+}

@@ -3,7 +3,6 @@
 import '../styles/global.css';
 import themeInit from '../scripts/theme-init.js?raw';
 import jersey20Url from '@fontsource/jersey-20/files/jersey-20-latin-400-normal.woff2?url';
-import notchUrl from '@fontsource-variable/stack-sans-notch/files/stack-sans-notch-latin-wght-normal.woff2?url';
 import jakartaUrl from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
 
 interface Props {
@@ -23,7 +22,6 @@ const isDevelopment = siteStage !== 'production';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="preload" href={jersey20Url} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={notchUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={jakartaUrl} as="font" type="font/woff2" crossorigin />
     <script is:inline set:html={themeInit} />
     <title>{title}</title>

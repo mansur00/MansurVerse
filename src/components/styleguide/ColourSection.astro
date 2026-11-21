@@ -1,0 +1,319 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import Chip from '../primitives/Chip.astro';
+import Divider from '../primitives/Divider.astro';
+import summary from '../../styles/tokens/generated/tokens.summary.json';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures.sections.colour;
+const palette = Object.entries(summary.palette);
+const colors = summary.colors;
+const contrast = summary.contrast;
+---
+
+<section id="colour" class="sg-section sg-surface-base">
+  <div class="sg-section-content">
+    <div class="sg-section-header">
+      <SlashLabel label={f.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.title}
+        <SuperscriptNumber number={f.number} />
+      </h2>
+    </div>
+
+    <!-- Core Palette -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.paletteTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.paletteDesc}</p>
+      <div class="palette-grid">
+        {palette.map(([name, value]) => (
+          <div class="palette-card">
+            <div class="palette-swatch" style={`background: var(--palette-${name})`} />
+            <div class="palette-meta">
+              <span class="text-label palette-name">{name}</span>
+              <span class="text-body-small palette-hex">{value}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Semantic Tokens -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.semanticTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.semanticDesc}</p>
+      <div class="semantic-grid">
+        {colors.map((c) => (
+          <div class="semantic-card">
+            <div class="semantic-swatches">
+              <div class="semantic-swatch" style={`background: ${c.light}`}>
+                <span class="text-body-small swatch-tag">{f.lightLabel}</span>
+              </div>
+              <div class="semantic-swatch" style={`background: ${c.dark}`}>
+                <span class="text-body-small swatch-tag swatch-tag-dark">{f.darkLabel}</span>
+              </div>
+            </div>
+            <div class="semantic-meta">
+              <span class="text-label semantic-name">{c.name}</span>
+              <span class="text-body-small semantic-vals">
+                {c.light} / {c.dark}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Contrast Pairs -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.contrastTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.contrastDesc}</p>
+      <div class="contrast-grid">
+        {contrast.map((item) => (
+          <div class="contrast-card" style={`background: ${item.bgValue}; color: ${item.fgValue}`}>
+            <div class="contrast-top">
+              <span class="text-label contrast-pair-label">
+                {item.fg} / {item.bg}
+              </span>
+              <Chip variant="accent">{item.pass ? f.statusPass : f.statusFail}</Chip>
+            </div>
+            <div class="contrast-bottom">
+              <div class="contrast-ratio-row">
+                <span class="text-heading-job">{item.ratio}:1</span>
+                <span class="text-body-small contrast-target">
+                  {f.thresholdLabel}: {item.min}:1
+                </span>
+              </div>
+              <span class="text-body-small contrast-theme-pill">{item.theme}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-base {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .palette-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .palette-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+
+  .palette-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    overflow: hidden;
+  }
+
+  .palette-swatch {
+    height: 96px;
+    width: 100%;
+  }
+
+  .palette-meta {
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .palette-name {
+    color: var(--color-text-primary);
+  }
+
+  .palette-hex {
+    color: var(--color-text-muted);
+  }
+
+  .semantic-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .semantic-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .semantic-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .semantic-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    overflow: hidden;
+  }
+
+  .semantic-swatches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 80px;
+  }
+
+  .semantic-swatch {
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-2);
+  }
+
+  .swatch-tag {
+    font-size: var(--text-superscript-size);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--palette-white-16);
+    color: var(--color-text-primary);
+  }
+
+  .swatch-tag-dark {
+    background: var(--palette-black-40);
+    color: var(--palette-white);
+  }
+
+  .semantic-meta {
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .semantic-name {
+    color: var(--color-text-primary);
+  }
+
+  .semantic-vals {
+    color: var(--color-text-muted);
+  }
+
+  .contrast-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (width >= 721px) {
+    .contrast-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .contrast-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .contrast-card {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 120px;
+    border-radius: var(--radius-none);
+  }
+
+  .contrast-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .contrast-pair-label {
+    letter-spacing: 0;
+  }
+
+  .contrast-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .contrast-ratio-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .contrast-target {
+    opacity: var(--opacity-shape);
+  }
+
+  .contrast-theme-pill {
+    text-transform: uppercase;
+    font-size: var(--text-superscript-size);
+    opacity: var(--opacity-shape);
+  }
+</style>

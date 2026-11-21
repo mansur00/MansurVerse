@@ -1,0 +1,303 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import PixelShape from '../primitives/PixelShape.astro';
+import Divider from '../primitives/Divider.astro';
+import summary from '../../styles/tokens/generated/tokens.summary.json';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures.sections.shapes;
+const radius = Object.entries(summary.radius);
+const space = Object.entries(summary.space);
+const z = Object.entries(summary.z);
+const opacity = Object.entries(summary.opacity);
+const shapeTokens = Object.entries(summary.shape);
+---
+
+<section id="shapes" class="sg-section sg-surface-base">
+  <div class="sg-section-content">
+    <div class="sg-section-header">
+      <SlashLabel label={f.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.title}
+        <SuperscriptNumber number={f.number} />
+      </h2>
+    </div>
+
+    <!-- Stepped Pixel Shapes -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.pixelShapesTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.pixelShapesDesc}</p>
+      <div class="shapes-row">
+        {styleguideFixtures.primitives.pixelShapes.map((shape) => (
+          <div class="shape-item">
+            <PixelShape variant={shape.variant} accent={shape.accent} />
+            <span class="text-body-small shape-label">
+              {shape.variant} / {shape.accent}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Half-Pill Geometry (Rounded on the LEFT side: 999px 0 0 999px) -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.halfPillTitle}</h3>
+      <p class="text-body-small sg-block-desc">{f.halfPillDesc}</p>
+      <div class="half-pill-demo">
+        <div class="half-pill-shape">
+          <span class="text-label half-pill-text">{f.halfPillLabel}</span>
+        </div>
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Shape Tokens Scale (Looped dynamically) -->
+    <div class="sg-block">
+      <h3 class="text-heading-case sg-block-title">{f.pixelShapesTitle}</h3>
+      <div class="scale-list">
+        {shapeTokens.map(([name, val]) => (
+          <div class="scale-item">
+            <span class="text-label scale-name">
+              {f.shapePrefix}
+              {name}
+            </span>
+            <span class="text-body-small scale-val">{val}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Radii & Spacing Grid (Looped dynamically) -->
+    <div class="sg-grid-2">
+      <div class="sg-block">
+        <h3 class="text-heading-case sg-block-title">{f.radiusTitle}</h3>
+        <div class="radius-list">
+          {radius.map(([name, val]) => (
+            <div class="scale-item">
+              <span class="text-label scale-name">
+                {f.radiusPrefix}
+                {name}
+              </span>
+              <span class="text-body-small scale-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="sg-block">
+        <h3 class="text-heading-case sg-block-title">{f.spaceTitle}</h3>
+        <div class="space-list">
+          {space.map(([name, val]) => (
+            <div class="space-bar-row">
+              <span class="text-label space-name">{name}</span>
+              <div class="space-bar-wrap">
+                <div class="space-bar" style={`width: var(--space-${name})`} />
+              </div>
+              <span class="text-body-small space-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <Divider variant="on-base" />
+
+    <!-- Z-Index & Opacity (Looped dynamically) -->
+    <div class="sg-grid-2">
+      <div class="sg-block">
+        <h3 class="text-heading-case sg-block-title">{f.zIndexTitle}</h3>
+        <div class="scale-list">
+          {z.map(([name, val]) => (
+            <div class="scale-item">
+              <span class="text-label scale-name">
+                {f.zIndexPrefix}
+                {name}
+              </span>
+              <span class="text-body-small scale-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="sg-block">
+        <h3 class="text-heading-case sg-block-title">{f.opacityTitle}</h3>
+        <div class="scale-list">
+          {opacity.map(([name, val]) => (
+            <div class="scale-item">
+              <span class="text-label scale-name">
+                {f.opacityPrefix}
+                {name}
+              </span>
+              <span class="text-body-small scale-val">{val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sg-section {
+    width: 100%;
+    padding: var(--layout-section-y) var(--layout-pad);
+  }
+
+  .sg-surface-base {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .sg-section-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .sg-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    max-width: 65ch;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .shapes-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .shape-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .shape-label {
+    color: var(--color-text-muted);
+  }
+
+  .half-pill-demo {
+    width: 100%;
+    padding: var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .half-pill-shape {
+    width: 100%;
+    max-width: 480px;
+    height: 120px;
+    background: var(--color-accent-primary);
+    border-radius: var(--shape-half-pill-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .half-pill-text {
+    color: var(--color-text-on-accent);
+  }
+
+  .sg-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (width >= 721px) {
+    .sg-grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .radius-list,
+  .scale-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .scale-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+  }
+
+  .scale-name {
+    color: var(--color-text-primary);
+  }
+
+  .scale-val {
+    color: var(--color-text-muted);
+    word-break: break-all;
+  }
+
+  .space-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .space-bar-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 64px;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .space-name {
+    color: var(--color-text-primary);
+  }
+
+  .space-bar-wrap {
+    height: 16px;
+    background: var(--color-bg-alt);
+    display: flex;
+    align-items: center;
+  }
+
+  .space-bar {
+    height: 100%;
+    background: var(--color-accent-primary);
+  }
+
+  .space-val {
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+</style>

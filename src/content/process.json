@@ -1,0 +1,22 @@
+{
+  "label": "Process",
+  "items": [
+    {
+      "title": "Discover",
+      "text": "Understand the problem, users and constraints."
+    },
+    {
+      "title": "Define",
+      "text": "Set goals, scope, tokens and structure."
+    },
+    {
+      "title": "Design",
+      "text": "Explore layouts, prototypes and typography."
+    },
+    {
+      "title": "Deliver",
+      "text": "Build, test, verify accessibility and ship."
+    }
+  ],
+  "placeholder": true
+}

@@ -1,0 +1,46 @@
+{
+  "hero": {
+    "lead": "I craft interfaces for the",
+    "headline": ["MODERN", "WEB"],
+    "tags": [
+      { "label": "Code", "accent": "blue" },
+      { "label": "Motion", "accent": "primary" },
+      { "label": "Design", "accent": "secondary-1" }
+    ],
+    "intro": "Designer and frontend engineer building calm, high-performance interfaces with a system behind every detail."
+  },
+  "statement": {
+    "text": "I design and build interfaces that feel obvious, with systems behind them that scale and details people notice.",
+    "inline": [
+      {
+        "afterWord": 3,
+        "kind": "shape",
+        "shape": "pixel-step"
+      }
+    ],
+    "link": {
+      "label": "More about me",
+      "href": "/about"
+    }
+  },
+  "work": {
+    "label": "Selected Work",
+    "heading": "Selected work.",
+    "ctaLabel": "All work →"
+  },
+  "numbers": {
+    "label": "Numbers",
+    "heading": ["Numbers that", "tell the story"],
+    "lead": "A snapshot of craft, projects delivered, and interface systems shaped over years of disciplined practice."
+  },
+  "values": {
+    "label": "Values",
+    "heading": ["What design", "means to me"],
+    "tags": ["Clarity", "Craft", "Care"]
+  },
+  "contactCta": {
+    "label": "Contact",
+    "heading": "Say hello."
+  },
+  "placeholder": true
+}

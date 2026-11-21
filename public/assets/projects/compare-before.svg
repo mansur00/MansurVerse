@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" fill="none">
+  <rect width="800" height="500" fill="#E6E6E6"/>
+  <rect x="40" y="40" width="720" height="420" fill="#FFFFFF"/>
+  <rect x="80" y="80" width="300" height="24" fill="#3D3D3D"/>
+  <rect x="80" y="130" width="640" height="40" fill="#F1F1F1"/>
+  <rect x="80" y="190" width="640" height="40" fill="#F1F1F1"/>
+  <rect x="80" y="250" width="640" height="40" fill="#F1F1F1"/>
+  <text x="400" y="420" text-anchor="middle" font-family="'Stack Sans Notch', sans-serif" font-weight="700" font-size="24" fill="#636363">BEFORE: LEGACY INTERFACE (800x500)</text>
+</svg>
