@@ -1,16 +1,211 @@
 ---
-// Phase 1 placeholder so the build has a page. Replaced in Phase 4 by the real Home page driven by content files.
+// Temporary Phase 3 Build Preview landing page.
+// Replaced in Phase 4 by the production Home page driven by content collections.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/primitives/Logo.astro';
+import ThemeToggle from '../components/layout/ThemeToggle.astro';
+import Chip from '../components/primitives/Chip.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import Button from '../components/primitives/Button.astro';
+import Divider from '../components/primitives/Divider.astro';
+import SkillChips from '../components/content/SkillChips.astro';
+import { previewFixtures } from '../fixtures/preview';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MansurVerse</title>
-  </head>
-  <body>
-    <main id="main">
-      <h1>MansurVerse</h1>
+<BaseLayout title={previewFixtures.pageTitle}>
+  <div class="preview-page">
+    <header class="preview-header">
+      <div class="header-brand">
+        <Logo />
+        <Chip variant="accent">{previewFixtures.badge}</Chip>
+      </div>
+      <ThemeToggle />
+    </header>
+
+    <main id="main" class="preview-main">
+      <section class="preview-hero">
+        <SlashLabel label={previewFixtures.phaseLabel} />
+        <h1 class="preview-title text-display-page">{previewFixtures.heading}</h1>
+        <div class="phase-badge-wrap">
+          <Chip variant="filled">{previewFixtures.phaseName}</Chip>
+        </div>
+        <p class="preview-desc text-body">{previewFixtures.description}</p>
+        <div class="preview-cta-wrap">
+          <Button href={previewFixtures.componentsLinkHref} variant="primary" showArrow={true}>
+            {previewFixtures.componentsLinkText}
+          </Button>
+        </div>
+      </section>
+
+      <Divider variant="on-base" />
+
+      <section class="preview-section">
+        <h2 class="section-heading text-heading-case">{previewFixtures.pagesSectionTitle}</h2>
+        <div class="pages-grid">
+          {previewFixtures.pages.map((p) => (
+            <div class="page-card">
+              <div class="page-card-top">
+                <h3 class="page-card-title text-heading-job">{p.title}</h3>
+                <Chip variant="outlined">{p.badge}</Chip>
+              </div>
+              <p class="page-card-desc text-body-small">{p.description}</p>
+              <div class="page-card-action">
+                <Button href={p.href} variant="outlined" showArrow={true}>
+                  {p.title}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Divider variant="on-base" />
+
+      <section class="preview-section">
+        <h2 class="section-heading text-heading-case">{previewFixtures.componentsSectionTitle}</h2>
+        <p class="section-desc text-body">{previewFixtures.componentsSummary}</p>
+      </section>
+
+      <Divider variant="on-base" />
+
+      <section class="preview-section">
+        <h2 class="section-heading text-heading-case">{previewFixtures.techStackTitle}</h2>
+        <SkillChips skills={previewFixtures.techStack} />
+      </section>
+
+      <footer class="preview-footer">
+        <p class="preview-notice text-body-small">{previewFixtures.notice}</p>
+      </footer>
     </main>
-  </body>
-</html>
+  </div>
+</BaseLayout>
+
+<style>
+  .preview-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--layout-section-y) var(--layout-pad);
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .preview-main {
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .preview-hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .preview-title {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .phase-badge-wrap {
+    margin-top: var(--space-2xs);
+  }
+
+  .preview-desc {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--color-text-muted);
+  }
+
+  .preview-cta-wrap {
+    margin-top: var(--space-3);
+  }
+
+  .preview-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .section-heading {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .section-desc {
+    margin: 0;
+    max-width: 65ch;
+    color: var(--color-text-muted);
+  }
+
+  .pages-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  @media (width >= 721px) {
+    .pages-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .page-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-6);
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    gap: var(--space-4);
+  }
+
+  .page-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .page-card-title {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .page-card-desc {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .page-card-action {
+    margin-top: auto;
+  }
+
+  .preview-footer {
+    padding-top: var(--space-4);
+  }
+
+  .preview-notice {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+</style>
