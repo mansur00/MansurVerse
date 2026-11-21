@@ -1,8 +1,15 @@
 ---
-// Case Study page template (/work/[slug]) per docs/01-design/page-specs.md.
+// Case Study page template (/work/[slug]) per docs/01-design/page-specs.md
+// and docs/01-design/layout-system.md.
 // Static paths generated from MDX content collection; renders sections C1 to C7.
+// Composes only layout primitives, blocks and components; zero <style> block.
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/layout-primitives/Section.astro';
+import Grid from '../../components/layout-primitives/Grid.astro';
+import Cell from '../../components/layout-primitives/Cell.astro';
+import Stack from '../../components/layout-primitives/Stack.astro';
+import Cluster from '../../components/layout-primitives/Cluster.astro';
 import SlashLabel from '../../components/primitives/SlashLabel.astro';
 import Chip from '../../components/primitives/Chip.astro';
 import MetaSidebar from '../../components/content/MetaSidebar.astro';
@@ -57,18 +64,21 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
   ogType="article"
 >
   <!-- C1: Header -->
-  <header class="case-header-section">
-    <div class="case-header-container">
-      <SlashLabel label="Case study" variant="on-light" />
-      <h1 class="case-title text-display-page">{project.data.title}</h1>
+  <Section size="default" surface="base" aria-label="Case Study Header">
+    <Stack gap="loose">
+      <div>
+        <SlashLabel label="Case study" variant="on-light" />
+      </div>
 
-      <div class="case-meta-chips">
+      <h1 class="text-display-page">{project.data.title}</h1>
+
+      <Cluster gap="tight">
         <Chip variant="accent">{project.data.category}</Chip>
         <Chip variant="outlined">{String(project.data.year)}</Chip>
         <Chip variant="filled">{project.data.role}</Chip>
-      </div>
+      </Cluster>
 
-      <div class="case-hero-art">
+      <div>
         <img
           src={project.data.cover.image}
           alt={project.data.cover.alt}
@@ -76,41 +86,47 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
           loading="eager"
         />
       </div>
-    </div>
-  </header>
+    </Stack>
+  </Section>
 
   <!-- C2: Body Section with MetaSidebar & MDX Body -->
-  <section class="case-body-section" aria-label="Case Study Details">
-    <div class="case-body-container">
-      <aside class="case-sidebar">
-        <MetaSidebar
-          role={project.data.role}
-          year={String(project.data.year)}
-          tools={project.data.tools}
-          links={sidebarLinks}
-          sections={sidebarSections}
-        />
-      </aside>
+  <Section size="default" surface="base" aria-label="Case Study Details">
+    <Grid>
+      <Cell placement="meta" from="tablet">
+        <aside>
+          <MetaSidebar
+            role={project.data.role}
+            year={String(project.data.year)}
+            tools={project.data.tools}
+            links={sidebarLinks}
+            sections={sidebarSections}
+          />
+        </aside>
+      </Cell>
 
-      <article class="case-content">
-        <Content />
-      </article>
-    </div>
-  </section>
+      <Cell placement="body" from="tablet">
+        <Stack gap="loose">
+          <article class="case-content">
+            <Content />
+          </article>
 
-  <!-- C3: Compare Slider (if project has compare images) -->
-  {project.data.compare && (
-    <section class="case-compare-section" aria-label="Before and After Comparison">
-      <div class="case-compare-container">
-        <SlashLabel label="Comparison" variant="on-light" />
-        <h2 class="compare-heading text-heading-section">Before and After</h2>
-        <CompareSlider
-          beforeLabel={project.data.compare.before.alt}
-          afterLabel={project.data.compare.after.alt}
-        />
-      </div>
-    </section>
-  )}
+          <!-- C3: Compare Slider (inside body cell) -->
+          {project.data.compare && (
+            <Stack gap="base">
+              <div>
+                <SlashLabel label="Comparison" variant="on-light" />
+              </div>
+              <h2 class="text-heading-section">Before and After</h2>
+              <CompareSlider
+                beforeLabel={project.data.compare.before.alt}
+                afterLabel={project.data.compare.after.alt}
+              />
+            </Stack>
+          )}
+        </Stack>
+      </Cell>
+    </Grid>
+  </Section>
 
   <!-- C4: Results Section -->
   <NumbersBlock
@@ -123,40 +139,44 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
   <ProcessBlock surface="alt" />
 
   <!-- C6: More Work -->
-  <section class="case-more-section" aria-label="More Work">
-    <div class="case-more-container">
-      <SlashLabel label="More work" variant="on-light" />
-      <h2 class="more-heading text-heading-section">Selected Projects</h2>
-      <div class="more-projects-grid">
-        {otherProjects.map((p, idx) => (
-          <ProjectCard
-            title={p.data.title}
-            number={idx + 1}
-            description={p.data.summary}
-            category={p.data.category}
-            year={String(p.data.year)}
-            href={`/work/${p.id}`}
-            accent={p.data.accent}
-            imageSrc={p.data.cover.image}
-            imageAlt={p.data.cover.alt}
-            variant="grid"
-          />
-        ))}
+  <Section size="default" surface="base" aria-label="More Work">
+    <Stack gap="section">
+      <div>
+        <SlashLabel label="More work" variant="on-light" />
       </div>
-    </div>
-  </section>
+      <h2 class="text-heading-section">Selected Projects</h2>
 
-  <!-- C7: Next Project Navigation & CTA Band -->
+      <Grid>
+        {otherProjects.map((p, idx) => (
+          <Cell placement={idx % 2 === 0 ? 'half-a' : 'half-b'} from="tablet">
+            <ProjectCard
+              title={p.data.title}
+              number={idx + 1}
+              description={p.data.summary}
+              category={p.data.category}
+              year={String(p.data.year)}
+              href={`/work/${p.id}`}
+              accent={p.data.accent}
+              imageSrc={p.data.cover.image}
+              imageAlt={p.data.cover.alt}
+              variant="grid"
+            />
+          </Cell>
+        ))}
+      </Grid>
+    </Stack>
+  </Section>
+
+  <!-- C7: Next Project Navigation -->
   {nextProject && (
-    <section class="case-next-section" aria-label="Next Project">
-      <div class="case-next-container">
-        <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
-          Next project: {nextProject.data.title}
-        </Button>
-      </div>
-    </section>
+    <Section size="compact" surface="base" aria-label="Next Project">
+      <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
+        Next project: {nextProject.data.title}
+      </Button>
+    </Section>
   )}
 
+  <!-- CTA Band -->
   <CTABand
     slashLabel={siteConfig.cta.label}
     heading={siteConfig.cta.heading}
@@ -166,161 +186,3 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
     variant="on-alt"
   />
 </BaseLayout>
-
-<style>
-  /* C1: Header */
-  .case-header-section {
-    padding: var(--space-12) var(--layout-page-gutter) var(--space-8);
-    background: var(--color-bg-base);
-  }
-
-  .case-header-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .case-title {
-    margin: 0;
-  }
-
-  .case-meta-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .case-hero-art {
-    margin-top: var(--space-6);
-    background: var(--color-bg-surface);
-    overflow: hidden;
-  }
-
-  .case-cover-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-
-  /* C2: Body */
-  .case-body-section {
-    padding: var(--space-8) var(--layout-page-gutter) var(--space-12);
-    background: var(--color-bg-base);
-  }
-
-  .case-body-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: var(--space-10);
-    align-items: start;
-  }
-
-  .case-sidebar {
-    position: sticky;
-    top: calc(var(--layout-nav-height) + var(--space-6));
-  }
-
-  .case-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-    max-width: 65ch;
-  }
-
-  /* C3: Compare */
-  .case-compare-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-alt);
-  }
-
-  .case-compare-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .compare-heading {
-    margin: 0;
-  }
-
-  /* C6: More Work */
-  .case-more-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-base);
-  }
-
-  .case-more-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .more-heading {
-    margin: 0;
-  }
-
-  .more-projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-6);
-  }
-
-  /* C7: Next Project */
-  .case-next-section {
-    padding: var(--space-8) var(--layout-page-gutter);
-    background: var(--color-bg-base);
-    display: flex;
-    justify-content: center;
-  }
-
-  .case-next-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-  }
-
-  @media (width < 900px) {
-    .case-body-container {
-      grid-template-columns: 1fr;
-    }
-
-    .case-sidebar {
-      position: static;
-    }
-
-    .more-projects-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-
-<style is:global>
-  .case-content h2 {
-    font-family: var(--font-label);
-    font-weight: 700;
-    font-size: var(--text-heading-case-size);
-    line-height: var(--text-heading-case-line);
-    margin-top: var(--space-8);
-    margin-bottom: var(--space-2);
-    color: var(--color-text-primary);
-  }
-
-  .case-content p {
-    font-family: var(--font-body);
-    font-size: var(--text-body-size);
-    line-height: var(--text-body-line);
-    color: var(--color-text-primary);
-    margin: 0;
-  }
-</style>

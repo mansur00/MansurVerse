@@ -1,4 +1,7 @@
 ---
+// CTABand layout component per docs/01-design/layout-system.md
+import Section from '../layout-primitives/Section.astro';
+import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import Button from '../primitives/Button.astro';
 
@@ -23,15 +26,18 @@ const {
 } = Astro.props;
 
 const isFeature = variant === 'on-feature';
+const surface = variant === 'on-alt' ? 'alt' : isFeature ? 'feature' : 'base';
 ---
 
-<section class:list={['cta-band', `cta-${variant}`, className]}>
-  <div class="cta-inner">
-    <SlashLabel
-      label={slashLabel}
-      variant={isFeature ? 'on-feature' : 'on-light'}
-      class="cta-label"
-    />
+<Section surface={surface} size="default" class={className}>
+  <Stack gap="base" class="cta-inner">
+    <div>
+      <SlashLabel
+        label={slashLabel}
+        variant={isFeature ? 'on-feature' : 'on-light'}
+        class="cta-label"
+      />
+    </div>
     <h2 class:list={['cta-heading', 'text-heading-section', { 'text-feature': isFeature }]}>
       {heading}
     </h2>
@@ -41,35 +47,12 @@ const isFeature = variant === 'on-feature';
         {buttonLabel}
       </Button>
     </div>
-  </div>
-</section>
+  </Stack>
+</Section>
 
 <style>
-  .cta-band {
-    padding: var(--layout-section-y) var(--layout-pad);
-    width: 100%;
-  }
-
-  .cta-on-base {
-    background: var(--color-bg-base);
-  }
-
-  .cta-on-alt {
-    background: var(--color-bg-alt);
-  }
-
-  .cta-on-feature {
-    background: var(--color-bg-feature);
-  }
-
   .cta-inner {
-    max-width: 56ch;
-    margin: 0 auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-4);
+    max-width: var(--measure-body, 60ch);
   }
 
   .cta-heading {

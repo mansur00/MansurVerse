@@ -1,0 +1,317 @@
+---
+// Section 07 of Style Guide: Layout Primitives & Placements
+// Demonstrates Section, Grid, Cell, Stack, Cluster, and Bleed at all breakpoints.
+import Section from '../layout-primitives/Section.astro';
+import Grid from '../layout-primitives/Grid.astro';
+import Cell from '../layout-primitives/Cell.astro';
+import type { Placement } from '../layout-primitives/Cell.astro';
+import Stack from '../layout-primitives/Stack.astro';
+import type { StackGap } from '../layout-primitives/Stack.astro';
+import Cluster from '../layout-primitives/Cluster.astro';
+import Bleed from '../layout-primitives/Bleed.astro';
+import SlashLabel from '../primitives/SlashLabel.astro';
+import SuperscriptNumber from '../primitives/SuperscriptNumber.astro';
+import Chip from '../primitives/Chip.astro';
+import Divider from '../primitives/Divider.astro';
+import summary from '../../styles/tokens/generated/tokens.summary.json';
+import { styleguideFixtures } from '../../fixtures/styleguide';
+
+const f = styleguideFixtures.sections.layout;
+const placements = Object.entries(summary.placement) as Array<
+  [Placement, { start: number; span: number }]
+>;
+const stackGaps: StackGap[] = ['tight', 'base', 'loose', 'section'];
+---
+
+<Section id="layout" surface="base" size="default">
+  <Stack gap="section">
+    <!-- Header -->
+    <Stack gap="tight">
+      <SlashLabel label={f.label} />
+      <h2 class="text-heading-section sg-section-title">
+        {f.title}
+        <SuperscriptNumber number={f.number} />
+      </h2>
+      <p class="text-body sg-section-intro">{f.intro}</p>
+    </Stack>
+
+    <Divider variant="on-base" />
+
+    <!-- 1. Section Surfaces & Sizes -->
+    <Stack gap="loose">
+      <Stack gap="tight">
+        <h3 class="text-heading-case sg-block-title">{f.sectionTitle}</h3>
+        <p class="text-body-small sg-block-desc">{f.sectionDesc}</p>
+      </Stack>
+
+      <div class="surfaces-demo-grid">
+        <div class="demo-box surface-base">
+          <span class="text-label">{f.surfaceBaseLabel}</span>
+        </div>
+        <div class="demo-box surface-alt">
+          <span class="text-label">{f.surfaceAltLabel}</span>
+        </div>
+        <div class="demo-box surface-feature">
+          <span class="text-label">{f.surfaceFeatureLabel}</span>
+        </div>
+        <div class="demo-box surface-feature-dots">
+          <span class="text-label">{f.surfaceDotsLabel}</span>
+        </div>
+      </div>
+    </Stack>
+
+    <Divider variant="on-base" />
+
+    <!-- 2. Grid & Cell Placements -->
+    <Stack gap="loose">
+      <Stack gap="tight">
+        <h3 class="text-heading-case sg-block-title">{f.gridTitle}</h3>
+        <p class="text-body-small sg-block-desc">{f.gridDesc}</p>
+      </Stack>
+
+      <Stack gap="base">
+        {placements.map(([name, config]) => (
+          <div class="placement-row">
+            <div class="placement-meta">
+              <span class="text-label placement-name">{name}</span>
+              <span class="text-body-small placement-info">
+                {f.startPrefix}
+                {config.start}
+                {f.spanPrefix}
+                {config.span}
+              </span>
+            </div>
+            <Grid>
+              <Cell placement={name} from="tablet">
+                <div class="placement-cell-demo">
+                  <span class="text-label">
+                    {f.cellPlacementPrefix}
+                    {name}
+                    {f.cellPlacementSuffix}
+                  </span>
+                </div>
+              </Cell>
+            </Grid>
+          </div>
+        ))}
+      </Stack>
+    </Stack>
+
+    <Divider variant="on-base" />
+
+    <!-- 3. Stack Rhythm Scale -->
+    <Stack gap="loose">
+      <Stack gap="tight">
+        <h3 class="text-heading-case sg-block-title">{f.stackTitle}</h3>
+        <p class="text-body-small sg-block-desc">{f.stackDesc}</p>
+      </Stack>
+
+      <div class="stack-demos-grid">
+        {stackGaps.map((gap) => (
+          <div class="stack-demo-card">
+            <span class="text-label">
+              {f.gapPrefix}
+              {gap}
+              {f.gapSuffix}
+            </span>
+            <Stack gap={gap} class="stack-box">
+              <div class="stack-item">
+                <span class="text-body-small">{f.itemPrefix}1</span>
+              </div>
+              <div class="stack-item">
+                <span class="text-body-small">{f.itemPrefix}2</span>
+              </div>
+              <div class="stack-item">
+                <span class="text-body-small">{f.itemPrefix}3</span>
+              </div>
+            </Stack>
+          </div>
+        ))}
+      </div>
+    </Stack>
+
+    <Divider variant="on-base" />
+
+    <!-- 4. Cluster Wrapping Scale -->
+    <Stack gap="loose">
+      <Stack gap="tight">
+        <h3 class="text-heading-case sg-block-title">{f.clusterTitle}</h3>
+        <p class="text-body-small sg-block-desc">{f.clusterDesc}</p>
+      </Stack>
+
+      <Stack gap="base">
+        {stackGaps.map((gap) => (
+          <div class="cluster-demo-card">
+            <span class="text-label">
+              {f.gapPrefix}
+              {gap}
+              {f.gapSuffix}
+            </span>
+            <Cluster gap={gap}>
+              <Chip variant="accent">{f.chipLabels[0]}</Chip>
+              <Chip variant="filled">{f.chipLabels[1]}</Chip>
+              <Chip variant="outlined">{f.chipLabels[2]}</Chip>
+              <Chip variant="accent">{f.chipLabels[3]}</Chip>
+              <Chip variant="filled">{f.chipLabels[4]}</Chip>
+            </Cluster>
+          </div>
+        ))}
+      </Stack>
+    </Stack>
+
+    <Divider variant="on-base" />
+
+    <!-- 5. Bleed Primitive -->
+    <Stack gap="loose">
+      <Stack gap="tight">
+        <h3 class="text-heading-case sg-block-title">{f.bleedTitle}</h3>
+        <p class="text-body-small sg-block-desc">{f.bleedDesc}</p>
+      </Stack>
+
+      <div class="bleed-demo-frame">
+        <Bleed>
+          <div class="bleed-content">
+            <span class="text-label">
+              {f.bleedLabel} {f.bleedBreakoutNote}
+            </span>
+          </div>
+        </Bleed>
+      </div>
+    </Stack>
+  </Stack>
+</Section>
+
+<style>
+  .sg-section-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-section-intro {
+    max-width: var(--measure-body, 60ch);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .sg-block-title {
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .sg-block-desc {
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .surfaces-demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--layout-gap);
+  }
+
+  .demo-box {
+    padding: var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .surface-base {
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+  }
+
+  .surface-alt {
+    background-color: var(--color-bg-alt);
+    color: var(--color-text-primary);
+  }
+
+  .surface-feature {
+    background-color: var(--color-bg-feature);
+    color: var(--color-text-on-feature);
+  }
+
+  .surface-feature-dots {
+    background-color: var(--color-bg-feature);
+    color: var(--color-text-on-feature);
+    background-image: radial-gradient(var(--palette-white-18) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .placement-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-bg-alt);
+  }
+
+  .placement-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .placement-name {
+    color: var(--color-text-primary);
+  }
+
+  .placement-info {
+    color: var(--color-text-muted);
+  }
+
+  .placement-cell-demo {
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stack-demos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--layout-gap);
+  }
+
+  .stack-demo-card {
+    padding: var(--space-4);
+    background: var(--color-bg-alt);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .stack-box {
+    background: var(--color-bg-base);
+    padding: var(--space-3);
+  }
+
+  .stack-item {
+    background: var(--color-bg-alt);
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-primary);
+  }
+
+  .cluster-demo-card {
+    padding: var(--space-4);
+    background: var(--color-bg-alt);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .bleed-demo-frame {
+    background: var(--color-bg-alt);
+    padding-block: var(--space-4);
+    overflow: hidden;
+  }
+
+  .bleed-content {
+    background: var(--color-bg-feature);
+    color: var(--color-text-on-feature);
+    padding: var(--space-4);
+    text-align: center;
+  }
+</style>

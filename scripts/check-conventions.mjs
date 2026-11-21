@@ -63,6 +63,72 @@ try {
       );
     }
   }
+
+  // 4. Layout system convention checks per docs/01-design/layout-system.md section 8:
+  // - Every page section is a Section (no raw <section> tags in production pages)
+  // - No page or block sets outer padding
+  // - Nav and Footer (via Section) use the same inline-padding token (--layout-pad)
+  const pagesDir = new URL('../src/pages/', import.meta.url);
+  const scanPages = (dirUrl) => {
+    if (!existsSync(dirUrl)) return;
+    for (const entry of readdirSync(dirUrl, { withFileTypes: true })) {
+      const entryUrl = new URL(entry.name, dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/');
+      if (entry.isDirectory()) {
+        scanPages(
+          new URL(entry.name + '/', dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/'),
+        );
+      } else if (entry.name.endsWith('.astro') && entry.name !== 'styleguide.astro') {
+        const fullContent = readFileSync(entryUrl, 'utf-8');
+        // Strip frontmatter before checking markup
+        const content = fullContent.replace(/^---[\s\S]*?---/, '');
+        if (/<section[\s>]/.test(content)) {
+          errors.push(
+            `${entry.name}: Raw <section> disallowed in pages per layout-system.md. Use Section primitive.`,
+          );
+        }
+        if (/<style[\s>]/.test(content)) {
+          errors.push(
+            `${entry.name}: <style> blocks disallowed in pages per layout-system.md rule 1.6.`,
+          );
+        }
+      }
+    }
+  };
+  scanPages(pagesDir);
+
+  // Check blocks do not set outer padding or centered margins
+  const blocksDir = new URL('../src/components/blocks/', import.meta.url);
+  if (existsSync(blocksDir)) {
+    for (const entry of readdirSync(blocksDir)) {
+      if (entry.endsWith('.astro')) {
+        const blockContent = readFileSync(new URL(entry, blocksDir), 'utf-8');
+        if (
+          blockContent.includes('margin: 0 auto') ||
+          blockContent.includes('--layout-page-gutter')
+        ) {
+          errors.push(
+            `Block ${entry}: Blocks may not set outer padding or margin: 0 auto per layout-system.md.`,
+          );
+        }
+      }
+    }
+  }
+
+  // Check Nav and Section/Footer use the same inline-padding token
+  const navContent = readFileSync(
+    new URL('../src/components/layout/Nav.astro', import.meta.url),
+    'utf-8',
+  );
+  const sectionContent = readFileSync(
+    new URL('../src/components/layout-primitives/Section.astro', import.meta.url),
+    'utf-8',
+  );
+  if (!navContent.includes('var(--layout-pad)')) {
+    errors.push('Nav.astro: must use var(--layout-pad) for horizontal alignment');
+  }
+  if (!sectionContent.includes('var(--layout-pad)')) {
+    errors.push('Section.astro: must use var(--layout-pad) for horizontal alignment');
+  }
 } catch (error) {
   warnings.push(`Component convention checks skipped: ${error.message}`);
 }

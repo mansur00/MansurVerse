@@ -1,4 +1,10 @@
 ---
+// Footer component per docs/01-design/layout-system.md section 4.1 & section 6.
+// Uses Section size="none" so its inline padding matches Nav and every page section.
+import Section from '../layout-primitives/Section.astro';
+import Grid from '../layout-primitives/Grid.astro';
+import Cell from '../layout-primitives/Cell.astro';
+import Stack from '../layout-primitives/Stack.astro';
 import Divider from '../primitives/Divider.astro';
 import MotionToggle from './MotionToggle.astro';
 
@@ -25,10 +31,10 @@ const {
 } = Astro.props;
 ---
 
-<footer class:list={['footer', className]}>
-  <div class="footer-container">
-    <div class="footer-columns">
-      <div class="footer-col">
+<Section as="footer" surface="base" size="none" class:list={['footer-section', className]}>
+  <Stack gap="section" class="footer-stack">
+    <Grid>
+      <Cell placement="label" from="tablet" class="footer-col">
         <span class="col-title text-label">{pagesTitle}</span>
         <ul class="col-list">
           {pages.map((item) => (
@@ -39,9 +45,9 @@ const {
             </li>
           ))}
         </ul>
-      </div>
+      </Cell>
 
-      <div class="footer-col">
+      <Cell placement="label" from="tablet" class="footer-col">
         <span class="col-title text-label">{elsewhereTitle}</span>
         <ul class="col-list">
           {socials.map((item) => (
@@ -57,17 +63,17 @@ const {
             </li>
           ))}
         </ul>
-      </div>
+      </Cell>
 
-      <div class="footer-col">
+      <Cell placement="label" from="tablet" class="footer-col">
         <span class="col-title text-label">{localTimeLabel}</span>
         <div class="time-block">
           <time class="time-value text-body" data-timezone={timeZone}>
             {timeZone}
           </time>
         </div>
-      </div>
-    </div>
+      </Cell>
+    </Grid>
 
     <Divider variant="on-base" class="footer-divider" />
 
@@ -75,39 +81,23 @@ const {
       <p class="copyright text-body-small">{copyright}</p>
       <MotionToggle />
     </div>
-  </div>
-</footer>
+  </Stack>
+</Section>
 
 <style>
-  .footer {
+  .footer-section {
+    padding-top: var(--layout-section-y);
+    padding-bottom: var(--space-6);
+  }
+
+  .footer-stack {
     width: 100%;
-    background: var(--color-bg-base);
-    padding: var(--layout-section-y) var(--layout-pad) var(--space-6);
-  }
-
-  .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    gap: var(--space-7);
-  }
-
-  .footer-columns {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
-  }
-
-  @media (width >= 721px) {
-    .footer-columns {
-      grid-template-columns: repeat(3, 1fr);
-    }
   }
 
   .footer-col {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
-    align-content: start;
   }
 
   .col-title {
@@ -118,7 +108,8 @@ const {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-2);
   }
 
@@ -129,15 +120,16 @@ const {
   }
 
   .footer-link:hover {
-    color: var(--color-accent-primary);
+    color: var(--color-accent);
   }
 
   .time-value {
     color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
   }
 
   .footer-divider {
-    margin: var(--space-4) 0;
+    width: 100%;
   }
 
   .footer-bottom {

@@ -25,8 +25,10 @@ const {
   <details class="capability-row" open={isOpen}>
     <summary class="row-summary">
       <div class="summary-left">
-        <SuperscriptNumber number={number} surface="feature" class="row-num" />
-        <h3 class="row-title text-heading-row">{title}</h3>
+        <h3 class="row-title text-heading-row">
+          {title}
+          <SuperscriptNumber number={number} surface="feature" class="row-num" />
+        </h3>
       </div>
       <span class="row-indicator" aria-hidden="true">
         +

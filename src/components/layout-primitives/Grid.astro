@@ -2,7 +2,7 @@
 // Grid primitive per docs/01-design/layout-system.md section 4.2.
 // 12-column grid with standard column gutter and row gap.
 interface Props {
-  as?: string | undefined;
+  as?: 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | undefined;
   id?: string | undefined;
   class?: string | undefined;
 }

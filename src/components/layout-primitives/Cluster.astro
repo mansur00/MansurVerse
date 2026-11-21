@@ -1,0 +1,93 @@
+---
+// Cluster primitive per docs/01-design/layout-system.md section 4.3.
+// Wrapping row for chips, tags, links with strict stack token gaps.
+export type StackGap = 'tight' | 'base' | 'loose' | 'section';
+
+interface Props {
+  gap?: StackGap | undefined;
+  align?: 'start' | 'center' | 'end' | 'baseline' | undefined;
+  justify?: 'start' | 'center' | 'end' | 'between' | undefined;
+  as?: 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const {
+  gap = 'tight',
+  align = 'center',
+  justify = 'start',
+  as: Component = 'div',
+  id,
+  class: className = '',
+} = Astro.props;
+---
+
+<Component
+  id={id}
+  class:list={[
+    'layout-cluster',
+    `cluster-gap-${gap}`,
+    `cluster-align-${align}`,
+    `cluster-justify-${justify}`,
+    className,
+  ]}
+>
+  <slot />
+</Component>
+
+<style>
+  .layout-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cluster-gap-tight {
+    gap: var(--stack-tight);
+  }
+
+  .cluster-gap-base {
+    gap: var(--stack-base);
+  }
+
+  .cluster-gap-loose {
+    gap: var(--stack-loose);
+  }
+
+  .cluster-gap-section {
+    gap: var(--stack-section);
+  }
+
+  .cluster-align-start {
+    align-items: flex-start;
+  }
+
+  .cluster-align-center {
+    align-items: center;
+  }
+
+  .cluster-align-end {
+    align-items: flex-end;
+  }
+
+  .cluster-align-baseline {
+    align-items: baseline;
+  }
+
+  .cluster-justify-start {
+    justify-content: flex-start;
+  }
+
+  .cluster-justify-center {
+    justify-content: center;
+  }
+
+  .cluster-justify-end {
+    justify-content: flex-end;
+  }
+
+  .cluster-justify-between {
+    justify-content: space-between;
+  }
+</style>

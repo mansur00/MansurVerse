@@ -1,8 +1,14 @@
 ---
-// Work catalog index page (/work) per docs/01-design/page-specs.md.
-// Shows all projects with category filter chips, grid view, shared blocks and CTA band.
+// Work catalog index page (/work) per docs/01-design/page-specs.md
+// and docs/01-design/layout-system.md.
+// Composes only layout primitives, blocks and components; zero <style> block.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/layout-primitives/Section.astro';
+import Grid from '../../components/layout-primitives/Grid.astro';
+import Cell from '../../components/layout-primitives/Cell.astro';
+import Stack from '../../components/layout-primitives/Stack.astro';
+import Cluster from '../../components/layout-primitives/Cluster.astro';
 import SlashLabel from '../../components/primitives/SlashLabel.astro';
 import SuperscriptNumber from '../../components/primitives/SuperscriptNumber.astro';
 import Chip from '../../components/primitives/Chip.astro';
@@ -18,33 +24,33 @@ const categories = ['All', ...siteConfig.categories];
 ---
 
 <BaseLayout title={`Work | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
-  <!-- W1: Header -->
-  <section class="work-header-section" aria-label="Work Catalog">
-    <div class="work-header-container">
-      <SlashLabel label="Work" variant="on-light" />
-      <h1 class="work-title text-display-page">
+  <!-- W1: Header & W2: Toolbar -->
+  <Section size="default" surface="base" aria-label="Work Catalog">
+    <Stack gap="loose">
+      <div>
+        <SlashLabel label="Work" variant="on-light" />
+      </div>
+
+      <h1 class="text-display-page">
         Work
-        <span class="count-wrapper">
-          <SuperscriptNumber number={sortedProjects.length} />
-        </span>
+        <SuperscriptNumber number={sortedProjects.length} pad={false} />
       </h1>
 
-      <!-- W2: Toolbar -->
-      <div class="work-toolbar" role="toolbar" aria-label="Project filter">
-        <div class="filter-chips">
+      <div role="toolbar" aria-label="Project filter">
+        <Cluster gap="tight">
           {categories.map((cat, idx) => (
             <Chip variant={idx === 0 ? 'accent' : 'outlined'}>{cat}</Chip>
           ))}
-        </div>
+        </Cluster>
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 
   <!-- W3: Projects Grid -->
-  <section class="projects-grid-section" aria-label="Projects">
-    <div class="projects-grid-container">
-      <div class="projects-grid">
-        {sortedProjects.map((project, idx) => (
+  <Section size="default" surface="base" aria-label="Projects">
+    <Grid>
+      {sortedProjects.map((project, idx) => (
+        <Cell placement={idx % 2 === 0 ? 'half-a' : 'half-b'} from="tablet">
           <ProjectCard
             title={project.data.title}
             number={idx + 1}
@@ -57,10 +63,10 @@ const categories = ['All', ...siteConfig.categories];
             imageAlt={project.data.cover.alt}
             variant="grid"
           />
-        ))}
-      </div>
-    </div>
-  </section>
+        </Cell>
+      ))}
+    </Grid>
+  </Section>
 
   <!-- W4: Capabilities Block -->
   <CapabilitiesBlock />
@@ -78,66 +84,3 @@ const categories = ['All', ...siteConfig.categories];
     variant="on-alt"
   />
 </BaseLayout>
-
-<style>
-  .work-header-section {
-    padding: var(--space-12) var(--layout-page-gutter) var(--space-6);
-    background: var(--color-bg-base);
-  }
-
-  .work-header-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .work-title {
-    margin: 0;
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-2);
-  }
-
-  .count-wrapper {
-    display: inline-flex;
-  }
-
-  .work-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-4);
-    flex-wrap: wrap;
-    margin-top: var(--space-4);
-  }
-
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .projects-grid-section {
-    padding: var(--space-6) var(--layout-page-gutter) var(--space-12);
-    background: var(--color-bg-base);
-  }
-
-  .projects-grid-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-6);
-  }
-
-  @media (width < 768px) {
-    .projects-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>

@@ -124,6 +124,36 @@ export interface StyleguideFixtures {
       numbersHeading: string;
       numbersSlash: string;
     };
+    layout: {
+      number: string;
+      label: string;
+      title: string;
+      intro: string;
+      sectionTitle: string;
+      sectionDesc: string;
+      gridTitle: string;
+      gridDesc: string;
+      stackTitle: string;
+      stackDesc: string;
+      clusterTitle: string;
+      clusterDesc: string;
+      bleedTitle: string;
+      bleedDesc: string;
+      bleedLabel: string;
+      surfaceBaseLabel: string;
+      surfaceAltLabel: string;
+      surfaceFeatureLabel: string;
+      surfaceDotsLabel: string;
+      startPrefix: string;
+      spanPrefix: string;
+      cellPlacementPrefix: string;
+      cellPlacementSuffix: string;
+      gapPrefix: string;
+      gapSuffix: string;
+      itemPrefix: string;
+      chipLabels: string[];
+      bleedBreakoutNote: string;
+    };
   };
   brand: {
     primary: string;
@@ -324,6 +354,7 @@ export const styleguideFixtures: StyleguideFixtures = {
       { label: '04 Components', href: '#components' },
       { label: '05 Motion', href: '#motion' },
       { label: '06 Composition', href: '#composition' },
+      { label: '07 Layout', href: '#layout' },
     ],
   },
   sections: {
@@ -642,6 +673,40 @@ export const styleguideFixtures: StyleguideFixtures = {
       valuesSlash: 'Principles',
       numbersHeading: 'Key Metrics & Impact',
       numbersSlash: 'Numbers',
+    },
+    layout: {
+      number: '07',
+      label: 'Layout System',
+      title: 'Primitives & Placements',
+      intro:
+        'The global layout system enforcing consistent margins, responsive columns, and mathematical spacing via Section, Grid, Cell, Stack, Cluster, and Bleed.',
+      sectionTitle: 'Section Surfaces & Sizes',
+      sectionDesc:
+        'The only element that sets page padding. Four surfaces and three vertical sizes.',
+      gridTitle: '12-Column Grid & Semantic Placements',
+      gridDesc:
+        'Columns collapse on mobile (< 721px) and align to named placements on tablet/desktop.',
+      stackTitle: 'Stack Rhythm Scale',
+      stackDesc: 'Vertical flow with strict token gaps: tight, base, loose, and section.',
+      clusterTitle: 'Cluster Wrapping Scale',
+      clusterDesc: 'Inline flex wrapping row for chips, tags, and action groups.',
+      bleedTitle: 'Bleed Primitive',
+      bleedDesc:
+        'The controlled mechanism to break out of section padding to reach the viewport edge.',
+      bleedLabel: 'Full-bleed edge-to-edge container',
+      surfaceBaseLabel: 'surface="base"',
+      surfaceAltLabel: 'surface="alt"',
+      surfaceFeatureLabel: 'surface="feature"',
+      surfaceDotsLabel: 'surface="feature-dots"',
+      startPrefix: 'start: ',
+      spanPrefix: ', span: ',
+      cellPlacementPrefix: 'Cell placement="',
+      cellPlacementSuffix: '"',
+      gapPrefix: 'gap="',
+      gapSuffix: '"',
+      itemPrefix: 'Item ',
+      chipLabels: ['Chip A', 'Chip B', 'Chip C', 'Chip D', 'Chip E'],
+      bleedBreakoutNote: '(breaks out to viewport edges)',
     },
   },
   brand: {

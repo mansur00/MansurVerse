@@ -1,6 +1,9 @@
 ---
 // Shared Block: Values (used on Home and About)
 // Feature surface with large heading, KeywordTags, ValueRows and flat colour shapes per docs/01-design/page-specs.md
+import Section from '../layout-primitives/Section.astro';
+import Stack from '../layout-primitives/Stack.astro';
+import Cluster from '../layout-primitives/Cluster.astro';
 import KeywordTag from '../primitives/KeywordTag.astro';
 import ValueRow from '../content/ValueRow.astro';
 import valuesData from '../../content/values.json';
@@ -26,103 +29,29 @@ const {
 } = Astro.props;
 ---
 
-<section class:list={['values-block', className]} data-surface="feature">
-  <div class="block-container">
-    <div class="values-header">
-      <h2 class="values-heading text-heading-section">
-        {headingLines.map((line, idx) => (
-          <span class="heading-line">
-            {line}
-            {idx < headingLines.length - 1 && <br />}
-          </span>
-        ))}
-      </h2>
+<Section id="values" surface="feature" size="default" class={className}>
+  <Stack gap="section">
+    <Stack gap="base" class="values-header">
+      <h2 class="values-heading text-heading-section">{headingLines.join(' ')}</h2>
 
-      <div class="values-tags" aria-hidden="true">
+      <Cluster gap="tight" class="values-tags" aria-hidden="true">
         {tags.map((tag, idx) => (
           <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag}</KeywordTag>
         ))}
-      </div>
+      </Cluster>
+    </Stack>
 
-      <div class="decorative-shapes" aria-hidden="true">
-        <div class="shape-lime"></div>
-        <div class="shape-pink"></div>
-      </div>
-    </div>
-
-    <div class="values-list">
+    <Stack gap="base">
       {items.map((item) => (
         <ValueRow slashLabel={item.label} text={item.text} variant="on-feature" />
       ))}
-    </div>
-  </div>
-</section>
+    </Stack>
+  </Stack>
+</Section>
 
 <style>
-  .values-block {
-    position: relative;
-    background: var(--color-bg-feature);
-    color: var(--color-text-on-feature);
-    padding: var(--space-12) var(--layout-page-gutter);
-    overflow: hidden;
-  }
-
-  .block-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-  }
-
-  .values-header {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
   .values-heading {
     margin: 0;
-    color: var(--color-text-on-feature);
-  }
-
-  .values-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    margin-top: var(--space-2);
-  }
-
-  .decorative-shapes {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .shape-lime {
-    width: var(--space-12);
-    height: var(--space-12);
-    background: var(--color-accent-primary);
-  }
-
-  .shape-pink {
-    width: var(--space-12);
-    height: var(--space-12);
-    background: var(--color-accent-secondary-1);
-  }
-
-  @media (width < 768px) {
-    .decorative-shapes {
-      display: none;
-    }
-  }
-
-  .values-list {
-    display: flex;
-    flex-direction: column;
+    max-width: var(--measure-body, 60ch);
   }
 </style>

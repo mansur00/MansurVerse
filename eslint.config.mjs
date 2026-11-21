@@ -87,6 +87,32 @@ const customPlugin = {
         };
       },
     },
+    'no-page-styles': {
+      meta: {
+        type: 'problem',
+        docs: {
+          description:
+            'Pages may not contain <style> tags per docs/01-design/layout-system.md. Layout comes only from primitives.',
+        },
+      },
+      create(context) {
+        return {
+          JSXElement(node) {
+            if (
+              node.openingElement &&
+              node.openingElement.name &&
+              node.openingElement.name.name === 'style'
+            ) {
+              context.report({
+                node,
+                message:
+                  'Pages may not contain <style> tags per docs/01-design/layout-system.md. Compose layout primitives instead.',
+              });
+            }
+          },
+        };
+      },
+    },
   },
 };
 
@@ -118,6 +144,13 @@ export default [
     files: ['src/components/**/*.astro', 'tests/guardrails/fixtures/**/*.astro'],
     rules: {
       'custom/no-hardcoded-copy': 'error',
+    },
+  },
+  {
+    files: ['src/pages/**/*.astro'],
+    ignores: ['src/pages/styleguide.astro'],
+    rules: {
+      'custom/no-page-styles': 'error',
     },
   },
 ];
