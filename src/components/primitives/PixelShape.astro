@@ -1,0 +1,58 @@
+---
+interface Props {
+  variant?: 'blob' | 'corner' | undefined;
+  accent?: 'lime' | 'sky' | 'lime-yellow' | 'pink' | 'cyan' | 'blue' | 'primary' | undefined;
+  class?: string | undefined;
+  style?: string | undefined;
+}
+
+const { variant = 'blob', accent = 'lime', class: className = '', style = '' } = Astro.props;
+---
+
+<div
+  class:list={['pixel-shape', `shape-${variant}`, `accent-${accent}`, className]}
+  style={style}
+  aria-hidden="true"
+/>
+
+<style>
+  .pixel-shape {
+    display: inline-block;
+    width: var(--space-8);
+    height: var(--space-8);
+    opacity: var(--opacity-shape);
+  }
+
+  .shape-blob {
+    clip-path: var(--shape-pixel-blob);
+  }
+
+  .shape-corner {
+    clip-path: var(--shape-pixel-corner);
+  }
+
+  .accent-lime,
+  .accent-primary {
+    background: var(--color-accent-primary);
+  }
+
+  .accent-sky {
+    background: var(--color-accent-secondary-1);
+  }
+
+  .accent-lime-yellow {
+    background: var(--color-accent-secondary-2);
+  }
+
+  .accent-pink {
+    background: var(--color-accent-secondary-3);
+  }
+
+  .accent-cyan {
+    background: var(--color-accent-secondary-4);
+  }
+
+  .accent-blue {
+    background: var(--color-accent-blue);
+  }
+</style>

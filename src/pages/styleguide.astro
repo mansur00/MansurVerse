@@ -3,6 +3,22 @@
 // Not indexed; removed from production builds unless PUBLIC_ENABLE_STYLEGUIDE=true (scripts/strip-styleguide.mjs).
 import BaseLayout from '../layouts/BaseLayout.astro';
 import summary from '../styles/tokens/generated/tokens.summary.json';
+import Logo from '../components/primitives/Logo.astro';
+import Button from '../components/primitives/Button.astro';
+import Chip from '../components/primitives/Chip.astro';
+import KeywordTag from '../components/primitives/KeywordTag.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import SuperscriptNumber from '../components/primitives/SuperscriptNumber.astro';
+import PixelShape from '../components/primitives/PixelShape.astro';
+import Divider from '../components/primitives/Divider.astro';
+import Nav from '../components/layout/Nav.astro';
+import ThemeToggle from '../components/layout/ThemeToggle.astro';
+import MotionToggle from '../components/layout/MotionToggle.astro';
+import SectionHeader from '../components/layout/SectionHeader.astro';
+import CTABand from '../components/layout/CTABand.astro';
+import Footer from '../components/layout/Footer.astro';
+import MenuOverlay from '../components/layout/MenuOverlay.astro';
+import { styleguideFixtures } from '../fixtures/styleguide';
 
 const colors = summary.colors;
 const palette = Object.entries(summary.palette);
@@ -100,6 +116,184 @@ const z = Object.entries(summary.z);
           </li>
         ))}
       </ul>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Primitives (Group 1)</h2>
+      <div class="primitives-grid">
+        <div class="component-demo">
+          <span class="text-label">Logo</span>
+          <div class="demo-box">
+            <Logo
+              brandPrimary={styleguideFixtures.brand.primary}
+              brandSecondary={styleguideFixtures.brand.secondary}
+              ariaLabel={styleguideFixtures.brand.homeAriaLabel}
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Buttons (variants & states)</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.buttons.map((btn) => (
+              <Button
+                variant={btn.variant}
+                showArrow={btn.showArrow}
+                loading={btn.label.includes('Loading')}
+                success={btn.label.includes('Success')}
+                disabled={btn.label.includes('Disabled')}
+              >
+                {btn.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Chips</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.chips.map((chip) => (
+              <Chip variant={chip.variant} active={chip.active}>
+                {chip.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Keyword Tags</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.tags.map((tag) => (
+              <KeywordTag tagIndex={tag.tagIndex}>{tag.text}</KeywordTag>
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Slash Labels</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.slashLabels.map((sl) => (
+              <div class={sl.variant === 'on-feature' ? 'feature-box' : ''}>
+                <SlashLabel label={sl.label} variant={sl.variant} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Superscript Numbers</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.numbers.map((num) => (
+              <span class="text-heading-case">
+                Item
+                <SuperscriptNumber number={num} />
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Pixel Shapes</span>
+          <div class="demo-box demo-row">
+            {styleguideFixtures.primitives.pixelShapes.map((ps) => (
+              <PixelShape variant={ps.variant} accent={ps.accent} />
+            ))}
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Dividers</span>
+          <div class="demo-box demo-stack">
+            <span class="text-body-small">On base:</span>
+            <Divider variant="on-base" />
+            <div class="feature-box">
+              <span class="text-body-small text-white">On feature:</span>
+              <Divider variant="on-feature" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-heading-case">Layout (Group 2)</h2>
+      <div class="primitives-grid">
+        <div class="component-demo">
+          <span class="text-label">Nav & Theme Toggle</span>
+          <div class="demo-box">
+            <Nav
+              brandPrimary={styleguideFixtures.brand.primary}
+              brandSecondary={styleguideFixtures.brand.secondary}
+              navLinks={styleguideFixtures.layout.navLinks}
+              currentPath="/work"
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Section Headers</span>
+          <div class="demo-box demo-stack">
+            <SectionHeader
+              slashLabel={styleguideFixtures.layout.sectionHeader.slashLabel}
+              title={styleguideFixtures.layout.sectionHeader.title}
+              variant="on-light"
+            />
+            <div class="feature-box">
+              <SectionHeader
+                slashLabel="Capabilities"
+                title="Engineering solutions built for scale and speed."
+                variant="on-feature"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">CTA Band</span>
+          <div class="demo-box">
+            <CTABand
+              slashLabel={styleguideFixtures.layout.cta.slashLabel}
+              heading={styleguideFixtures.layout.cta.heading}
+              text={styleguideFixtures.layout.cta.text}
+              buttonLabel={styleguideFixtures.layout.cta.buttonLabel}
+              buttonHref={styleguideFixtures.layout.cta.buttonHref}
+              variant="on-alt"
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Footer & Motion Toggle</span>
+          <div class="demo-box">
+            <Footer
+              pages={styleguideFixtures.layout.footer.pages}
+              socials={styleguideFixtures.layout.footer.socials}
+              localTimeLabel={styleguideFixtures.layout.footer.localTimeLabel}
+              timeZone={styleguideFixtures.layout.footer.timeZone}
+              copyright={styleguideFixtures.layout.footer.copyright}
+            />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Standalone Theme & Motion Toggles</span>
+          <div class="demo-box demo-row">
+            <ThemeToggle label="Theme" />
+            <MotionToggle />
+          </div>
+        </div>
+
+        <div class="component-demo">
+          <span class="text-label">Menu Overlay (Mobile Dialog Preview)</span>
+          <div class="demo-box" style="position: relative; height: 320px; overflow: hidden;">
+            <MenuOverlay
+              links={styleguideFixtures.layout.navLinks}
+              isOpen={true}
+              class="relative-overlay"
+            />
+          </div>
+        </div>
+      </div>
     </section>
 
     <section>
@@ -219,6 +413,48 @@ const z = Object.entries(summary.z);
   .bar {
     height: var(--space-3);
     background: var(--color-accent-primary);
+  }
+
+  .primitives-grid {
+    display: grid;
+    gap: var(--layout-gap-wide);
+  }
+
+  .component-demo {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .demo-box {
+    padding: var(--space-4);
+    background: var(--color-bg-surface);
+  }
+
+  .demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .demo-stack {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .feature-box {
+    background: var(--color-bg-feature);
+    padding: var(--space-3);
+  }
+
+  .text-white {
+    color: var(--color-text-on-feature);
+  }
+
+  .relative-overlay {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .plain {

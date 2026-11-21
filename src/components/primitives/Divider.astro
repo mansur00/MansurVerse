@@ -1,0 +1,41 @@
+---
+interface Props {
+  variant?: 'on-base' | 'on-feature';
+  orientation?: 'horizontal' | 'vertical';
+  class?: string;
+}
+
+const { variant = 'on-base', orientation = 'horizontal', class: className = '' } = Astro.props;
+---
+
+<hr
+  class:list={['divider', `divider-${variant}`, `divider-${orientation}`, className]}
+  aria-hidden="true"
+/>
+
+<style>
+  .divider {
+    margin: 0;
+    padding: 0;
+    border: none;
+    flex-shrink: 0;
+  }
+
+  .divider-horizontal {
+    width: 100%;
+    height: var(--line-hairline);
+  }
+
+  .divider-vertical {
+    width: var(--line-hairline);
+    height: 100%;
+  }
+
+  .divider-on-base {
+    background: var(--color-divider);
+  }
+
+  .divider-on-feature {
+    background: var(--color-divider-on-feature);
+  }
+</style>

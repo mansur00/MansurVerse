@@ -85,6 +85,21 @@
   --text-tag-size: clamp(14px, 2.2vw, 28px);
   --text-tag-line: 1;
   --text-tag-tracking: -0.02em;
+  --text-logo-primary-font: var(--font-display);
+  --text-logo-primary-weight: 400;
+  --text-logo-primary-size: 2.2rem;
+  --text-logo-primary-line: 1;
+  --text-logo-primary-tracking: 0;
+  --text-logo-secondary-font: var(--font-label);
+  --text-logo-secondary-weight: 700;
+  --text-logo-secondary-size: 1.5rem;
+  --text-logo-secondary-line: 1;
+  --text-logo-secondary-tracking: -0.02em;
+  --text-superscript-font: var(--font-label);
+  --text-superscript-weight: 700;
+  --text-superscript-size: 0.75em;
+  --text-superscript-line: 1;
+  --text-superscript-tracking: 0;
 }
 
 .text-display-hero {
@@ -225,4 +240,28 @@
   font-size: var(--text-tag-size);
   line-height: var(--text-tag-line);
   letter-spacing: var(--text-tag-tracking);
+}
+
+.text-logo-primary {
+  font-family: var(--text-logo-primary-font);
+  font-weight: var(--text-logo-primary-weight);
+  font-size: var(--text-logo-primary-size);
+  line-height: var(--text-logo-primary-line);
+  letter-spacing: var(--text-logo-primary-tracking);
+}
+
+.text-logo-secondary {
+  font-family: var(--text-logo-secondary-font);
+  font-weight: var(--text-logo-secondary-weight);
+  font-size: var(--text-logo-secondary-size);
+  line-height: var(--text-logo-secondary-line);
+  letter-spacing: var(--text-logo-secondary-tracking);
+}
+
+.text-superscript {
+  font-family: var(--text-superscript-font);
+  font-weight: var(--text-superscript-weight);
+  font-size: var(--text-superscript-size);
+  line-height: var(--text-superscript-line);
+  letter-spacing: var(--text-superscript-tracking);
 }

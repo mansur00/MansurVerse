@@ -1,0 +1,102 @@
+---
+interface Props {
+  as?: 'span' | 'button' | 'a' | undefined;
+  variant?: 'filled' | 'accent' | 'outlined' | undefined;
+  active?: boolean | undefined;
+  href?: string | undefined;
+  type?: 'button' | 'submit' | undefined;
+  class?: string | undefined;
+  ariaPressed?: boolean | undefined;
+}
+
+const {
+  as: Tag = 'span',
+  variant = 'filled',
+  active = false,
+  href,
+  type = 'button',
+  class: className = '',
+  ariaPressed,
+} = Astro.props;
+
+const isLink = Tag === 'a' || Boolean(href);
+const isButton = Tag === 'button';
+const Element = isLink ? 'a' : isButton ? 'button' : 'span';
+---
+
+{Element === 'a' ? (
+  <a href={href} class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}>
+    <slot />
+  </a>
+) : Element === 'button' ? (
+  <button
+    type={type}
+    class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}
+    aria-pressed={ariaPressed !== undefined ? ariaPressed : active}
+  >
+    <slot />
+  </button>
+) : (
+  <span class:list={['chip', `chip-${variant}`, { 'is-active': active }, className]}>
+    <slot />
+  </span>
+)}
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: var(--text-chip-size);
+    font-weight: var(--text-chip-weight);
+    line-height: var(--text-chip-line);
+    letter-spacing: var(--text-chip-tracking);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background var(--motion-fast) var(--ease-out),
+      color var(--motion-fast) var(--ease-out);
+  }
+
+  .chip-filled {
+    background: var(--chip-filled-bg);
+    color: var(--chip-filled-text);
+    border: none;
+  }
+
+  .chip-accent {
+    background: var(--chip-accent-bg);
+    color: var(--chip-accent-text);
+    border: none;
+  }
+
+  .chip-outlined {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: var(--line-hairline) solid var(--chip-outline-stroke);
+  }
+
+  .chip-outlined.is-active,
+  .chip.is-active {
+    background: var(--chip-accent-bg);
+    color: var(--chip-accent-text);
+    border-color: transparent;
+  }
+
+  button.chip {
+    cursor: pointer;
+  }
+
+  button.chip:hover,
+  a.chip:hover {
+    opacity: 0.9;
+  }
+
+  .chip:focus-visible {
+    outline: var(--line-focus-ring) solid var(--color-focus);
+    outline-offset: var(--line-focus-offset);
+  }
+</style>

@@ -1,0 +1,178 @@
+---
+interface Props {
+  as?: 'button' | 'a' | undefined;
+  variant?: 'primary' | 'inverse' | 'outlined' | undefined;
+  href?: string | undefined;
+  type?: 'button' | 'submit' | 'reset' | undefined;
+  disabled?: boolean | undefined;
+  loading?: boolean | undefined;
+  success?: boolean | undefined;
+  showArrow?: boolean | undefined;
+  arrowDirection?: 'up-right' | 'right' | undefined;
+  class?: string | undefined;
+  ariaLabel?: string | undefined;
+}
+
+const {
+  as: Tag = 'button',
+  variant = 'primary',
+  href,
+  type = 'button',
+  disabled = false,
+  loading = false,
+  success = false,
+  showArrow = false,
+  arrowDirection = 'up-right',
+  class: className = '',
+  ariaLabel,
+} = Astro.props;
+
+const isLink = Tag === 'a' || Boolean(href);
+const arrowChar = arrowDirection === 'up-right' ? '↗' : '→';
+---
+
+{isLink ? (
+  <a
+    href={href}
+    class:list={[
+      'btn',
+      `btn-${variant}`,
+      { 'is-loading': loading, 'is-success': success, 'is-disabled': disabled },
+      className,
+    ]}
+    aria-label={ariaLabel}
+    aria-disabled={disabled ? 'true' : undefined}
+    tabindex={disabled ? -1 : undefined}
+  >
+    <span class="btn-label">
+      <slot />
+    </span>
+    {showArrow && (
+      <span class="btn-arrow" aria-hidden="true">
+        {arrowChar}
+      </span>
+    )}
+  </a>
+) : (
+  <button
+    type={type}
+    disabled={disabled || loading}
+    class:list={[
+      'btn',
+      `btn-${variant}`,
+      { 'is-loading': loading, 'is-success': success },
+      className,
+    ]}
+    aria-label={ariaLabel}
+  >
+    <span class="btn-label">
+      <slot />
+    </span>
+    {showArrow && (
+      <span class="btn-arrow" aria-hidden="true">
+        {arrowChar}
+      </span>
+    )}
+  </button>
+)}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: var(--text-chip-size);
+    font-weight: var(--text-chip-weight);
+    line-height: var(--text-chip-line);
+    letter-spacing: var(--text-chip-tracking);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      opacity var(--motion-fast) var(--ease-out),
+      transform var(--motion-fast) var(--ease-out);
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
+    border: none;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+
+  .btn-inverse {
+    background: var(--button-inverse-bg);
+    color: var(--button-inverse-text);
+    border: none;
+  }
+
+  .btn-inverse:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  .btn-inverse:active:not(:disabled) {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+
+  .btn-outlined {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: var(--line-hairline) solid var(--color-divider);
+  }
+
+  .btn-outlined:hover:not(:disabled) {
+    background: var(--color-bg-alt);
+    transform: translateY(-1px);
+  }
+
+  .btn-outlined:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn:focus-visible {
+    outline: var(--line-focus-ring) solid var(--color-focus);
+    outline-offset: var(--line-focus-offset);
+  }
+
+  .btn:disabled,
+  .btn.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn.is-loading {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
+  .btn.is-success {
+    background: var(--color-accent-primary);
+    color: var(--color-text-on-accent);
+  }
+
+  .btn-arrow {
+    display: inline-block;
+    line-height: 1;
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+
+  .btn:hover .btn-arrow {
+    transform: translate(2px, -2px);
+  }
+</style>

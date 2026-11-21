@@ -1,0 +1,28 @@
+---
+interface Props {
+  number: number | string;
+  pad?: boolean | undefined;
+  class?: string | undefined;
+}
+
+const { number, pad = true, class: className = '' } = Astro.props;
+
+const formatted =
+  pad && typeof number === 'number' ? (number < 10 ? `0${number}` : `${number}`) : `${number}`;
+---
+
+<span class:list={['superscript-number', className]} aria-hidden="true">
+  {formatted}
+</span>
+
+<style>
+  .superscript-number {
+    font-family: var(--font-label);
+    font-size: var(--text-superscript-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    vertical-align: super;
+    line-height: 1;
+    margin-left: 2px;
+  }
+</style>

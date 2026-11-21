@@ -1,0 +1,13 @@
+---
+// Deliberately violates guardrails:
+// 1. Tailwind arbitrary value: w-[200px]
+// 2. Hardcoded visible copy: "Bad hardcoded text"
+// 3. Hardcoded link: href="https://example.com"
+// 4. Hardcoded image path: src="/images/photo.png"
+---
+
+<div class="w-[200px]">
+  <p>Bad hardcoded text</p>
+  <a href="https://example.com">External link</a>
+  <img src="/images/photo.png" alt="photo" />
+</div>

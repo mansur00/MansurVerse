@@ -1,0 +1,97 @@
+---
+import SlashLabel from '../primitives/SlashLabel.astro';
+import Button from '../primitives/Button.astro';
+
+interface Props {
+  slashLabel: string;
+  heading: string;
+  text: string;
+  buttonLabel: string;
+  buttonHref: string;
+  variant?: 'on-base' | 'on-alt' | 'on-feature' | undefined;
+  class?: string | undefined;
+}
+
+const {
+  slashLabel,
+  heading,
+  text,
+  buttonLabel,
+  buttonHref,
+  variant = 'on-base',
+  class: className = '',
+} = Astro.props;
+
+const isFeature = variant === 'on-feature';
+---
+
+<section class:list={['cta-band', `cta-${variant}`, className]}>
+  <div class="cta-inner">
+    <SlashLabel
+      label={slashLabel}
+      variant={isFeature ? 'on-feature' : 'on-light'}
+      class="cta-label"
+    />
+    <h2 class:list={['cta-heading', 'text-heading-section', { 'text-feature': isFeature }]}>
+      {heading}
+    </h2>
+    <p class:list={['cta-text', 'text-body', { 'text-muted-feature': isFeature }]}>{text}</p>
+    <div class="cta-action">
+      <Button href={buttonHref} variant="primary" showArrow={true}>
+        {buttonLabel}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding: var(--layout-section-y) var(--layout-pad);
+    width: 100%;
+  }
+
+  .cta-on-base {
+    background: var(--color-bg-base);
+  }
+
+  .cta-on-alt {
+    background: var(--color-bg-alt);
+  }
+
+  .cta-on-feature {
+    background: var(--color-bg-feature);
+  }
+
+  .cta-inner {
+    max-width: 56ch;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .cta-heading {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .cta-heading.text-feature {
+    color: var(--color-text-on-feature);
+  }
+
+  .cta-text {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .cta-text.text-muted-feature {
+    color: var(--color-text-on-feature);
+    opacity: 0.8;
+  }
+
+  .cta-action {
+    margin-top: var(--space-3);
+  }
+</style>

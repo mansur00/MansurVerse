@@ -102,6 +102,7 @@
   --color-focus: var(--palette-black);
   --color-focus-on-feature: var(--palette-lime);
   --color-digit-field: var(--palette-black-40);
+  --color-error: var(--palette-coral);
   --card-bg: var(--color-bg-card);
   --card-text: var(--color-text-on-accent);
   --chip-accent-bg: var(--color-accent-primary);

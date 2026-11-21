@@ -1,0 +1,51 @@
+---
+interface Props {
+  tagIndex?: 1 | 2 | 3 | 4 | undefined;
+  class?: string | undefined;
+  style?: string | undefined;
+}
+
+const { tagIndex = 1, class: className = '', style = '' } = Astro.props;
+---
+
+<span class:list={['keyword-tag', `tag-${tagIndex}`, className]} style={style}>
+  <slot />
+</span>
+
+<style>
+  .keyword-tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: var(--radius-none);
+    font-family: var(--font-body);
+    font-size: var(--text-tag-size);
+    font-weight: var(--text-tag-weight);
+    line-height: var(--text-tag-line);
+    letter-spacing: var(--text-tag-tracking);
+    color: var(--tag-text);
+    z-index: var(--z-tag);
+    white-space: nowrap;
+    transition: transform var(--motion-fast) var(--ease-out);
+    user-select: none;
+  }
+
+  .keyword-tag:hover {
+    transform: scale(1.15);
+  }
+
+  .tag-1 {
+    background: var(--tag-bg-1);
+  }
+
+  .tag-2 {
+    background: var(--tag-bg-2);
+  }
+
+  .tag-3 {
+    background: var(--tag-bg-3);
+  }
+
+  .tag-4 {
+    background: var(--tag-bg-4);
+  }
+</style>
