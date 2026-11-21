@@ -105,6 +105,7 @@
 | D-97 | Build-time content validation script `scripts/check-content.mjs` integrated into `pnpm run verify`, checking unique order and slugs, allowed categories, required headings in MDX body in order, compare image dimension equality, alt text presence, and placeholder warnings | Decided | Build-time content safety |
 | D-98 | Generic placeholder content created in English for all 6 projects, capabilities, process, values, stats, experience, skills, open-to, profile, and home copy with `placeholder: true`. `site.timezone` set to temporary placeholder UTC until owner provides IANA timezone (O-16) | Decided | Phase 4 placeholder content |
 | D-99 | Flat-fill vector placeholder assets created in `public/assets/` for projects, compare before/after, profile portrait, and default social share OG image | Decided | Media asset placeholders |
+| D-100 | Full BaseLayout implemented per `pages-and-routing.md` and `seo-and-metadata.md`: strict head order, Jersey 20 and Plus Jakarta Sans font preloads, inline theme script, canonical URL, Open Graph, Twitter metadata, theme-color, skip link, and layout persistence for Nav and Footer | Decided | Full BaseLayout implementation |
 
 ## Open Items
 
