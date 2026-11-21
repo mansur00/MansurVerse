@@ -1,0 +1,224 @@
+---
+export interface Props {
+  name: string;
+  id?: string | undefined;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'url' | 'search' | 'password' | 'textarea' | undefined;
+  as?: 'input' | 'textarea' | undefined;
+  placeholder?: string | undefined;
+  value?: string | undefined;
+  state?: 'idle' | 'focus' | 'filled' | 'error' | 'disabled' | undefined;
+  errorMessage?: string | undefined;
+  hintMessage?: string | undefined;
+  required?: boolean | undefined;
+  disabled?: boolean | undefined;
+  autocomplete?: string | undefined;
+  rows?: number | undefined;
+  class?: string | undefined;
+}
+
+const {
+  name,
+  id = name,
+  label,
+  type = 'text',
+  as = type === 'textarea' ? 'textarea' : 'input',
+  placeholder = ' ',
+  value = '',
+  state = 'idle',
+  errorMessage,
+  hintMessage,
+  required = false,
+  disabled = state === 'disabled',
+  autocomplete,
+  rows = 4,
+  class: className = '',
+} = Astro.props;
+
+const isError = state === 'error' || Boolean(errorMessage);
+const isTextarea = as === 'textarea' || type === 'textarea';
+const messageId = `${id}-message`;
+---
+
+<div
+  class:list={[
+    'form-field',
+    `is-${state}`,
+    { 'has-error': isError, 'is-disabled': disabled },
+    className,
+  ]}
+  data-state={state}
+>
+  <div class="field-control">
+    {isTextarea ? (
+      <textarea
+        id={id}
+        name={name}
+        rows={rows}
+        placeholder={placeholder}
+        disabled={disabled}
+        required={required}
+        autocomplete={autocomplete}
+        aria-invalid={isError ? 'true' : undefined}
+        aria-describedby={isError || hintMessage ? messageId : undefined}
+        class="field-input field-textarea"
+      >{value}</textarea>
+    ) : (
+      <input
+        id={id}
+        name={name}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        required={required}
+        autocomplete={autocomplete}
+        aria-invalid={isError ? 'true' : undefined}
+        aria-describedby={isError || hintMessage ? messageId : undefined}
+        class="field-input"
+      />
+    )}
+    <label for={id} class="field-label">
+      {label}
+      {required && (
+        <span class="required-mark" aria-hidden="true">
+          *
+        </span>
+      )}
+    </label>
+  </div>
+
+  {isError && errorMessage ? (
+    <div id={messageId} class="field-message error-message" role="alert">
+      <svg
+        class="message-icon"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5" />
+        <path d="M7 4V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <circle cx="7" cy="10" r="0.75" fill="currentColor" />
+      </svg>
+      <span class="message-text">{errorMessage}</span>
+    </div>
+  ) : hintMessage ? (
+    <div id={messageId} class="field-message hint-message">
+      <span class="message-text">{hintMessage}</span>
+    </div>
+  ) : null}
+</div>
+
+<style>
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .field-control {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-bg-alt);
+    border-radius: var(--radius-none);
+    transition: background-color var(--motion-fast) var(--ease-out);
+  }
+
+  .field-input {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line);
+    padding: var(--space-md) var(--space-sm) var(--space-2xs) var(--space-sm);
+  }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 120px;
+    padding-top: var(--space-lg);
+  }
+
+  .field-label {
+    position: absolute;
+    left: var(--space-sm);
+    top: var(--space-xs);
+    font-family: var(--font-label);
+    font-size: var(--text-label-size);
+    line-height: var(--text-label-line);
+    letter-spacing: var(--text-label-tracking);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transform-origin: left top;
+    transform: translateY(var(--space-2xs));
+    transition:
+      transform var(--motion-fast) var(--ease-out),
+      color var(--motion-fast) var(--ease-out);
+  }
+
+  .field-textarea ~ .field-label {
+    transform: translateY(0);
+  }
+
+  .is-focus .field-label,
+  .is-filled .field-label {
+    transform: translateY(0);
+    color: var(--color-text-primary);
+  }
+
+  .has-error .field-label {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .field-input:focus ~ .field-label,
+  .field-input:not(:placeholder-shown) ~ .field-label {
+    transform: translateY(0);
+    color: var(--color-text-primary);
+  }
+
+  .is-disabled {
+    opacity: 0.5;
+  }
+
+  .required-mark {
+    margin-left: var(--space-3xs);
+    color: var(--color-text-primary);
+  }
+
+  .field-message {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    margin-top: var(--space-3xs);
+    font-family: var(--font-body);
+    font-size: var(--text-label-size);
+    line-height: var(--text-label-line);
+  }
+
+  .field-message.error-message {
+    background-color: var(--color-error);
+    color: var(--color-text-on-accent);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-none);
+  }
+
+  .field-message.hint-message {
+    color: var(--color-text-muted);
+  }
+
+  .message-icon {
+    flex-shrink: 0;
+  }
+
+  .message-text {
+    flex: 1;
+  }
+</style>

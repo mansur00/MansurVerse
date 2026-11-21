@@ -118,6 +118,69 @@ export interface StyleguideFixtures {
       links: Array<{ label: string; href: string }>;
       sections: Array<{ id: string; label: string }>;
     };
+    forms: {
+      fields: {
+        idle: { name: string; label: string };
+        focus: {
+          name: string;
+          label: string;
+          state: 'focus';
+          value: string;
+        };
+        filled: {
+          name: string;
+          label: string;
+          state: 'filled';
+          value: string;
+        };
+        error: {
+          name: string;
+          label: string;
+          state: 'error';
+          value: string;
+          errorMessage: string;
+        };
+        disabled: {
+          name: string;
+          label: string;
+          state: 'disabled';
+          value: string;
+          disabled: boolean;
+        };
+        textarea: {
+          name: string;
+          label: string;
+          as: 'textarea';
+          rows: number;
+        };
+      };
+      formStates: {
+        idle: { state: 'idle'; submitText: string };
+        sending: {
+          state: 'sending';
+          nameValue: string;
+          emailValue: string;
+          messageValue: string;
+          sendingText: string;
+        };
+        sent: {
+          state: 'sent';
+          nameValue: string;
+          emailValue: string;
+          messageValue: string;
+          sentText: string;
+        };
+        failed: {
+          state: 'failed';
+          nameValue: string;
+          emailValue: string;
+          messageValue: string;
+          failedText: string;
+          fallbackLabel: string;
+          fallbackEmail: string;
+        };
+      };
+    };
   };
 }
 
@@ -375,6 +438,69 @@ export const styleguideFixtures: StyleguideFixtures = {
         { id: 'solution', label: 'The Solution' },
         { id: 'results', label: 'Results & Impact' },
       ],
+    },
+    forms: {
+      fields: {
+        idle: { name: 'sample-idle', label: 'Your Full Name' },
+        focus: {
+          name: 'sample-focus',
+          label: 'Email Address',
+          state: 'focus' as const,
+          value: 'mansur@',
+        },
+        filled: {
+          name: 'sample-filled',
+          label: 'Company / Studio',
+          state: 'filled' as const,
+          value: 'MansurVerse Studio',
+        },
+        error: {
+          name: 'sample-error',
+          label: 'Project Budget',
+          state: 'error' as const,
+          value: 'None',
+          errorMessage: 'Please enter a valid estimate or budget range',
+        },
+        disabled: {
+          name: 'sample-disabled',
+          label: 'Referral Source',
+          state: 'disabled' as const,
+          value: 'Read-only field',
+          disabled: true,
+        },
+        textarea: {
+          name: 'sample-textarea',
+          label: 'Tell me about the project',
+          as: 'textarea' as const,
+          rows: 4,
+        },
+      },
+      formStates: {
+        idle: { state: 'idle' as const, submitText: 'Send message' },
+        sending: {
+          state: 'sending' as const,
+          nameValue: 'Elena Rostova',
+          emailValue: 'elena@example.com',
+          messageValue: 'We would love to discuss a design system project.',
+          sendingText: 'Sending…',
+        },
+        sent: {
+          state: 'sent' as const,
+          nameValue: 'Elena Rostova',
+          emailValue: 'elena@example.com',
+          messageValue: 'We would love to discuss a design system project.',
+          sentText: 'Sent ✓',
+        },
+        failed: {
+          state: 'failed' as const,
+          nameValue: 'Elena Rostova',
+          emailValue: 'elena@example.com',
+          messageValue: 'We would love to discuss a design system project.',
+          failedText: 'Failed to send message. Please retry or email directly.',
+          fallbackLabel: 'Send via email client instead',
+          fallbackEmail: 'mansur@mansurverse.dev',
+        },
+      },
     },
   },
 };

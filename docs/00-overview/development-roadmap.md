@@ -27,7 +27,7 @@
 **Goal:** the full component library without motion.
 **Deliverables:** nav, button/pill, chip (filled and outlined), keyword tag, "/" label, project card, capability row, process step, stat tile, value row, job row, marquee, form fields, footer, cursor element.
 **Docs:** `component-specs.md`, `style-guide.md`, `ui-layout.md`.
-**Exit:** every component matches its spec; no hardcoded values.
+**Exit:** every component matches its spec; no hardcoded values. (Complete across 4 feature branches, awaiting owner review)
 
 ### Phase 4: Content and pages
 **Goal:** every page and section complete with placeholder content.
