@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm run tokens:build && astro dev",
     "build": "pnpm run tokens:build && astro build && node scripts/strip-styleguide.mjs",
-    "build:e2e": "PUBLIC_E2E=true pnpm run build",
+    "build:e2e": "PUBLIC_E2E=true PUBLIC_ENABLE_DEBUG=true pnpm run build",
     "preview": "astro preview --ignore-lock",
     "check": "astro check",
     "lint": "eslint .",

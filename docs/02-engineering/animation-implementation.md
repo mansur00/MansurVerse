@@ -95,7 +95,12 @@ GSAP's ticker drives Lenis; Lenis scroll events call `ScrollTrigger.update`; lag
 ## 7. Digit Field (I-05)
 
 - OGL renderer on a canvas behind the hero (`#digit-field-canvas`), `aria-hidden="true"`, loaded via dynamic import after first paint (`requestIdleCallback` with fallback timeout) so the `h1` remains the LCP.
-- Canvas styled with tokens `--color-digit-field`, `--opacity-digit-field`, and `--blur-digit-field`. GSAP intro animations preserve the token-driven inline opacity via `clearProps: 'opacity'`.
+- CSS filter blur removed from canvas: softness is achieved through bilinear texture filtering (`gl.LINEAR`) on the glyph atlas, avoiding GPU compositor filter invalidation during scrolling.
+- Coordinate system & CSS pixels: all uniforms (`uResolution`, `uPointer`, `uCellSize`, `uFlipRadius`, `uFalloffRadius`) are passed strictly in CSS pixels. Distance calculations in the fragment shader compute distance from the CSS pixel cell center (`cellCenter = (cellCoord + 0.5) * uCellSize`), ensuring identical falloff curves across DPR 1.0, 1.5, 2.0 and low power without glyph tearing.
+- Touch & Coarse pointers: coarse pointers render a single static frame and immediately halt the GSAP ticker loop. Re-renders only on window resize or theme changes.
+- Scroll pause: on all fine-pointer devices, the WebGL render loop pauses during page scrolling and resumes 150ms after scrolling ceases.
+- Live reactive toggles: listens to `THEME_CHANGE_EVENT` and `MOTION_CHANGE_EVENT`. Theme changes update `uColor` immediately; motion toggle pauses ticker and clears pointer without requiring a page reload.
+- Statement scrub optimization: single ScrollTrigger per statement paragraph; dirty checks `activeIndex` and updates only newly activated/deactivated word classes.
 - Double alpha removed: `--color-digit-field` is opaque theme text colour (`#000000` in light, `#F1F1F1` in dark); visible strength is derived strictly from per-digit shader falloff and the canvas opacity token (`--opacity-digit-field: 0.45`).
 - WebGL alpha & blending: Renderer initialized with `premultipliedAlpha: true`, Program uses `blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)` and `transparent: true`, and the fragment shader outputs premultiplied `vec4(uColor.rgb * alpha, alpha)`. This prevents compositor buffer corruption and crushed contrast.
 - Adjustable tokens in `tokens.json` under `digit-field`:

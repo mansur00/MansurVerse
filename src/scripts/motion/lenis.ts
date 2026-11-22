@@ -4,6 +4,7 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { isReducedMotion, MOTION_CHANGE_EVENT } from './context';
+import { isFeatureDisabled } from '../debug/features';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +20,8 @@ export function getLenis(): Lenis | null {
  */
 export function initLenis(): Lenis | null {
   if (typeof window === 'undefined') return null;
+
+  if (isFeatureDisabled('lenis')) return null;
 
   if (isReducedMotion()) {
     destroyLenis();

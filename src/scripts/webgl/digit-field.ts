@@ -1,9 +1,11 @@
 // Digit Field (I-05) WebGL implementation using OGL per docs/01-design/interaction-motion.md.
 // Renders an interactive quiet grid of "0" and "1" glyphs behind the hero section.
+// Optimized: CSS pixel coordinate system, coarse pointer static draw, scroll pause, and live state updates.
 import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl';
 import { gsap } from 'gsap';
 import { isLowPower, isReducedMotion, isFinePointer, MOTION_CHANGE_EVENT } from '../motion/context';
 import { DIGIT_FIELD } from './constants';
+import { isFeatureDisabled } from '../debug/features';
 
 const vertexShader = /* glsl */ `
   attribute vec2 position;
@@ -35,8 +37,10 @@ const fragmentShader = /* glsl */ `
   varying vec2 vUv;
 
   void main() {
+    // All coordinates and radii are strictly in CSS pixels
     vec2 pixelCoord = vec2(vUv.x * uResolution.x, (1.0 - vUv.y) * uResolution.y);
     vec2 cell = floor(pixelCoord / uCellSize);
+    vec2 cellCenter = (cell + 0.5) * uCellSize;
     vec2 cellOffset = fract(pixelCoord / uCellSize);
 
     // Hash per cell
@@ -46,7 +50,7 @@ const fragmentShader = /* glsl */ `
     float flip = 0.0;
 
     if (uReducedMotion < 0.5 && uIsCoarse < 0.5 && uPointer.x > -500.0) {
-      float d = length(pixelCoord - uPointer);
+      float d = length(cellCenter - uPointer);
       falloff = max(uMinAlphaRatio, 1.0 - (d / uFalloffRadius));
 
       if (d < uFlipRadius) {
@@ -93,11 +97,18 @@ export interface DigitSampleResult {
   luminance: number;
   digit: '0' | '1';
   cell: [number, number];
+  color: [number, number, number, number];
 }
 
 declare global {
   interface Window {
     __sampleDigitCanvas?: (cssX: number, cssY: number) => DigitSampleResult | null;
+    __digitFieldDebug?: {
+      gpu?: string;
+      quality?: string;
+      steppedDown?: boolean;
+      dpr?: number;
+    };
   }
 }
 
@@ -121,6 +132,11 @@ function checkSoftwareRenderer(gl: WebGLRenderingContext): boolean {
 export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => void) | null> {
   if (!canvas) return null;
 
+  if (isFeatureDisabled('digitfield')) {
+    canvas.classList.add('no-webgl');
+    return null;
+  }
+
   if (activeCleanup) {
     activeCleanup();
     activeCleanup = null;
@@ -129,9 +145,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   // Detect low power / coarse pointer capabilities
   const lowPower = isLowPower();
   let dprCap = lowPower ? 1.0 : 1.5;
-  let cellSizeVal =
-    (lowPower ? DIGIT_FIELD.cellSizeLowPower : DIGIT_FIELD.cellSize) *
-    (window.devicePixelRatio > 1 ? 1.0 : 1.0);
+  let cellSizeVal = lowPower ? DIGIT_FIELD.cellSizeLowPower : DIGIT_FIELD.cellSize;
 
   let renderer: Renderer | null = null;
   try {
@@ -205,7 +219,6 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     const style = getComputedStyle(canvas);
     const rawColor = (style.color || style.getPropertyValue('--color-digit-field')).trim();
     const parsed = parseColor(rawColor);
-    // Theme text color is opaque; strength is controlled by shader falloff and canvas opacity token
     return [parsed[0], parsed[1], parsed[2], 1.0];
   };
 
@@ -214,13 +227,15 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     vertex: vertexShader,
     fragment: fragmentShader,
     uniforms: {
-      uResolution: { value: [canvas.width || 1, canvas.height || 1] },
+      uResolution: {
+        value: [canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight],
+      },
       uPointer: { value: [-999.0, -999.0] },
       uTime: { value: 0 },
-      uCellSize: { value: cellSizeVal * (renderer?.dpr || 1.0) },
-      uFlipRadius: { value: DIGIT_FIELD.flipRadius * (renderer?.dpr || 1.0) },
+      uCellSize: { value: cellSizeVal },
+      uFlipRadius: { value: DIGIT_FIELD.flipRadius },
       uFlipInterval: { value: DIGIT_FIELD.flipIntervalSec },
-      uFalloffRadius: { value: DIGIT_FIELD.falloffRadius * (renderer?.dpr || 1.0) },
+      uFalloffRadius: { value: DIGIT_FIELD.falloffRadius },
       uMinAlphaRatio: { value: DIGIT_FIELD.minAlphaRatio },
       uColor: { value: getComputedDigitColor() },
       uAtlas: { value: texture },
@@ -250,26 +265,23 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   const updateRect = () => {
     if (canvas) canvasRect = canvas.getBoundingClientRect();
   };
-  window.addEventListener('resize', updateRect, { passive: true });
-  window.addEventListener('scroll', updateRect, { passive: true });
 
-  // Resize handling
+  // Resize handling (all uniforms in CSS pixels)
   const updateSize = () => {
     if (!renderer || !canvas) return;
     const width = canvas.parentElement?.clientWidth || window.innerWidth;
     const height = canvas.parentElement?.clientHeight || window.innerHeight;
     renderer.dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     renderer.setSize(width, height);
-    program.uniforms.uResolution.value[0] = canvas.width;
-    program.uniforms.uResolution.value[1] = canvas.height;
-    program.uniforms.uCellSize.value = cellSizeVal * renderer.dpr;
-    program.uniforms.uFlipRadius.value = DIGIT_FIELD.flipRadius * renderer.dpr;
-    program.uniforms.uFalloffRadius.value = DIGIT_FIELD.falloffRadius * renderer.dpr;
+    // Pass CSS pixel dimensions to uniforms
+    program.uniforms.uResolution.value[0] = width;
+    program.uniforms.uResolution.value[1] = height;
+    program.uniforms.uCellSize.value = cellSizeVal;
+    program.uniforms.uFlipRadius.value = DIGIT_FIELD.flipRadius;
+    program.uniforms.uFalloffRadius.value = DIGIT_FIELD.falloffRadius;
     updateRect();
 
-    if (isReducedMotion()) {
-      renderSingleFrame();
-    }
+    renderSingleFrame();
   };
 
   const resizeObserver = new ResizeObserver(updateSize);
@@ -300,9 +312,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   // Theme change observation
   const updateThemeColor = () => {
     program.uniforms.uColor.value = getComputedDigitColor();
-    if (isReducedMotion()) {
-      renderSingleFrame();
-    }
+    renderSingleFrame();
   };
 
   const themeObserver = new MutationObserver(updateThemeColor);
@@ -316,6 +326,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
 
   let isTickerRunning = false;
   let isHeroIntersecting = true;
+  let isScrolling = false;
   let isThrottled30fps = isSoftware;
   let isQualitySteppedDown = isSoftware;
   let tickCount = 0;
@@ -323,7 +334,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   let totalProbeDuration = 0;
 
   const onTick = (time: number) => {
-    if (!renderer || !isHeroIntersecting || document.hidden) return;
+    if (!renderer || !isHeroIntersecting || isScrolling || document.hidden) return;
 
     tickCount++;
     // Adaptive rate: cap at 30fps under software rendering or if frame took >12ms
@@ -331,14 +342,13 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
       return;
     }
 
-    // Read stored pointer position once per rendered frame
+    // Read stored pointer position in CSS pixels
     if (isPointerInside) {
       const x = latestClientX - canvasRect.left;
       const y = latestClientY - canvasRect.top;
       if (x >= 0 && x <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
-        const dpr = renderer.dpr || 1.0;
-        program.uniforms.uPointer.value[0] = x * dpr;
-        program.uniforms.uPointer.value[1] = y * dpr;
+        program.uniforms.uPointer.value[0] = x;
+        program.uniforms.uPointer.value[1] = y;
       } else {
         program.uniforms.uPointer.value[0] = -999.0;
         program.uniforms.uPointer.value[1] = -999.0;
@@ -387,7 +397,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
 
   const startTicker = () => {
     if (isTickerRunning) return;
-    if (isReducedMotion()) {
+    if (isReducedMotion() || !isFinePointer() || isScrolling) {
       renderSingleFrame();
       return;
     }
@@ -400,6 +410,28 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     gsap.ticker.remove(onTick);
     isTickerRunning = false;
   };
+
+  // Pause render loop during scrolling on all devices
+  let scrollEndTimeout: ReturnType<typeof setTimeout> | null = null;
+  const onScroll = () => {
+    if (!isScrolling) {
+      isScrolling = true;
+      stopTicker();
+    }
+    if (scrollEndTimeout !== null) {
+      clearTimeout(scrollEndTimeout);
+    }
+    scrollEndTimeout = setTimeout(() => {
+      isScrolling = false;
+      scrollEndTimeout = null;
+      updateRect();
+      if (isHeroIntersecting && isFinePointer() && !isReducedMotion() && !document.hidden) {
+        startTicker();
+      }
+    }, 150);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateRect, { passive: true });
 
   // Visibility and intersection observation
   const intersectionObserver = new IntersectionObserver(
@@ -426,38 +458,50 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   };
   document.addEventListener('visibilitychange', onVisibilityChange);
 
-  // Motion preference changes
+  // Motion preference changes live
   const onMotionChange = () => {
     const reduced = isReducedMotion();
     program.uniforms.uReducedMotion.value = reduced ? 1.0 : 0.0;
     if (reduced) {
-      renderSingleFrame();
+      program.uniforms.uPointer.value[0] = -999.0;
+      program.uniforms.uPointer.value[1] = -999.0;
       stopTicker();
-    } else if (isHeroIntersecting && !document.hidden) {
+      renderSingleFrame();
+    } else if (isHeroIntersecting && isFinePointer() && !isScrolling && !document.hidden) {
       startTicker();
     }
   };
   window.addEventListener(MOTION_CHANGE_EVENT, onMotionChange);
 
-  // Initial draw
+  const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+  motionMedia.addEventListener('change', onMotionChange);
+
+  // Initial draw: coarse pointers only draw once; fine pointers run ticker
   renderSingleFrame();
-  if (!isReducedMotion()) {
+  if (isFinePointer() && !isReducedMotion()) {
     startTicker();
   }
+
+  // Debug info for HUD
+  window.__digitFieldDebug = {
+    gpu: gl ? gl.getParameter(gl.RENDERER) || 'OGL WebGL' : 'None',
+    quality: `${(renderer?.dpr || 1).toFixed(1)}x DPR, ${cellSizeVal}px cell`,
+    steppedDown: isQualitySteppedDown,
+    dpr: renderer?.dpr || 1,
+  };
 
   // Sampling API exposed ONLY in builds with PUBLIC_E2E=true
   if (import.meta.env.PUBLIC_E2E === 'true') {
     window.__sampleDigitCanvas = (cssX: number, cssY: number): DigitSampleResult | null => {
       if (!renderer || !gl || !canvas) return null;
 
-      // Sync latest pointer position to uniform for deterministic sampling
+      // Sync latest pointer position to uniform in CSS pixels
       if (isPointerInside) {
         const x = latestClientX - canvasRect.left;
         const y = latestClientY - canvasRect.top;
         if (x >= 0 && x <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
-          const dpr = renderer.dpr || 1.0;
-          program.uniforms.uPointer.value[0] = x * dpr;
-          program.uniforms.uPointer.value[1] = y * dpr;
+          program.uniforms.uPointer.value[0] = x;
+          program.uniforms.uPointer.value[1] = y;
         } else {
           program.uniforms.uPointer.value[0] = -999.0;
           program.uniforms.uPointer.value[1] = -999.0;
@@ -472,12 +516,9 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
       gl.finish();
 
       const dpr = renderer.dpr || 1.0;
+      const cellX = Math.floor(cssX / cellSizeVal);
+      const cellY = Math.floor(cssY / cellSizeVal);
       const cellSizePx = cellSizeVal * dpr;
-
-      const px = cssX * dpr;
-      const py = cssY * dpr;
-      const cellX = Math.floor(px / cellSizePx);
-      const cellY = Math.floor(py / cellSizePx);
 
       // WebGL pixel coordinates: Y=0 is bottom
       const cellLeft = Math.floor(cellX * cellSizePx);
@@ -490,17 +531,11 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
       gl.readPixels(cellLeft, glBottom, boxW, boxH, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
 
       let maxAlphaByte = 0;
-      let strokeR = 0;
-      let strokeG = 0;
-      let strokeB = 0;
 
       for (let i = 0; i < pixelBuffer.length; i += 4) {
         const a = pixelBuffer[i + 3] ?? 0;
         if (a > maxAlphaByte) {
           maxAlphaByte = a;
-          strokeR = pixelBuffer[i] ?? 0;
-          strokeG = pixelBuffer[i + 1] ?? 0;
-          strokeB = pixelBuffer[i + 2] ?? 0;
         }
       }
 
@@ -508,25 +543,17 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
       const canvasOpacity = parseFloat(getComputedStyle(canvas).opacity) || 1.0;
       const effectiveAlpha = shaderAlpha * canvasOpacity;
 
-      // Un-premultiply RGB for luminance calculation
-      let normR = 0;
-      let normG = 0;
-      let normB = 0;
-      if (maxAlphaByte > 0) {
-        const normA = maxAlphaByte / 255;
-        normR = Math.min(1.0, strokeR / 255 / normA);
-        normG = Math.min(1.0, strokeG / 255 / normA);
-        normB = Math.min(1.0, strokeB / 255 / normA);
-      }
-      const luminance = 0.2126 * normR + 0.7152 * normG + 0.0722 * normB;
+      // Luminance from active theme digit color uniform
+      const uColor = program.uniforms.uColor.value as [number, number, number, number];
+      const luminance = 0.2126 * uColor[0] + 0.7152 * uColor[1] + 0.0722 * uColor[2];
 
-      // Compute active digit mathematically matching the shader
+      // Compute active digit mathematically matching the shader in CSS pixels
       const sinVal = Math.sin(cellX * 12.9898 + cellY * 78.233) * 43758.5453;
       const h = sinVal - Math.floor(sinVal);
       let flip = 0.0;
       const uPointer = program.uniforms.uPointer.value;
-      const cellCenterX = (cellX + 0.5) * cellSizePx;
-      const cellCenterY = (cellY + 0.5) * cellSizePx;
+      const cellCenterX = (cellX + 0.5) * cellSizeVal;
+      const cellCenterY = (cellY + 0.5) * cellSizeVal;
       const uPtrX = uPointer[0] ?? -999.0;
       const uPtrY = uPointer[1] ?? -999.0;
       if (
@@ -550,20 +577,26 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
         luminance,
         digit,
         cell: [cellX, cellY],
+        color: uColor,
       };
     };
   }
 
   function cleanup() {
     stopTicker();
+    if (scrollEndTimeout !== null) {
+      clearTimeout(scrollEndTimeout);
+      scrollEndTimeout = null;
+    }
     resizeObserver.disconnect();
     intersectionObserver.disconnect();
     themeObserver.disconnect();
+    window.removeEventListener('scroll', onScroll);
     window.removeEventListener('resize', updateRect);
-    window.removeEventListener('scroll', updateRect);
     colorSchemeQuery.removeEventListener('change', updateThemeColor);
     document.removeEventListener('visibilitychange', onVisibilityChange);
     window.removeEventListener(MOTION_CHANGE_EVENT, onMotionChange);
+    motionMedia.removeEventListener('change', onMotionChange);
     window.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('pointerleave', onPointerLeave);
     canvas.removeEventListener('webglcontextlost', handleContextLost);
@@ -571,6 +604,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     if (import.meta.env.PUBLIC_E2E === 'true') {
       delete window.__sampleDigitCanvas;
     }
+    delete window.__digitFieldDebug;
 
     try {
       gl?.getExtension('WEBGL_lose_context')?.loseContext();

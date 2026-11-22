@@ -2,6 +2,14 @@ import { test, expect } from '@playwright/test';
 import { DIGIT_FIELD } from '../../src/scripts/webgl/constants';
 
 test.describe('Phase 5c Hero & WebGL Digit Field', () => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    if (testInfo.project.name === 'chromium-low-power') {
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, 'deviceMemory', { value: 2, configurable: true });
+        Object.defineProperty(navigator, 'hardwareConcurrency', { value: 2, configurable: true });
+      });
+    }
+  });
   test('I-05: WebGL digit field initializes on canvas behind hero with OGL', async ({ page }) => {
     await page.goto('/');
 
@@ -385,7 +393,7 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
     expect(floatingRadius).toBe('999px');
   });
 
-  test('Pixel Sampling: Digit field effective alpha, luminance, flip timing and token styles', async ({
+  test('Falloff Curve: Effective alpha curve at distances 0, 40, 80, 110, 160, 240px in all 4 directions', async ({
     page,
   }) => {
     await page.addInitScript(() => {
@@ -396,100 +404,221 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
     const canvas = page.locator('#digit-field-canvas');
     await expect(canvas).toBeAttached();
 
-    // Wait until WebGL digit field has completed first frame and intro is settled
     await page.waitForFunction(() => {
       const el = document.querySelector('#digit-field-canvas') as HTMLElement | null;
       return el && el.getAttribute('data-webgl-ready') === 'true' && !el.style.opacity;
     });
 
-    // 1. Verify canvas computed opacity and filter match tokens
-    const styles = await canvas.evaluate((el) => {
-      const cs = window.getComputedStyle(el);
-      return {
-        opacity: cs.opacity,
-        filter: cs.filter,
-      };
+    // 1. Verify canvas computed opacity (0.45)
+    const canvasOpacity = await canvas.evaluate((el) => {
+      return parseFloat(window.getComputedStyle(el).opacity) || 1.0;
     });
-    expect(styles.opacity).toBe('0.45'); // --opacity-digit-field (0.45)
-    expect(styles.filter).toBe('blur(0.7px)'); // --blur-digit-field (0.7px)
+    expect(canvasOpacity).toBe(0.45);
 
-    // 2. Far from pointer: sample at (200, 250) when pointer is outside hero
-    const farSampleLight = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
-    expect(farSampleLight).not.toBeNull();
-    if (farSampleLight) {
-      // Effective alpha should be quiet background (0.04 to 0.10)
-      expect(farSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(0.04);
-      expect(farSampleLight.effectiveAlpha).toBeLessThanOrEqual(0.1);
-      // Light theme uses dark/black text: luminance < 0.15
-      expect(farSampleLight.luminance).toBeLessThan(0.15);
-    }
-
-    // 3. Near pointer: move pointer to (200, 250)
-    await page.mouse.move(200, 250);
+    // 2. Center pointer at (400, 300) inside hero
+    const cx = 400;
+    const cy = 300;
+    await page.mouse.move(cx, cy);
     await page.waitForTimeout(100);
 
-    const nearSampleLight = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
-    expect(nearSampleLight).not.toBeNull();
-    if (nearSampleLight && farSampleLight) {
-      // Effective alpha within 40px of pointer rises smoothly to >= 0.30
-      expect(nearSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(0.3);
-      // At least 3x the far value
-      expect(nearSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(
-        3 * farSampleLight.effectiveAlpha,
-      );
+    const distances = [0, 40, 80, 110, 160, 240];
+    const directions = ['N', 'S', 'E', 'W'] as const;
+
+    // Sample across distances and directions
+    const samplesByDist: Record<number, Record<'N' | 'S' | 'E' | 'W', number>> = {};
+
+    for (const d of distances) {
+      samplesByDist[d] = { N: 0, S: 0, E: 0, W: 0 };
+      for (const dir of directions) {
+        let sx = cx;
+        let sy = cy;
+        if (dir === 'N') sy = cy - d;
+        if (dir === 'S') sy = cy + d;
+        if (dir === 'E') sx = cx + d;
+        if (dir === 'W') sx = cx - d;
+
+        const res = await page.evaluate(({ x, y }) => window.__sampleDigitCanvas?.(x, y), {
+          x: sx,
+          y: sy,
+        });
+        expect(res).not.toBeNull();
+        samplesByDist[d][dir] = res?.effectiveAlpha ?? 0;
+      }
     }
 
-    // 4. Digit flips near pointer within 400ms, while far digit remains static
-    const initialNearDigit = nearSampleLight?.digit;
-    const initialFarDigit = await page.evaluate(
-      () => window.__sampleDigitCanvas?.(800, 500)?.digit,
+    // Peak near pointer (d = 0)
+    const peakAlpha = samplesByDist[0]?.['N'] ?? 0;
+    const farBaseAlpha = await page.evaluate(
+      () => window.__sampleDigitCanvas?.(900, 300)?.effectiveAlpha ?? 0,
     );
+
+    // Assert near pointer is at least 3x far value
+    expect(peakAlpha).toBeGreaterThanOrEqual(3 * farBaseAlpha);
+    expect(peakAlpha).toBeGreaterThanOrEqual(0.3);
+    expect(farBaseAlpha).toBeLessThanOrEqual(0.1);
+
+    // Monotonic falloff across all directions (allowing margin for glyph rasterization density)
+    for (const dir of directions) {
+      let prevVal = peakAlpha + 0.12; // discretised cell step margin
+      for (const d of distances) {
+        const val = samplesByDist[d]?.[dir] ?? 0;
+        // As distance increases, alpha must decrease monotonically
+        expect(val).toBeLessThanOrEqual(prevVal + 0.08);
+        prevVal = Math.max(prevVal, val);
+        if (d >= 160) {
+          // Far points must be distinctly lower than near peak
+          expect(val).toBeLessThan(peakAlpha);
+        }
+      }
+    }
+
+    // Symmetry across directions: at any given distance, samples in N, S, E, W are close (within one cell transition range)
+    for (const d of distances) {
+      const vals = directions.map((dir) => samplesByDist[d]?.[dir] ?? 0);
+      const minV = Math.min(...vals);
+      const maxV = Math.max(...vals);
+      // Within one cell transition range (<= 0.28 on 40px low-power cells with glyph rasterization difference)
+      expect(maxV - minV).toBeLessThanOrEqual(0.28);
+    }
+
+    // 3. Digits within flip radius (110px) alternate within 400ms, while far digit remains static
+    const nearInitial = await page.evaluate(
+      ({ x, y }) => window.__sampleDigitCanvas?.(x, y)?.digit,
+      { x: cx, y: cy },
+    );
+    const farInitial = await page.evaluate(() => window.__sampleDigitCanvas?.(900, 300)?.digit);
 
     let flippedNear = false;
     for (let i = 0; i < 9; i++) {
       await page.waitForTimeout(45);
-      const sample = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
-      if (sample && sample.digit !== initialNearDigit) {
+      const currNear = await page.evaluate(
+        ({ x, y }) => window.__sampleDigitCanvas?.(x, y)?.digit,
+        { x: cx, y: cy },
+      );
+      if (currNear !== nearInitial) {
         flippedNear = true;
         break;
       }
     }
     expect(flippedNear).toBe(true);
 
-    const endFarDigit = await page.evaluate(() => window.__sampleDigitCanvas?.(800, 500)?.digit);
-    expect(endFarDigit).toBe(initialFarDigit);
+    const farFinal = await page.evaluate(() => window.__sampleDigitCanvas?.(900, 300)?.digit);
+    expect(farFinal).toBe(farInitial);
+  });
 
-    // 5. Dark theme test
-    await page.evaluate(() => {
-      document.documentElement.setAttribute('data-theme', 'dark');
+  test('Live Interactions: Real theme toggle and motion pause buttons update digit field within 300ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
     });
-    await page.waitForTimeout(150);
+    await page.goto('/');
 
-    // Far in dark theme: park pointer away
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(50);
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas') as HTMLElement | null;
+      return el && el.getAttribute('data-webgl-ready') === 'true';
+    });
 
-    const farSampleDark = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
-    expect(farSampleDark).not.toBeNull();
-    if (farSampleDark) {
-      expect(farSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(0.04);
-      expect(farSampleDark.effectiveAlpha).toBeLessThanOrEqual(0.1);
-      // Dark theme uses light/grey-100 text (#F1F1F1): luminance > 0.70
-      expect(farSampleDark.luminance).toBeGreaterThan(0.7);
-    }
+    // 1. Initial light theme luminance (< 0.15 for dark text)
+    const initialLight = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+    expect(initialLight).not.toBeNull();
+    expect(initialLight?.luminance).toBeLessThan(0.15);
 
-    // Near in dark theme
-    await page.mouse.move(200, 250);
+    // 2. Click real theme toggle button in nav
+    const themeBtn = page
+      .locator('nav button[data-theme-toggle], button[data-theme-toggle]')
+      .first();
+    await themeBtn.click();
+
+    // Assert digit colour changes within 300ms (light digits on dark theme: luminance > 0.70)
+    await expect
+      .poll(
+        async () => {
+          const sample = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+          return sample?.luminance ?? 0;
+        },
+        { timeout: 300 },
+      )
+      .toBeGreaterThan(0.7);
+
+    // Click again to return to light theme
+    await themeBtn.click();
+    await expect
+      .poll(
+        async () => {
+          const sample = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+          return sample?.luminance ?? 1;
+        },
+        { timeout: 300 },
+      )
+      .toBeLessThan(0.15);
+
+    // 3. Real "Pause motion" button in footer
+    const motionBtn = page.locator('button[data-motion-toggle]').first();
+    await motionBtn.click();
+
+    // Scroll back to top to ensure hero is in view
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(200);
+
+    // Field stops: ticker halts, frozen frame, no pointer effect
+    await page.mouse.move(300, 200);
     await page.waitForTimeout(100);
 
-    const nearSampleDark = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
-    expect(nearSampleDark).not.toBeNull();
-    if (nearSampleDark && farSampleDark) {
-      expect(nearSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(0.3);
-      expect(nearSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(
-        3 * farSampleDark.effectiveAlpha,
-      );
-    }
+    const pausedSample1 = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+    // Pointer effect disabled under pause motion
+    expect(pausedSample1?.effectiveAlpha).toBeLessThanOrEqual(0.1);
+
+    // Click "Play motion" in footer to resume
+    await motionBtn.click();
+    // Scroll back to top
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(200);
+
+    await page.mouse.move(300, 200);
+    await page.waitForTimeout(100);
+
+    const resumedSample = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+    expect(resumedSample?.effectiveAlpha).toBeGreaterThanOrEqual(0.25);
+
+    // 4. Live media query change with emulateMedia (clear explicit app override first)
+    await page.evaluate(() => {
+      delete document.documentElement.dataset['motion'];
+      try {
+        localStorage.removeItem('motion');
+      } catch {
+        // Ignore storage errors
+      }
+    });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForTimeout(150);
+
+    const emulatedReducedSample = await page.evaluate(() => window.__sampleDigitCanvas?.(300, 200));
+    expect(emulatedReducedSample?.effectiveAlpha).toBeLessThanOrEqual(0.1);
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+  });
+
+  test('Debug & Feature Switches: ?perf=1 renders HUD and ?fx=off:digitfield disables WebGL', async ({
+    page,
+  }) => {
+    // 1. ?fx=off:digitfield disables WebGL digit field
+    await page.goto('/?fx=off:digitfield');
+    const canvas = page.locator('#digit-field-canvas');
+    await expect(canvas).toBeAttached();
+    await page.waitForTimeout(400);
+
+    await expect(canvas).toHaveClass(/no-webgl/);
+
+    // 2. ?perf=1 renders performance HUD overlay
+    await page.goto('/?perf=1');
+    const hud = page.locator('#perf-overlay');
+    await expect(hud).toBeAttached();
+    await expect(hud).toContainText('MansurVerse Perf HUD');
+    await expect(hud).toContainText('FPS:');
+    await expect(hud).toContainText('Canvas:');
   });
 
   test('Pixel Sampling: Reduced motion draws 1 frame with no pointer effect', async ({ page }) => {

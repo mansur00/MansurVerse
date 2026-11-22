@@ -2,15 +2,20 @@
 // Fine pointers only; system cursor remains visible; disabled on touch devices.
 import { gsap } from 'gsap';
 import type { MotionModule } from './registry';
+import { isFeatureDisabled } from '../debug/features';
+import { MOTION_CHANGE_EVENT, isReducedMotion } from './context';
 
 let pointerListener: ((e: PointerEvent) => void) | null = null;
 let pointerLeaveListener: (() => void) | null = null;
+let motionChangeListener: ((e: Event) => void) | null = null;
 let cursorEl: HTMLElement | null = null;
 let labelEl: HTMLElement | null = null;
 let magneticCleanups: (() => void)[] = [];
 
 export const cursorModule: MotionModule = {
   init(root, ctx) {
+    if (isFeatureDisabled('cursor')) return;
+
     if (!ctx.finePointer) {
       if (cursorEl) cursorEl.style.display = 'none';
       return;
@@ -101,11 +106,18 @@ export const cursorModule: MotionModule = {
       };
       updateCenters();
 
+      let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+      const onDebouncedScroll = () => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(updateCenters, 150);
+      };
+
       window.addEventListener('resize', updateCenters, { passive: true });
-      window.addEventListener('scroll', updateCenters, { passive: true });
+      window.addEventListener('scroll', onDebouncedScroll, { passive: true });
       magneticCleanups.push(() => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
         window.removeEventListener('resize', updateCenters);
-        window.removeEventListener('scroll', updateCenters);
+        window.removeEventListener('scroll', onDebouncedScroll);
       });
 
       // Single consolidated mousemove listener with fast bounding-box exit
@@ -164,9 +176,20 @@ export const cursorModule: MotionModule = {
         });
       });
     }
+    motionChangeListener = () => {
+      if (isReducedMotion()) {
+        magneticCleanups.forEach((fn) => fn());
+        magneticCleanups = [];
+      }
+    };
+    window.addEventListener(MOTION_CHANGE_EVENT, motionChangeListener);
   },
 
   cleanup() {
+    if (motionChangeListener) {
+      window.removeEventListener(MOTION_CHANGE_EVENT, motionChangeListener);
+      motionChangeListener = null;
+    }
     if (pointerListener) {
       window.removeEventListener('pointermove', pointerListener);
       pointerListener = null;

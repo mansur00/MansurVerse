@@ -53,9 +53,18 @@ const { ariaLabel = 'Toggle theme', label, class: className = '' } = Astro.props
 <script>
   import { initThemeToggle } from '../../scripts/theme-toggle';
 
-  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
-    initThemeToggle(btn);
-  });
+  function setupThemeToggles(): void {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+      if ((btn as HTMLElement & { __themeInit?: boolean }).__themeInit) return;
+      (btn as HTMLElement & { __themeInit?: boolean }).__themeInit = true;
+      initThemeToggle(btn);
+    });
+  }
+
+  if (typeof window !== 'undefined') {
+    document.addEventListener('astro:page-load', setupThemeToggles);
+    setupThemeToggles();
+  }
 </script>
 
 <style>

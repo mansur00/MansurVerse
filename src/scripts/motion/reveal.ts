@@ -4,14 +4,19 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import type { MotionModule } from './registry';
+import { isFeatureDisabled } from '../debug/features';
+import { MOTION_CHANGE_EVENT, isReducedMotion } from './context';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 let triggers: ScrollTrigger[] = [];
 let splitInstances: SplitText[] = [];
+let revealMotionCleanup: (() => void) | null = null;
 
 export const revealModule: MotionModule = {
   init(root, ctx) {
+    if (isFeatureDisabled('reveal')) return;
+
     if (ctx.reduced) {
       // Content remains visible in final state under reduced motion
       root.querySelectorAll<HTMLElement>('[data-motion="reveal"]').forEach((el) => {
@@ -101,9 +106,33 @@ export const revealModule: MotionModule = {
       });
       triggers.push(trigger);
     });
+
+    const onMotionChange = () => {
+      if (isReducedMotion()) {
+        triggers.forEach((t) => t.kill());
+        triggers = [];
+        root.querySelectorAll<HTMLElement>('[data-motion="reveal"]').forEach((el) => {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+        root
+          .querySelectorAll<HTMLElement>('[data-motion="line-reveal"] .line-child')
+          .forEach((el) => {
+            el.style.transform = 'none';
+          });
+      }
+    };
+    window.addEventListener(MOTION_CHANGE_EVENT, onMotionChange);
+    revealMotionCleanup = () => {
+      window.removeEventListener(MOTION_CHANGE_EVENT, onMotionChange);
+    };
   },
 
   cleanup() {
+    if (revealMotionCleanup) {
+      revealMotionCleanup();
+      revealMotionCleanup = null;
+    }
     triggers.forEach((t) => t.kill());
     triggers = [];
     splitInstances.forEach((s) => {
