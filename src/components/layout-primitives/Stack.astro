@@ -5,7 +5,18 @@ export type StackGap = 'tight' | 'base' | 'loose' | 'section';
 
 interface Props {
   gap?: StackGap | undefined;
-  as?: string | undefined;
+  as?:
+    | 'div'
+    | 'section'
+    | 'article'
+    | 'aside'
+    | 'header'
+    | 'footer'
+    | 'nav'
+    | 'main'
+    | 'ul'
+    | 'ol'
+    | undefined;
   id?: string | undefined;
   class?: string | undefined;
 }

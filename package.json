@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "pnpm run tokens:build && astro dev",
     "build": "pnpm run tokens:build && astro build && node scripts/strip-styleguide.mjs",
-    "preview": "astro preview",
+    "preview": "astro preview --ignore-lock",
     "check": "astro check",
     "lint": "eslint .",
     "lint:css": "stylelint \"src/**/*.{css,astro}\" --allow-empty-input",
@@ -15,12 +15,13 @@
     "tokens:check": "node scripts/tokens-check.mjs",
     "check:conventions": "node scripts/check-conventions.mjs",
     "check:content": "node scripts/check-content.mjs",
+    "check:size": "node scripts/check-bundle-size.mjs",
     "test": "vitest run --passWithNoTests",
     "test:guardrails": "node scripts/test-guardrails.mjs",
     "test:e2e": "playwright test tests/e2e",
     "test:a11y": "playwright test tests/a11y",
     "lighthouse": "echo \"lighthouse arrives in Phase 7\"",
-    "verify": "pnpm run tokens:check && pnpm run check:conventions && pnpm run check:content && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build && pnpm run test:e2e && pnpm run test:a11y",
+    "verify": "pnpm run tokens:check && pnpm run check:conventions && pnpm run check:content && pnpm run format:check && pnpm run check && pnpm run lint && pnpm run lint:css && pnpm run test:guardrails && pnpm run test && pnpm run build && pnpm run check:size && pnpm run test:e2e && pnpm run test:a11y",
     "prepare": "test -d .git && husky || true"
   },
   "lint-staged": {

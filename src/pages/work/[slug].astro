@@ -68,7 +68,7 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
         <Chip variant="filled">{project.data.role}</Chip>
       </div>
 
-      <div class="case-hero-art">
+      <div class="case-hero-art" transition:name={`project-art-${project.id}`}>
         <img
           src={project.data.cover.image}
           alt={project.data.cover.alt}

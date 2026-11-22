@@ -9,7 +9,17 @@ export type FromBreakpoint = 'mobile' | 'tablet' | 'desktop';
 interface Props {
   placement?: Placement | undefined;
   from?: FromBreakpoint | undefined;
-  as?: string | undefined;
+  as?:
+    | 'div'
+    | 'section'
+    | 'article'
+    | 'aside'
+    | 'header'
+    | 'footer'
+    | 'nav'
+    | 'main'
+    | 'li'
+    | undefined;
   id?: string | undefined;
   class?: string | undefined;
 }

@@ -1,6 +1,6 @@
 # Animation Implementation
 
-> How the interactions in `interaction-motion.md` are built. Behaviour and timing are defined there; this file defines mechanisms. Last updated: 2026-11-19.
+> How the interactions in `interaction-motion.md` are built. Behaviour and timing are defined there; this file defines mechanisms. Last updated: 2026-11-22.
 
 ## 1. Decisions
 
@@ -19,18 +19,20 @@
 
 Persistent systems (ticker, Lenis, cursor, theme) are never torn down on navigation.
 
-## 3. Registry
+## 3. Registry & Core (Implemented in Phase 5a)
 
-Files in `src/scripts/motion/`: `ticker.ts`, `lenis.ts`, `registry.ts`, `context.ts`, one file per interaction group.
+Files in `src/scripts/motion/`: `ticker.ts`, `lenis.ts`, `registry.ts`, `context.ts`, `nav.ts`, `menu.ts`.
 
-```ts
-register('reveal', {
-  init(root, ctx) { /* attach; return nothing */ },
-  cleanup() { /* remove listeners, observers, tweens */ },
-});
-```
-
-`ctx` contains: `tokens` (durations, easings from generated TS), `reduced`, `finePointer`, `lowPower`, and the page's `gsap.matchMedia()` instance. Markup opts in with `data-motion="name"` plus data attributes for options (for example `data-motion-stagger`). No interaction code queries elements by class names that belong to styling.
+- **`context.ts`**: Reactive detection of `isReducedMotion()`, `isFinePointer()`, `isLowPower()` (detecting `saveData`, concurrency <= 4, deviceMemory <= 4). Dispatches `'mansurverse:motionchange'` upon toggle. Motion durations and easings imported directly from generated `tokens.ts`.
+- **`ticker.ts`**: Central GSAP ticker driving Lenis via `gsap.ticker.add((time) => lenis.raf(time * 1000))`. `gsap.ticker.lagSmoothing(0)` disables lag smoothing so scroll and tweens stay locked. No competing `requestAnimationFrame` loops.
+- **`lenis.ts`**: Lenis smooth scroll engine (`lerp: 0.1`, ~1.1s feel). Destroyed immediately under reduced motion (`isReducedMotion()`), paused while mobile menu is open, synchronised with `ScrollTrigger.update()`.
+- **`registry.ts`**: Lifecycle coordinator. Holds registered modules, initializes on `astro:page-load`, tears down on `astro:before-swap`, manages scoped `gsap.matchMedia()` instances.
+- **`nav.ts` (I-02)**: Nav hide/show on scroll direction past 120px down (`translateY(-110%)`, `--motion-base`), returns on scroll up, at page top, when focus is inside Nav, or when menu is open. Disabled under reduced motion.
+- **`menu.ts` (I-03 behaviour)**: Mobile `MenuOverlay` controller. Traps keyboard Tab/Shift+Tab focus, closes with Escape key, restores focus to hamburger trigger, pauses Lenis, locks document scroll.
+- **`theme-toggle.ts` (I-01)**: View Transitions circular reveal from button center (600ms, ease-out) where supported, 200ms colour fade fallback otherwise, instant under reduced motion.
+- **`MotionToggle.astro` (I-37)**: Functional toggle button manipulating `data-motion="reduced"` on `<html>`, updating `aria-pressed`, persisting in `localStorage` in try/catch, and initializing from `prefers-reduced-motion`.
+- **`BaseLayout.astro` (I-34)**: `<ClientRouter fallback="swap" />` with `transition:persist` on `Nav` and `Footer`. Moves focus to page `h1` (`tabindex="-1"`) and announces document title in polite live region (`#page-announcer`). Reserved `transition:name` hook on `ProjectCard` and case-study header.
+- **`scripts/check-bundle-size.mjs`**: Automated build-output check verifying client JS remains under the 90KB compressed budget (57.2KB measured).
 
 ## 4. Ticker and Lenis
 

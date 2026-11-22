@@ -1,8 +1,9 @@
 ---
 // Full BaseLayout per docs/02-engineering/pages-and-routing.md and docs/03-quality/seo-and-metadata.md.
 // Strictly manages head order, Open Graph, Twitter metadata, theme-color, font preloads, skip-link, Nav and Footer.
-// Route transitions (<ClientRouter />) and custom cursor arrive in Phase 5 per project roadmap.
+// Route transitions (<ClientRouter />) with persistent Nav/Footer and accessible page title announcements.
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import themeInit from '../scripts/theme-init.js?raw';
 import jersey20Url from '@fontsource/jersey-20/files/jersey-20-latin-400-normal.woff2?url';
 import jakartaUrl from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
@@ -88,8 +89,14 @@ const formattedTitle = title.includes('|')
     <!-- 4. Font Preloads (Jersey 20 display and Plus Jakarta Sans body strictly per tokens-implementation.md) -->
     <link rel="preload" href={jersey20Url} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={jakartaUrl} as="font" type="font/woff2" crossorigin />
+
+    <!-- 5. Astro ClientRouter for View Transitions (I-34) -->
+    <ClientRouter fallback="swap" />
   </head>
   <body>
+    <!-- Polite Live Region for Route Title Announcements -->
+    <div id="page-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <!-- Accessible Skip Link -->
     <a href="#main" class="skip-link">
       {siteConfig.skipLink}
@@ -101,6 +108,7 @@ const formattedTitle = title.includes('|')
         currentPath={Astro.url.pathname}
         brandPrimary={siteConfig.brand.primary}
         brandSecondary={siteConfig.brand.secondary}
+        transition:persist
       />
     )}
 
@@ -121,8 +129,48 @@ const formattedTitle = title.includes('|')
         copyright={siteConfig.footer.copyright}
         pagesTitle={siteConfig.footer.pagesLabel}
         elsewhereTitle={siteConfig.footer.elsewhereLabel}
+        transition:persist
       />
     )}
+
+    <script>
+      import { initTicker } from '../scripts/motion/ticker';
+      import { initLenis } from '../scripts/motion/lenis';
+      import { initAll, cleanupAll } from '../scripts/motion/registry';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+      let isInitial = true;
+
+      function handlePageLoad(): void {
+        initTicker();
+        initLenis();
+        initAll();
+
+        const announcer = document.getElementById('page-announcer');
+        if (announcer) {
+          announcer.textContent = document.title;
+        }
+
+        if (!isInitial) {
+          const h1 = document.querySelector<HTMLElement>('main h1, h1');
+          if (h1) {
+            h1.setAttribute('tabindex', '-1');
+            h1.focus({ preventScroll: true });
+          }
+        }
+        isInitial = false;
+      }
+
+      if (typeof window !== 'undefined') {
+        document.addEventListener('astro:page-load', handlePageLoad);
+        document.addEventListener('astro:before-swap', () => {
+          cleanupAll();
+        });
+        document.addEventListener('astro:after-swap', () => {
+          ScrollTrigger.refresh();
+        });
+      }
+    </script>
   </body>
 </html>
 

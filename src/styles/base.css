@@ -51,10 +51,34 @@ h6 {
   }
 }
 
+html.is-theme-reveal::view-transition-old(root),
+html.is-theme-reveal::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.is-theme-fading,
+html.is-theme-fading * {
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out) !important;
+}
+
 :root[data-motion='reduced'] *,
 :root[data-motion='reduced'] ::before,
 :root[data-motion='reduced'] ::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
