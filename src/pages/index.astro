@@ -176,8 +176,7 @@ const statementWords = homeData.statement.text.split(' ');
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: var(--opacity-digit-field, 0.4);
-    filter: blur(var(--blur-digit-field, 0.7px));
+    opacity: var(--opacity-digit-field, 0.45);
     color: var(--color-digit-field);
     z-index: 0;
   }
@@ -327,11 +326,19 @@ const statementWords = homeData.statement.text.split(' ');
 </style>
 
 <script>
+  import { isFeatureDisabled } from '../scripts/debug/features';
+
   let digitFieldCleanup: (() => void) | null = null;
 
   function setupHeroDigitField(): void {
     const canvas = document.getElementById('digit-field-canvas') as HTMLCanvasElement | null;
     if (!canvas) return;
+
+    if (isFeatureDisabled('digitfield')) {
+      canvas.classList.add('no-webgl');
+      canvas.setAttribute('data-webgl-ready', 'false');
+      return;
+    }
 
     const loadWebGL = () => {
       import('../scripts/webgl/digit-field')

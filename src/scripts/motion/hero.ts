@@ -1,6 +1,8 @@
 // Hero interactions (I-04 Hero Intro & I-06 Tag Shifts) per docs/01-design/interaction-motion.md.
 import { gsap } from 'gsap';
 import type { MotionModule } from './registry';
+import { DIGIT_FIELD } from '../webgl/constants';
+import { isFeatureDisabled } from '../debug/features';
 
 const HERO_INTRO_KEY = 'mansurverse:hero-intro';
 
@@ -63,9 +65,10 @@ export const heroModule: MotionModule = {
         introTimeline.to(
           digitCanvas,
           {
-            opacity: 1,
+            opacity: DIGIT_FIELD.peakOpacity,
             duration: 0.6,
             ease: 'power2.out',
+            clearProps: 'opacity',
           },
           '-=0.4',
         );
@@ -74,11 +77,11 @@ export const heroModule: MotionModule = {
       // Immediate final state
       gsap.set(headingLines, { yPercent: 0 });
       gsap.set(tags, { scale: 1, opacity: 1 });
-      if (digitCanvas) gsap.set(digitCanvas, { opacity: 1 });
+      if (digitCanvas) digitCanvas.style.opacity = '';
     }
 
     // 2. I-06 Hero Keyword Tags pointer shift (Fine pointers only)
-    if (ctx.finePointer && !ctx.reduced && tags.length > 0) {
+    if (!isFeatureDisabled('tags') && ctx.finePointer && !ctx.reduced && tags.length > 0) {
       const offsets = [16, -12, 10];
       const quickTos = Array.from(tags).map((tag) => ({
         x: gsap.quickTo(tag, 'x', { duration: 0.4, ease: 'power2.out' }),
@@ -89,8 +92,14 @@ export const heroModule: MotionModule = {
       const onResizeOrScroll = () => {
         rect = heroSection.getBoundingClientRect();
       };
+      let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+      const onDebouncedScroll = () => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(onResizeOrScroll, 150);
+      };
+
       window.addEventListener('resize', onResizeOrScroll, { passive: true });
-      window.addEventListener('scroll', onResizeOrScroll, { passive: true });
+      window.addEventListener('scroll', onDebouncedScroll, { passive: true });
 
       const onPointerMove = (e: PointerEvent) => {
         const halfW = rect.width / 2 || 1;
@@ -118,8 +127,9 @@ export const heroModule: MotionModule = {
       heroSection.addEventListener('pointerleave', onPointerLeave);
 
       pointerCleanup = () => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
         window.removeEventListener('resize', onResizeOrScroll);
-        window.removeEventListener('scroll', onResizeOrScroll);
+        window.removeEventListener('scroll', onDebouncedScroll);
         heroSection.removeEventListener('pointermove', onPointerMove);
         heroSection.removeEventListener('pointerleave', onPointerLeave);
       };

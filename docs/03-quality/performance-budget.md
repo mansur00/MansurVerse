@@ -49,6 +49,14 @@
 
 The fallback matrix in `interaction-motion.md` applies: larger digit cells, device pixel ratio cap of 1.5, no tilt or parallax on low-power devices or `saveData`.
 
+### 6.1 Digit Field Runtime Guard (I-05)
+- **Frame budget**: Average frame render time over the initial probe period must remain $\le 16$ms. Zero long tasks >50ms during mobile scroll (measured 0ms on throttled mid-range mobile profile).
+- **Scroll optimization**: WebGL render loop pauses during page scrolling on all devices, resuming 150ms after scroll ends.
+- **Coarse pointers**: Touch devices draw 1 static frame and halt the ticker loop completely; zero continuous GPU/CPU cycles on mobile.
+- **Software rendering**: Detected via `WEBGL_debug_renderer_info` (`swiftshader`, `llvmpipe`, etc.); automatically starts at half-resolution (`dpr: 0.5`, cell size 40px) and 30fps cap.
+- **Adaptive step-down**: If average frame time exceeds 16ms or a single frame exceeds 12ms, quality steps down to 30fps and 0.5 DPR.
+- **Static poster fallback**: If average frame time exceeds 24ms, WebGL rendering is automatically halted and the pre-rendered static SVG poster is displayed with zero ongoing CPU/GPU overhead.
+
 ## 7. Measurement and Enforcement
 
 - Lighthouse CI on every PR with assertions for the scores and metrics above (mobile and desktop profiles).

@@ -95,15 +95,30 @@ GSAP's ticker drives Lenis; Lenis scroll events call `ScrollTrigger.update`; lag
 ## 7. Digit Field (I-05)
 
 - OGL renderer on a canvas behind the hero (`#digit-field-canvas`), `aria-hidden="true"`, loaded via dynamic import after first paint (`requestIdleCallback` with fallback timeout) so the `h1` remains the LCP.
-- Canvas styled with tokens `--color-digit-field`, `--opacity-digit-field`, and `--blur-digit-field`.
+- CSS filter blur removed from canvas: softness is achieved through bilinear texture filtering (`gl.LINEAR`) on the glyph atlas, avoiding GPU compositor filter invalidation during scrolling.
+- Coordinate system & CSS pixels: all uniforms (`uResolution`, `uPointer`, `uCellSize`, `uFlipRadius`, `uFalloffRadius`) are passed strictly in CSS pixels. Distance calculations in the fragment shader compute distance from the CSS pixel cell center (`cellCenter = (cellCoord + 0.5) * uCellSize`), ensuring identical falloff curves across DPR 1.0, 1.5, 2.0 and low power without glyph tearing.
+- Touch & Coarse pointers: coarse pointers render a single static frame and immediately halt the GSAP ticker loop. Re-renders only on window resize or theme changes.
+- Scroll pause: on all fine-pointer devices, the WebGL render loop pauses during page scrolling and resumes 150ms after scrolling ceases.
+- Live reactive toggles: listens to `THEME_CHANGE_EVENT` and `MOTION_CHANGE_EVENT`. Theme changes update `uColor` immediately; motion toggle pauses ticker and clears pointer without requiring a page reload.
+- Statement scrub optimization: single ScrollTrigger per statement paragraph; dirty checks `activeIndex` and updates only newly activated/deactivated word classes.
+- Double alpha removed: `--color-digit-field` is opaque theme text colour (`#000000` in light, `#F1F1F1` in dark); visible strength is derived strictly from per-digit shader falloff and the canvas opacity token (`--opacity-digit-field: 0.45`).
+- WebGL alpha & blending: Renderer initialized with `premultipliedAlpha: true`, Program uses `blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)` and `transparent: true`, and the fragment shader outputs premultiplied `vec4(uColor.rgb * alpha, alpha)`. This prevents compositor buffer corruption and crushed contrast.
+- Adjustable tokens in `tokens.json` under `digit-field`:
+  - `peak-opacity`: `0.45` (bound to `--opacity-digit-field`)
+  - `min-alpha`: `0.054` (0.12 ratio of peak opacity; generates quiet background effective alpha between 0.04 and 0.10)
+  - `falloff-radius`: `240px`
+  - `flip-radius`: `110px`
+  - `cell-size`: `28px` (40px on low power)
+  - `glyph-size`: `14px`
+- Pointer tracking: window-level pointer listener computes local canvas coordinates dynamically using `canvas.getBoundingClientRect()` scaled by DPR; sets `[-999, -999]` outside hero bounds to eliminate child-element clipping or scroll desynchronization.
 - A glyph atlas texture of `0` and `1` is drawn once in an offscreen canvas using the label font (Stack Sans Notch 600, loaded via `document.fonts.load`).
-- A fragment shader computes the cell grid (28px standard cell, 40px low power; 14px glyphs), picks the digit by a pseudo-random hash of the cell coordinate, and applies the pointer opacity falloff `max(0.12, 1.0 - d / 240.0)`; digits within the 110px flip radius alternate every `--motion-digit-flip` (160ms).
-- Uniforms: `uResolution`, `uPointer`, `uTime`, `uCellSize`, `uFlipRadius`, `uFalloffRadius`, `uFlipInterval`, `uColor`, `uBaseOpacity`, `uAtlas`.
+- Uniforms: `uResolution`, `uPointer`, `uTime`, `uCellSize`, `uFlipRadius`, `uFalloffRadius`, `uFlipInterval`, `uMinAlphaRatio`, `uColor`, `uAtlas`, `uIsCoarse`, `uReducedMotion`.
 - Device pixel ratio capped at 1.5 (1.0 on low power); resize observer; renders only while visible (`IntersectionObserver`) and while the tab is visible (`!document.hidden`). Driven exclusively by the GSAP ticker (no separate RAF loop).
 - Context loss or init failure adds a `no-webgl` class and the static fallback shows: a pre-rendered SVG poster (`public/assets/digit-field-poster.svg`) generated at build time, applied as a CSS background on the canvas.
 - Reduced motion: renders a single static frame and halts ticker.
 - Touch devices: coarse pointer suppresses pointer reactivity to preserve performance and avoid phantom hover states.
 - Flash safety (WCAG 2.3.1): digit flip area at 110px radius is ~3.71% of viewport (<5% threshold, far below the 25% WCAG limit), posing zero seizure hazard.
+- Pixel Sampling Hook: exposed via `window.__sampleDigitCanvas(cssX, cssY)` ONLY in builds with `PUBLIC_E2E=true` (stripped in standard production builds), returning `{ alpha, effectiveAlpha, luminance, digit, cell }` for pixel-level Playwright verification.
 
 ## 8. Accessibility
 

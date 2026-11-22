@@ -55,3 +55,17 @@
 ## 7. Project Initialised When
 
 Clean install works from a fresh clone; `verify` passes; CI is green; the guardrail lint rules fail on a deliberately bad example (raw hex, `box-shadow`, hardcoded copy) and pass on the real code; pointer files for each agent exist.
+
+## 8. Debug Overlay and Feature Switches
+
+To support profiling, performance diagnosis, and interaction isolation, debug features can be enabled via URL query parameters when running locally in DEV, in E2E testing, or when built with `PUBLIC_ENABLE_DEBUG=true`:
+- `?perf=1`: Renders a non-intrusive high-visibility HUD overlay showing real-time FPS, frame duration (ms), max long task in the last 5 seconds (ms), canvas dimensions & DPR, GPU renderer string, runtime quality level, and frame guard status.
+- `?fx=off:<name>` or `?fx=off:<name1>,<name2>`: Disables specific interaction subsystems to isolate performance bottlenecks. Supported switches:
+  - `digitfield`: disables WebGL canvas initialization.
+  - `blur`: disables canvas texture blur filtering.
+  - `scrub`: disables statement and bio word scrubbing.
+  - `reveal`: disables GSAP scroll reveals and line reveals.
+  - `marquee`: disables continuous marquee animation.
+  - `cursor`: disables custom cursor dot and follower.
+  - `lenis`: disables Lenis smooth scrolling.
+  - `tags`: disables keyword floating tag animations.

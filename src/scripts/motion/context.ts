@@ -46,6 +46,17 @@ export function isFinePointer(): boolean {
  * Detects low power hardware or data-saving mode per interaction-motion.md section 4.
  */
 export function isLowPower(): boolean {
+  if (typeof window !== 'undefined') {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('lowpower') === '1' || window.location.search.includes('saveData')) {
+        return true;
+      }
+    } catch {
+      // Ignore URL parsing errors
+    }
+  }
+
   if (typeof navigator === 'undefined') return false;
 
   const nav = navigator as Navigator & {
@@ -115,8 +126,8 @@ if (typeof window !== 'undefined' && window.matchMedia) {
         } else {
           document.documentElement.removeAttribute('data-motion');
         }
-        dispatchMotionChange(e.matches);
       }
+      dispatchMotionChange(isReducedMotion());
     } catch {
       // Storage unavailable
     }

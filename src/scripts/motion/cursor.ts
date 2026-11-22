@@ -2,15 +2,20 @@
 // Fine pointers only; system cursor remains visible; disabled on touch devices.
 import { gsap } from 'gsap';
 import type { MotionModule } from './registry';
+import { isFeatureDisabled } from '../debug/features';
+import { MOTION_CHANGE_EVENT, isReducedMotion } from './context';
 
 let pointerListener: ((e: PointerEvent) => void) | null = null;
 let pointerLeaveListener: (() => void) | null = null;
+let motionChangeListener: ((e: Event) => void) | null = null;
 let cursorEl: HTMLElement | null = null;
 let labelEl: HTMLElement | null = null;
 let magneticCleanups: (() => void)[] = [];
 
 export const cursorModule: MotionModule = {
   init(root, ctx) {
+    if (isFeatureDisabled('cursor')) return;
+
     if (!ctx.finePointer) {
       if (cursorEl) cursorEl.style.display = 'none';
       return;
@@ -64,62 +69,127 @@ export const cursorModule: MotionModule = {
         '.button, [data-magnetic], .nav-link, button.theme-toggle, button.motion-toggle',
       );
 
+      interface MagneticItem {
+        btn: HTMLElement;
+        cx: number;
+        cy: number;
+        xBtnTo: gsap.QuickToFunc;
+        yBtnTo: gsap.QuickToFunc;
+        xLabelTo: gsap.QuickToFunc | null;
+        yLabelTo: gsap.QuickToFunc | null;
+        isMagnetized: boolean;
+      }
+
+      const items: MagneticItem[] = [];
+
       magneticTargets.forEach((btn) => {
         const label = btn.querySelector<HTMLElement>('.button-label, span');
-        const xBtnTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power2.out' });
-        const yBtnTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power2.out' });
-        const xLabelTo = label
-          ? gsap.quickTo(label, 'x', { duration: 0.4, ease: 'power2.out' })
-          : null;
-        const yLabelTo = label
-          ? gsap.quickTo(label, 'y', { duration: 0.4, ease: 'power2.out' })
-          : null;
+        items.push({
+          btn,
+          cx: 0,
+          cy: 0,
+          xBtnTo: gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power2.out' }),
+          yBtnTo: gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power2.out' }),
+          xLabelTo: label ? gsap.quickTo(label, 'x', { duration: 0.4, ease: 'power2.out' }) : null,
+          yLabelTo: label ? gsap.quickTo(label, 'y', { duration: 0.4, ease: 'power2.out' }) : null,
+          isMagnetized: false,
+        });
+      });
 
-        const onMouseMove = (e: MouseEvent) => {
-          const rect = btn.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
-          const dx = e.clientX - cx;
-          const dy = e.clientY - cy;
+      // Cache button centers on scroll / resize to avoid forced synchronous layout reflow during mousemove
+      const updateCenters = () => {
+        items.forEach((item) => {
+          const rect = item.btn.getBoundingClientRect();
+          item.cx = rect.left + rect.width / 2;
+          item.cy = rect.top + rect.height / 2;
+        });
+      };
+      updateCenters();
+
+      let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+      const onDebouncedScroll = () => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(updateCenters, 150);
+      };
+
+      window.addEventListener('resize', updateCenters, { passive: true });
+      window.addEventListener('scroll', onDebouncedScroll, { passive: true });
+      magneticCleanups.push(() => {
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        window.removeEventListener('resize', updateCenters);
+        window.removeEventListener('scroll', onDebouncedScroll);
+      });
+
+      // Single consolidated mousemove listener with fast bounding-box exit
+      const onMouseMove = (e: MouseEvent) => {
+        const mx = e.clientX;
+        const my = e.clientY;
+
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (!item) continue;
+          const dx = mx - item.cx;
+          const dy = my - item.cy;
+
+          // Quick bounding box rejection (80px radius) avoids Math.hypot when far away
+          if (Math.abs(dx) > 80 || Math.abs(dy) > 80) {
+            if (item.isMagnetized) {
+              item.xBtnTo(0);
+              item.yBtnTo(0);
+              item.xLabelTo?.(0);
+              item.yLabelTo?.(0);
+              item.isMagnetized = false;
+            }
+            continue;
+          }
+
           const dist = Math.hypot(dx, dy);
-
           if (dist < 80) {
+            item.isMagnetized = true;
             const pull = Math.min(10, (1 - dist / 80) * 10);
             const angle = Math.atan2(dy, dx);
             const moveX = Math.cos(angle) * pull;
             const moveY = Math.sin(angle) * pull;
 
-            xBtnTo(moveX);
-            yBtnTo(moveY);
-            xLabelTo?.(moveX * 1.4);
-            yLabelTo?.(moveY * 1.4);
-          } else {
-            xBtnTo(0);
-            yBtnTo(0);
-            xLabelTo?.(0);
-            yLabelTo?.(0);
+            item.xBtnTo(moveX);
+            item.yBtnTo(moveY);
+            item.xLabelTo?.(moveX * 1.4);
+            item.yLabelTo?.(moveY * 1.4);
+          } else if (item.isMagnetized) {
+            item.xBtnTo(0);
+            item.yBtnTo(0);
+            item.xLabelTo?.(0);
+            item.yLabelTo?.(0);
+            item.isMagnetized = false;
           }
-        };
+        }
+      };
 
-        const onMouseLeave = () => {
-          xBtnTo(0);
-          yBtnTo(0);
-          xLabelTo?.(0);
-          yLabelTo?.(0);
-        };
-
-        window.addEventListener('mousemove', onMouseMove, { passive: true });
-        btn.addEventListener('mouseleave', onMouseLeave);
-
-        magneticCleanups.push(() => {
-          window.removeEventListener('mousemove', onMouseMove);
-          btn.removeEventListener('mouseleave', onMouseLeave);
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+      magneticCleanups.push(() => {
+        window.removeEventListener('mousemove', onMouseMove);
+        items.forEach((item) => {
+          item.xBtnTo(0);
+          item.yBtnTo(0);
+          item.xLabelTo?.(0);
+          item.yLabelTo?.(0);
         });
       });
     }
+    motionChangeListener = () => {
+      if (isReducedMotion()) {
+        magneticCleanups.forEach((fn) => fn());
+        magneticCleanups = [];
+      }
+    };
+    window.addEventListener(MOTION_CHANGE_EVENT, motionChangeListener);
   },
 
   cleanup() {
+    if (motionChangeListener) {
+      window.removeEventListener(MOTION_CHANGE_EVENT, motionChangeListener);
+      motionChangeListener = null;
+    }
     if (pointerListener) {
       window.removeEventListener('pointermove', pointerListener);
       pointerListener = null;

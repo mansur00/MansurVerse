@@ -146,6 +146,14 @@ const formattedTitle = title.includes('|')
         initLenis();
         initAll();
 
+        if (
+          import.meta.env.PUBLIC_ENABLE_DEBUG === 'true' ||
+          import.meta.env.DEV ||
+          import.meta.env.PUBLIC_E2E === 'true'
+        ) {
+          import('../scripts/debug/perf-overlay').then((m) => m.initPerfOverlay());
+        }
+
         const announcer = document.getElementById('page-announcer');
         if (announcer) {
           announcer.textContent = document.title;
