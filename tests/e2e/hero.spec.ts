@@ -215,6 +215,11 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
   test('Performance: LCP is the h1 text, CLS <= 0.05, no long task > 50ms during pointermove', async ({
     page,
   }) => {
+    page.on('console', (msg) => {
+      if (msg.text().includes('MEASURED LONG TASK')) {
+        console.log('[PERF OBSERVER]', msg.text());
+      }
+    });
     await page.goto('/');
 
     const metrics = await page.evaluate(async () => {

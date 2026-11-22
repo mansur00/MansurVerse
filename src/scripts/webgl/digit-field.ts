@@ -103,6 +103,21 @@ declare global {
 
 let activeCleanup: (() => void) | null = null;
 
+function checkSoftwareRenderer(gl: WebGLRenderingContext): boolean {
+  const ext = gl.getExtension('WEBGL_debug_renderer_info');
+  if (!ext) return false;
+  const renderer = (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || '').toLowerCase();
+  const vendor = (gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) || '').toLowerCase();
+  return (
+    renderer.includes('swiftshader') ||
+    renderer.includes('llvmpipe') ||
+    renderer.includes('software') ||
+    renderer.includes('softpipe') ||
+    (renderer.includes('mesa') && renderer.includes('basic')) ||
+    (vendor.includes('mesa') && renderer.includes('llvmpipe'))
+  );
+}
+
 export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => void) | null> {
   if (!canvas) return null;
 
@@ -113,8 +128,8 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
 
   // Detect low power / coarse pointer capabilities
   const lowPower = isLowPower();
-  const dprCap = lowPower ? 1.0 : 1.5;
-  const cellSizeVal =
+  let dprCap = lowPower ? 1.0 : 1.5;
+  let cellSizeVal =
     (lowPower ? DIGIT_FIELD.cellSizeLowPower : DIGIT_FIELD.cellSize) *
     (window.devicePixelRatio > 1 ? 1.0 : 1.0);
 
@@ -138,6 +153,11 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   if (!gl) {
     canvas.classList.add('no-webgl');
     return null;
+  }
+
+  const isSoftware = checkSoftwareRenderer(gl);
+  if (isSoftware) {
+    dprCap = 1.0;
   }
 
   const handleContextLost = (e: Event) => {
@@ -238,6 +258,7 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     if (!renderer || !canvas) return;
     const width = canvas.parentElement?.clientWidth || window.innerWidth;
     const height = canvas.parentElement?.clientHeight || window.innerHeight;
+    renderer.dpr = Math.min(window.devicePixelRatio || 1, dprCap);
     renderer.setSize(width, height);
     program.uniforms.uResolution.value[0] = canvas.width;
     program.uniforms.uResolution.value[1] = canvas.height;
@@ -255,24 +276,22 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   resizeObserver.observe(heroSection);
   updateSize();
 
-  // Pointer tracking attached to window using cached rect (no forced synchronous layout)
+  // Pointer tracking: only store latest position, let single ticker read it per frame
+  let latestClientX = -999.0;
+  let latestClientY = -999.0;
+  let isPointerInside = false;
+
   const onPointerMove = (e: PointerEvent) => {
     if (!isFinePointer() || isReducedMotion()) return;
-    const x = e.clientX - canvasRect.left;
-    const y = e.clientY - canvasRect.top;
-    if (x >= 0 && x <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
-      const dpr = renderer?.dpr || 1.0;
-      program.uniforms.uPointer.value[0] = x * dpr;
-      program.uniforms.uPointer.value[1] = y * dpr;
-    } else {
-      program.uniforms.uPointer.value[0] = -999.0;
-      program.uniforms.uPointer.value[1] = -999.0;
-    }
+    latestClientX = e.clientX;
+    latestClientY = e.clientY;
+    isPointerInside = true;
   };
 
   const onPointerLeave = () => {
-    program.uniforms.uPointer.value[0] = -999.0;
-    program.uniforms.uPointer.value[1] = -999.0;
+    isPointerInside = false;
+    latestClientX = -999.0;
+    latestClientY = -999.0;
   };
 
   window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -297,11 +316,69 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
 
   let isTickerRunning = false;
   let isHeroIntersecting = true;
+  let isThrottled30fps = isSoftware;
+  let isQualitySteppedDown = isSoftware;
+  let tickCount = 0;
+  let probeFrames = 0;
+  let totalProbeDuration = 0;
 
   const onTick = (time: number) => {
     if (!renderer || !isHeroIntersecting || document.hidden) return;
+
+    tickCount++;
+    // Adaptive rate: cap at 30fps under software rendering or if frame took >12ms
+    if (isThrottled30fps && tickCount % 2 !== 0) {
+      return;
+    }
+
+    // Read stored pointer position once per rendered frame
+    if (isPointerInside) {
+      const x = latestClientX - canvasRect.left;
+      const y = latestClientY - canvasRect.top;
+      if (x >= 0 && x <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
+        const dpr = renderer.dpr || 1.0;
+        program.uniforms.uPointer.value[0] = x * dpr;
+        program.uniforms.uPointer.value[1] = y * dpr;
+      } else {
+        program.uniforms.uPointer.value[0] = -999.0;
+        program.uniforms.uPointer.value[1] = -999.0;
+      }
+    } else {
+      program.uniforms.uPointer.value[0] = -999.0;
+      program.uniforms.uPointer.value[1] = -999.0;
+    }
+
     program.uniforms.uTime.value = time;
+
+    const tStart = performance.now();
     renderer.render({ scene: mesh });
+    const frameDur = performance.now() - tStart;
+
+    // Cap at 30fps if any single frame takes > 12ms
+    if (frameDur > 12) {
+      isThrottled30fps = true;
+    }
+
+    // Runtime guard: measure average frame time during first 45 frames
+    if (probeFrames < 45) {
+      probeFrames++;
+      totalProbeDuration += frameDur;
+      const avgFrameTime = totalProbeDuration / probeFrames;
+
+      // If average frame time exceeds 16ms, step down quality
+      if (probeFrames >= 15 && avgFrameTime > 16 && !isQualitySteppedDown) {
+        isQualitySteppedDown = true;
+        isThrottled30fps = true;
+        dprCap = 0.5;
+        cellSizeVal = DIGIT_FIELD.cellSizeLowPower;
+        updateSize();
+      } else if (probeFrames >= 30 && avgFrameTime > 24) {
+        // If still exceeds budget (>24ms avg), halt field and show static poster
+        canvas.classList.add('no-webgl');
+        stopTicker();
+        return;
+      }
+    }
 
     if (isReducedMotion()) {
       stopTicker();
@@ -372,6 +449,23 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   if (import.meta.env.PUBLIC_E2E === 'true') {
     window.__sampleDigitCanvas = (cssX: number, cssY: number): DigitSampleResult | null => {
       if (!renderer || !gl || !canvas) return null;
+
+      // Sync latest pointer position to uniform for deterministic sampling
+      if (isPointerInside) {
+        const x = latestClientX - canvasRect.left;
+        const y = latestClientY - canvasRect.top;
+        if (x >= 0 && x <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
+          const dpr = renderer.dpr || 1.0;
+          program.uniforms.uPointer.value[0] = x * dpr;
+          program.uniforms.uPointer.value[1] = y * dpr;
+        } else {
+          program.uniforms.uPointer.value[0] = -999.0;
+          program.uniforms.uPointer.value[1] = -999.0;
+        }
+      } else {
+        program.uniforms.uPointer.value[0] = -999.0;
+        program.uniforms.uPointer.value[1] = -999.0;
+      }
 
       // Ensure frame buffer is freshly rendered
       renderer.render({ scene: mesh });
