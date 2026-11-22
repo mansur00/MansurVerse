@@ -171,7 +171,9 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
 
   const isSoftware = checkSoftwareRenderer(gl);
   if (isSoftware) {
-    dprCap = 1.0;
+    dprCap = 0.5;
+    cellSizeVal = DIGIT_FIELD.cellSizeLowPower;
+    renderer.dpr = Math.min(window.devicePixelRatio || 1, dprCap);
   }
 
   const handleContextLost = (e: Event) => {
