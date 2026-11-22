@@ -227,6 +227,9 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     minFilter: gl.LINEAR,
     magFilter: gl.LINEAR,
   });
+  if (typeof performance !== 'undefined' && performance.mark) {
+    performance.mark('digit-field:atlas-upload');
+  }
 
   const getComputedDigitColor = (): [number, number, number, number] => {
     const style = getComputedStyle(canvas);
@@ -282,6 +285,9 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   // Resize handling (all uniforms in CSS pixels)
   const updateSize = () => {
     if (!renderer || !canvas) return;
+    if (typeof performance !== 'undefined' && performance.mark) {
+      performance.mark('digit-field:resize');
+    }
     const width = canvas.parentElement?.clientWidth || window.innerWidth;
     const height = canvas.parentElement?.clientHeight || window.innerHeight;
     renderer.dpr = Math.min(window.devicePixelRatio || 1, dprCap);

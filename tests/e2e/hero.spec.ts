@@ -224,7 +224,11 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
     page,
   }) => {
     page.on('console', (msg) => {
-      if (msg.text().includes('MEASURED LONG TASK')) {
+      if (
+        msg.text().includes('MEASURED LONG TASK') ||
+        msg.text().includes('LONG TASK DETECTED') ||
+        msg.text().includes('POINTER PERF SAMPLE')
+      ) {
         console.log('[PERF OBSERVER]', msg.text());
       }
     });
@@ -287,89 +291,170 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
     // Allow dynamic import bytecode compilation and initial idle frames to settle completely
     await page.waitForTimeout(500);
 
-    // Verify pointer movement across hero produces no long task over 50ms
+    // Start measuring whole-page long tasks and our application execution during a 3-second pointer movement window
     await page.evaluate(() => {
       const win = window as unknown as {
-        __pointerLongTasks?: number;
-        __pointerLongTasksList?: Array<{ name: string; duration: number; attribution: string }>;
-        __pointerTaskObserver?: PerformanceObserver;
+        __longTasksLog?: Array<{
+          startTime: number;
+          duration: number;
+          name: string;
+          nearestMark: string;
+          markDeltaMs: number;
+        }>;
+        __longTaskObserver?: PerformanceObserver;
+        __sampleWindows?: Array<{ start: number; end: number }>;
         __digitFieldPerf?: { renderTimes: number[]; maxRenderTime: number };
         __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
       };
-      win.__pointerLongTasks = 0;
-      win.__pointerLongTasksList = [];
+      win.__longTasksLog = [];
+      win.__sampleWindows = [];
       win.__digitFieldPerf = { renderTimes: [], maxRenderTime: 0 };
       win.__pointerHandlerPerf = { handlerTimes: [], maxHandlerTime: 0 };
 
       const taskObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (entry.duration > 50) {
-            win.__pointerLongTasks = (win.__pointerLongTasks || 0) + 1;
-            const anyEntry = entry as unknown as {
-              attribution?: Array<{
-                name?: string;
-                containerType?: string;
-                containerSrc?: string;
-              }>;
-            };
-            const attr =
-              anyEntry.attribution
-                ?.map((a) => `${a.name || ''}:${a.containerType || ''}:${a.containerSrc || ''}`)
-                .join(';') || '';
-            win.__pointerLongTasksList?.push({
+            const marks = performance.getEntriesByType('mark');
+            let nearest = 'none';
+            let minDelta = Infinity;
+            for (const m of marks) {
+              const delta = Math.abs(m.startTime - entry.startTime);
+              if (delta < minDelta) {
+                minDelta = delta;
+                nearest = `${m.name} (Δ${Math.round(delta)}ms)`;
+              }
+            }
+            win.__longTasksLog?.push({
+              startTime: Math.round(entry.startTime),
+              duration: Math.round(entry.duration),
               name: entry.name,
-              duration: entry.duration,
-              attribution: attr,
+              nearestMark: nearest,
+              markDeltaMs: Math.round(minDelta),
             });
-            console.log(
-              `[MEASURED LONG TASK] duration=${entry.duration}ms name=${entry.name} attr=${attr}`,
-            );
           }
         }
       });
       taskObserver.observe({ type: 'longtask', buffered: false });
-      win.__pointerTaskObserver = taskObserver;
+      win.__longTaskObserver = taskObserver;
     });
 
-    // Move pointer continuously across hero
-    for (let i = 100; i < 500; i += 40) {
-      await page.mouse.move(i, 200 + (i % 80));
-      await page.waitForTimeout(20);
-    }
+    // 5 independent samples over a 3-second pointer movement window (5 x 600ms = 3000ms)
+    const samplesCount = 5;
+    const sampleDurationMs = 600;
 
-    const { ourCodeLongTasks, maxRenderTime, maxHandlerTime, renderCount, handlerCount } =
+    for (let s = 0; s < samplesCount; s++) {
       await page.evaluate(() => {
         const win = window as unknown as {
-          __pointerTaskObserver?: PerformanceObserver;
-          __digitFieldPerf?: { renderTimes: number[]; maxRenderTime: number };
-          __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+          __sampleWindows?: Array<{ start: number; end: number }>;
         };
-        win.__pointerTaskObserver?.disconnect();
-
-        const renderTimes = win.__digitFieldPerf?.renderTimes ?? [];
-        const handlerTimes = win.__pointerHandlerPerf?.handlerTimes ?? [];
-
-        const longRenders = renderTimes.filter((t) => t > 50).length;
-        const longHandlers = handlerTimes.filter((t) => t > 50).length;
-
-        return {
-          renderCount: renderTimes.length,
-          handlerCount: handlerTimes.length,
-          maxRenderTime: win.__digitFieldPerf?.maxRenderTime ?? 0,
-          maxHandlerTime: win.__pointerHandlerPerf?.maxHandlerTime ?? 0,
-          ourCodeLongTasks: longRenders + longHandlers,
-        };
+        win.__sampleWindows?.push({ start: performance.now(), end: 0 });
       });
 
-    // Strict requirements per brief:
-    // When measuring under runner load, assert on the trace of our own code rather than
-    // whole-page browser engine tasks (where V8 deferred major GC/compilation produces
-    // unknown:window: tasks). Strict rule: no long task over 50ms in our code during pointer movement.
-    expect(renderCount).toBeGreaterThan(0);
-    expect(handlerCount).toBeGreaterThan(0);
-    expect(maxRenderTime).toBeLessThanOrEqual(50);
-    expect(maxHandlerTime).toBeLessThanOrEqual(50);
-    expect(ourCodeLongTasks).toBe(0);
+      const sampleStart = Date.now();
+      let step = 0;
+      while (Date.now() - sampleStart < sampleDurationMs) {
+        const progress = step / 15;
+        const x = 100 + Math.round((((s * 15 + step) % 75) / 75) * 400);
+        const y = 200 + Math.round(Math.sin(progress * Math.PI * 2) * 80);
+        await page.mouse.move(x, y);
+        await page.waitForTimeout(16);
+        step++;
+      }
+
+      await page.evaluate(() => {
+        const win = window as unknown as {
+          __sampleWindows?: Array<{ start: number; end: number }>;
+        };
+        if (win.__sampleWindows && win.__sampleWindows.length > 0) {
+          const last = win.__sampleWindows[win.__sampleWindows.length - 1];
+          if (last) last.end = performance.now();
+        }
+      });
+    }
+
+    const perfSummary = await page.evaluate(() => {
+      const win = window as unknown as {
+        __longTasksLog?: Array<{
+          startTime: number;
+          duration: number;
+          name: string;
+          nearestMark: string;
+          markDeltaMs: number;
+        }>;
+        __longTaskObserver?: PerformanceObserver;
+        __sampleWindows?: Array<{ start: number; end: number }>;
+        __digitFieldPerf?: { renderTimes: number[]; maxRenderTime: number };
+        __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+      };
+      win.__longTaskObserver?.disconnect();
+
+      const allTasks = win.__longTasksLog ?? [];
+      const windows = win.__sampleWindows ?? [];
+      const renderTimes = win.__digitFieldPerf?.renderTimes ?? [];
+      const handlerTimes = win.__pointerHandlerPerf?.handlerTimes ?? [];
+
+      const longRenders = renderTimes.filter((t) => t > 50).length;
+      const longHandlers = handlerTimes.filter((t) => t > 50).length;
+
+      // Filter tasks to the active 3-second pointer movement window
+      const windowStart = windows[0]?.start ?? 0;
+      const windowEnd = windows[windows.length - 1]?.end ?? performance.now();
+      const windowTasks = allTasks.filter(
+        (t) => t.startTime >= windowStart && t.startTime <= windowEnd,
+      );
+
+      // Compute worst task per sample window
+      const sampleWorstTasks = windows.map((w) => {
+        const tasksInWindow = allTasks.filter(
+          (t) => t.startTime >= w.start && t.startTime <= w.end,
+        );
+        return tasksInWindow.length > 0 ? Math.max(...tasksInWindow.map((t) => t.duration)) : 0;
+      });
+
+      const sortedWorst = [...sampleWorstTasks].sort((a, b) => a - b);
+      const medianWorstTask = sortedWorst[Math.floor(sortedWorst.length / 2)] ?? 0;
+      const overallMaxTask =
+        windowTasks.length > 0 ? Math.max(...windowTasks.map((t) => t.duration)) : 0;
+      const tasksOver100ms = windowTasks.filter((t) => t.duration > 100);
+
+      return {
+        allTasks: windowTasks,
+        sampleWorstTasks,
+        medianWorstTask,
+        overallMaxTask,
+        tasksOver100msCount: tasksOver100ms.length,
+        renderCount: renderTimes.length,
+        handlerCount: handlerTimes.length,
+        maxRenderTime: win.__digitFieldPerf?.maxRenderTime ?? 0,
+        maxHandlerTime: win.__pointerHandlerPerf?.maxHandlerTime ?? 0,
+        ourCodeLongTasks: longRenders + longHandlers,
+      };
+    });
+
+    // Requirement 2: For every long task found, print its start time, duration and nearest mark
+    for (const t of perfSummary.allTasks) {
+      console.log(
+        `[LONG TASK DETECTED] startTime=${t.startTime}ms duration=${t.duration}ms name=${t.name} nearestMark=${t.nearestMark}`,
+      );
+    }
+    console.log(
+      `[POINTER PERF SAMPLE] samples=${JSON.stringify(perfSummary.sampleWorstTasks)} medianWorst=${perfSummary.medianWorstTask}ms maxOverall=${perfSummary.overallMaxTask}ms tasksOver100ms=${perfSummary.tasksOver100msCount} maxRender=${perfSummary.maxRenderTime.toFixed(1)}ms maxHandler=${perfSummary.maxHandlerTime.toFixed(2)}ms`,
+    );
+
+    // Strict requirements on our own code:
+    expect(perfSummary.renderCount).toBeGreaterThan(0);
+    expect(perfSummary.handlerCount).toBeGreaterThan(0);
+    expect(perfSummary.maxRenderTime).toBeLessThanOrEqual(50);
+    expect(perfSummary.maxHandlerTime).toBeLessThanOrEqual(50);
+    expect(perfSummary.ourCodeLongTasks).toBe(0);
+
+    // Requirement 1: Whole-page long task guard with realistic tolerance over 3-second window
+    // - Fail if more than 2 long tasks over 100ms
+    expect(perfSummary.tasksOver100msCount).toBeLessThanOrEqual(2);
+    // - Fail if any single task over 250ms
+    expect(perfSummary.overallMaxTask).toBeLessThanOrEqual(250);
+    // - Assert on the median of the worst task per sample
+    expect(perfSummary.medianWorstTask).toBeLessThanOrEqual(100);
   });
 
   test('Hero Stacking Order & Contrast: Lead line and hero text sit clearly above digit field with >= 4.5:1 contrast at DPR 1 and 2 in both themes', async ({
