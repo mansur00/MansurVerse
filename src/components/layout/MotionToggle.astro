@@ -2,7 +2,6 @@
 interface Props {
   pauseLabel?: string | undefined;
   playLabel?: string | undefined;
-  ariaLabel?: string | undefined;
   class?: string | undefined;
 }
 
@@ -18,6 +17,7 @@ const {
   id="motion-toggle"
   class:list={['motion-toggle', className]}
   data-motion-toggle
+  aria-pressed="false"
 >
   <span class="motion-icon" aria-hidden="true">
     ◎
@@ -25,6 +25,40 @@ const {
   <span class="motion-label-pause">{pauseLabel}</span>
   <span class="motion-label-play">{playLabel}</span>
 </button>
+
+<script>
+  import {
+    toggleMotionMode,
+    isReducedMotion,
+    MOTION_CHANGE_EVENT,
+  } from '../../scripts/motion/context';
+
+  function updateMotionToggleButtons(): void {
+    const isReduced = isReducedMotion();
+    document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle]').forEach((btn) => {
+      btn.setAttribute('aria-pressed', isReduced ? 'true' : 'false');
+    });
+  }
+
+  function initMotionToggles(): void {
+    document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle]').forEach((btn) => {
+      if ((btn as HTMLElement & { __motionInit?: boolean }).__motionInit) return;
+      (btn as HTMLElement & { __motionInit?: boolean }).__motionInit = true;
+
+      btn.addEventListener('click', () => {
+        toggleMotionMode();
+        updateMotionToggleButtons();
+      });
+    });
+    updateMotionToggleButtons();
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener(MOTION_CHANGE_EVENT, updateMotionToggleButtons);
+    document.addEventListener('astro:page-load', initMotionToggles);
+    initMotionToggles();
+  }
+</script>
 
 <style>
   .motion-toggle {

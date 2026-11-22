@@ -32,6 +32,10 @@ const {
 
 const isList = variant === 'list';
 const accentToken = `var(--color-accent-${accent === 'lime' ? 'primary' : accent === 'blue' ? 'blue' : accent === 'sky' ? 'secondary-1' : accent === 'lime-yellow' ? 'secondary-2' : accent === 'pink' ? 'secondary-3' : 'secondary-4'})`;
+const artTransitionName =
+  typeof href === 'string' && href.startsWith('/work/')
+    ? `project-art-${href.replace('/work/', '')}`
+    : undefined;
 ---
 
 <a
@@ -56,7 +60,11 @@ const accentToken = `var(--color-accent-${accent === 'lime' ? 'primary' : accent
   </div>
 
   {!isList && (
-    <div class="card-art" aria-hidden="true">
+    <div
+      class="card-art"
+      aria-hidden="true"
+      {...(artTransitionName ? { 'transition:name': artTransitionName } : {})}
+    >
       <div class="half-pill-block" />
       <div class="pixel-blob" />
       <div class="shot">

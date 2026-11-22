@@ -1,6 +1,7 @@
 ---
 import Logo from '../primitives/Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import MenuOverlay from './MenuOverlay.astro';
 
 interface Props {
   brandPrimary?: string | undefined;
@@ -50,7 +51,14 @@ const {
 
     <div class="nav-actions">
       <ThemeToggle ariaLabel={themeToggleAriaLabel} />
-      <button type="button" id="menu-open-button" class="menu-button" aria-label={menuAriaLabel}>
+      <button
+        type="button"
+        id="menu-open-button"
+        class="menu-button"
+        aria-label={menuAriaLabel}
+        aria-expanded="false"
+        aria-controls="menu-overlay"
+      >
         <span class="hamburger" aria-hidden="true">
           <span class="bar"></span>
           <span class="bar"></span>
@@ -58,7 +66,28 @@ const {
       </button>
     </div>
   </div>
+
+  <MenuOverlay links={navLinks} closeAriaLabel="Close menu" />
 </header>
+
+<script>
+  import { initNavScroll, cleanupNavScroll } from '../../scripts/motion/nav';
+  import { initMenuOverlay, cleanupMenuOverlay } from '../../scripts/motion/menu';
+
+  function setupNav(): void {
+    initNavScroll();
+    initMenuOverlay();
+  }
+
+  if (typeof window !== 'undefined') {
+    document.addEventListener('astro:page-load', setupNav);
+    document.addEventListener('astro:before-swap', () => {
+      cleanupNavScroll();
+      cleanupMenuOverlay();
+    });
+    setupNav();
+  }
+</script>
 
 <style>
   .nav-header {
@@ -68,7 +97,11 @@ const {
     background: var(--color-bg-base);
     height: var(--layout-nav-height);
     width: 100%;
-    transition: transform var(--motion-fast) var(--ease-out);
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+
+  .nav-header.is-hidden {
+    transform: translateY(-110%);
   }
 
   .nav-container {
