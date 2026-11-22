@@ -103,6 +103,10 @@ export interface DigitSampleResult {
 declare global {
   interface Window {
     __sampleDigitCanvas?: (cssX: number, cssY: number) => DigitSampleResult | null;
+    __digitFieldPerf?: {
+      renderTimes: number[];
+      maxRenderTime: number;
+    };
     __digitFieldDebug?: {
       gpu?: string;
       quality?: string;
@@ -199,6 +203,13 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
   const atlasCanvas = document.createElement('canvas');
   atlasCanvas.width = 64;
   atlasCanvas.height = 32;
+  if (import.meta.env.PUBLIC_E2E === 'true') {
+    window.__digitFieldPerf = {
+      renderTimes: [],
+      maxRenderTime: 0,
+    };
+  }
+
   const actx = atlasCanvas.getContext('2d');
   if (actx) {
     actx.clearRect(0, 0, 64, 32);
@@ -365,6 +376,16 @@ export async function initDigitField(canvas: HTMLCanvasElement): Promise<(() => 
     const tStart = performance.now();
     renderer.render({ scene: mesh });
     const frameDur = performance.now() - tStart;
+
+    if (import.meta.env.PUBLIC_E2E === 'true') {
+      const perf = window.__digitFieldPerf;
+      if (perf) {
+        perf.renderTimes.push(frameDur);
+        if (frameDur > perf.maxRenderTime) {
+          perf.maxRenderTime = frameDur;
+        }
+      }
+    }
 
     // Cap at 30fps if any single frame takes > 12ms
     if (frameDur > 12) {

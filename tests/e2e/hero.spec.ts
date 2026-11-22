@@ -284,20 +284,46 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
       return canvas && canvas.getAttribute('data-webgl-ready') === 'true' && !canvas.style.opacity;
     });
 
-    // Allow any remaining layout shifts or idle frames to settle completely
-    await page.waitForTimeout(300);
+    // Allow dynamic import bytecode compilation and initial idle frames to settle completely
+    await page.waitForTimeout(500);
 
     // Verify pointer movement across hero produces no long task over 50ms
     await page.evaluate(() => {
       const win = window as unknown as {
         __pointerLongTasks?: number;
+        __pointerLongTasksList?: Array<{ name: string; duration: number; attribution: string }>;
         __pointerTaskObserver?: PerformanceObserver;
+        __digitFieldPerf?: { renderTimes: number[]; maxRenderTime: number };
+        __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
       };
       win.__pointerLongTasks = 0;
+      win.__pointerLongTasksList = [];
+      win.__digitFieldPerf = { renderTimes: [], maxRenderTime: 0 };
+      win.__pointerHandlerPerf = { handlerTimes: [], maxHandlerTime: 0 };
+
       const taskObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (entry.duration > 50) {
             win.__pointerLongTasks = (win.__pointerLongTasks || 0) + 1;
+            const anyEntry = entry as unknown as {
+              attribution?: Array<{
+                name?: string;
+                containerType?: string;
+                containerSrc?: string;
+              }>;
+            };
+            const attr =
+              anyEntry.attribution
+                ?.map((a) => `${a.name || ''}:${a.containerType || ''}:${a.containerSrc || ''}`)
+                .join(';') || '';
+            win.__pointerLongTasksList?.push({
+              name: entry.name,
+              duration: entry.duration,
+              attribution: attr,
+            });
+            console.log(
+              `[MEASURED LONG TASK] duration=${entry.duration}ms name=${entry.name} attr=${attr}`,
+            );
           }
         }
       });
@@ -311,16 +337,208 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
       await page.waitForTimeout(20);
     }
 
-    const pointerLongTasks = await page.evaluate(() => {
-      const win = window as unknown as {
-        __pointerLongTasks?: number;
-        __pointerTaskObserver?: PerformanceObserver;
-      };
-      win.__pointerTaskObserver?.disconnect();
-      return win.__pointerLongTasks ?? 0;
-    });
+    const { pointerLongTasks, longTasksList, maxRenderTime, maxHandlerTime } = await page.evaluate(
+      () => {
+        const win = window as unknown as {
+          __pointerLongTasks?: number;
+          __pointerLongTasksList?: Array<{ name: string; duration: number; attribution: string }>;
+          __pointerTaskObserver?: PerformanceObserver;
+          __digitFieldPerf?: { renderTimes: number[]; maxRenderTime: number };
+          __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+        };
+        win.__pointerTaskObserver?.disconnect();
+        return {
+          pointerLongTasks: win.__pointerLongTasks ?? 0,
+          longTasksList: win.__pointerLongTasksList ?? [],
+          maxRenderTime: win.__digitFieldPerf?.maxRenderTime ?? 0,
+          maxHandlerTime: win.__pointerHandlerPerf?.maxHandlerTime ?? 0,
+        };
+      },
+    );
 
+    if (pointerLongTasks > 0) {
+      console.error(
+        'RECORDED LONG TASKS DURING POINTERMOVE:',
+        JSON.stringify(longTasksList, null, 2),
+      );
+    }
+
+    // Strict requirements: no task in our code exceeds 50ms, and no longtask > 50ms occurs during pointer movement
+    expect(maxRenderTime).toBeLessThanOrEqual(50);
+    expect(maxHandlerTime).toBeLessThanOrEqual(50);
     expect(pointerLongTasks).toBe(0);
+  });
+
+  test('Hero Stacking Order & Contrast: Lead line and hero text sit clearly above digit field with >= 4.5:1 contrast at DPR 1 and 2 in both themes', async ({
+    page,
+  }) => {
+    // Test across both light and dark themes
+    const themes = ['light', 'dark'] as const;
+
+    for (const theme of themes) {
+      await page.goto('/');
+
+      // Set active theme and allow transitions to settle
+      await page.evaluate((th) => {
+        document.documentElement.dataset.theme = th;
+        localStorage.setItem('theme', th);
+        window.dispatchEvent(
+          new CustomEvent('mansurverse:theme-change', { detail: { theme: th } }),
+        );
+      }, theme);
+
+      await page.waitForTimeout(300);
+
+      // Wait for digit field canvas to be ready
+      await page.waitForFunction(() => {
+        const canvas = document.querySelector('#digit-field-canvas') as HTMLElement | null;
+        return canvas && canvas.getAttribute('data-webgl-ready') === 'true';
+      });
+
+      // 1. Verify Stacking Order: canvas is z-index: 0, text containers are z-index >= 1, tags are z-index: 2
+      const stacking = await page.evaluate(() => {
+        const canvas = document.querySelector('#digit-field-canvas') as HTMLElement;
+        const container = document.querySelector('.hero-container') as HTMLElement;
+        const leadRow = document.querySelector('.hero-lead-row') as HTMLElement;
+        const lead = document.querySelector('.hero-lead') as HTMLElement;
+        const titleWrapper = document.querySelector('.hero-headline-wrapper') as HTMLElement;
+        const introRow = document.querySelector('.hero-intro-row') as HTMLElement;
+        const tag = document.querySelector('.hero-tag-item') as HTMLElement;
+
+        const parseZ = (el: HTMLElement | null) => {
+          if (!el) return 0;
+          const z = getComputedStyle(el).zIndex;
+          if (z === 'auto' || !z) return 1;
+          const parsed = parseInt(z, 10);
+          return isNaN(parsed) ? 1 : parsed;
+        };
+
+        return {
+          canvasZ: parseInt(getComputedStyle(canvas).zIndex || '0', 10),
+          containerZ: parseZ(container),
+          leadRowZ: parseZ(leadRow),
+          leadZ: parseZ(lead),
+          titleZ: parseZ(titleWrapper),
+          introZ: parseZ(introRow),
+          tagZ: parseZ(tag),
+        };
+      });
+
+      expect(stacking.canvasZ).toBe(0);
+      expect(stacking.containerZ).toBeGreaterThanOrEqual(1);
+      expect(stacking.leadRowZ).toBeGreaterThanOrEqual(1);
+      expect(stacking.leadZ).toBeGreaterThanOrEqual(1);
+      expect(stacking.titleZ).toBeGreaterThanOrEqual(1);
+      expect(stacking.introZ).toBeGreaterThanOrEqual(1);
+      expect(stacking.tagZ).toBeGreaterThanOrEqual(2);
+
+      // Verify elementFromPoint over text elements returns text or text containers, NEVER the canvas
+      const hitTest = await page.evaluate(() => {
+        const lead = document.querySelector('.hero-lead') as HTMLElement;
+        const title = document.querySelector('.hero-title') as HTMLElement;
+        const intro = document.querySelector('.hero-intro') as HTMLElement;
+
+        const leadRect = lead.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        const introRect = intro.getBoundingClientRect();
+
+        const hitLead = document.elementFromPoint(
+          leadRect.left + 20,
+          leadRect.top + leadRect.height / 2,
+        );
+        const hitTitle = document.elementFromPoint(
+          titleRect.left + 40,
+          titleRect.top + titleRect.height / 2,
+        );
+        const hitIntro = document.elementFromPoint(
+          introRect.left + 20,
+          introRect.top + introRect.height / 2,
+        );
+
+        return {
+          hitLeadIsCanvas: hitLead?.id === 'digit-field-canvas',
+          hitTitleIsCanvas: hitTitle?.id === 'digit-field-canvas',
+          hitIntroIsCanvas: hitIntro?.id === 'digit-field-canvas',
+        };
+      });
+
+      expect(hitTest.hitLeadIsCanvas).toBe(false);
+      expect(hitTest.hitTitleIsCanvas).toBe(false);
+      expect(hitTest.hitIntroIsCanvas).toBe(false);
+
+      // 2. Verify Effective Contrast: Lead line text against effective background (including underlying digits)
+      const contrastResults = await page.evaluate(
+        ({ activeTheme }) => {
+          const lead = document.querySelector('.hero-lead') as HTMLElement;
+          const rect = lead.getBoundingClientRect();
+          const leadColorStyle = getComputedStyle(lead).color;
+
+          // Parse text color
+          const rgbMatch = leadColorStyle.match(/\d+/g) || ['0', '0', '0'];
+          const textR = parseInt(rgbMatch[0] || '0', 10) / 255;
+          const textG = parseInt(rgbMatch[1] || '0', 10) / 255;
+          const textB = parseInt(rgbMatch[2] || '0', 10) / 255;
+
+          const toLinear = (c: number) =>
+            c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+          const textLuminance =
+            0.2126 * toLinear(textR) + 0.7152 * toLinear(textG) + 0.0722 * toLinear(textB);
+
+          // Sample 5 points across the lead line text
+          const sampleFractions = [0.1, 0.25, 0.5, 0.75, 0.9];
+          const points = sampleFractions.map((f) => ({
+            x: Math.round(rect.left + rect.width * f),
+            y: Math.round(rect.top + rect.height * 0.5),
+          }));
+
+          const results: Array<{
+            point: { x: number; y: number };
+            contrastRatio: number;
+            effectiveAlpha: number;
+          }> = [];
+
+          for (const pt of points) {
+            const sample = window.__sampleDigitCanvas?.(pt.x, pt.y);
+            const effectiveAlpha = sample?.effectiveAlpha ?? 0;
+
+            // Compute composite background color under the digit stroke
+            let bgR = activeTheme === 'light' ? 1.0 : 0.0;
+            let bgG = activeTheme === 'light' ? 1.0 : 0.0;
+            let bgB = activeTheme === 'light' ? 1.0 : 0.0;
+
+            if (activeTheme === 'light') {
+              // Light theme: white background with black digits
+              bgR = 1.0 - effectiveAlpha;
+              bgG = 1.0 - effectiveAlpha;
+              bgB = 1.0 - effectiveAlpha;
+            } else {
+              // Dark theme: black background with light digits (#F1F1F1 -> 241/255)
+              const digitVal = 241 / 255;
+              bgR = digitVal * effectiveAlpha;
+              bgG = digitVal * effectiveAlpha;
+              bgB = digitVal * effectiveAlpha;
+            }
+
+            const bgLuminance =
+              0.2126 * toLinear(bgR) + 0.7152 * toLinear(bgG) + 0.0722 * toLinear(bgB);
+
+            const maxL = Math.max(textLuminance, bgLuminance);
+            const minL = Math.min(textLuminance, bgLuminance);
+            const contrastRatio = (maxL + 0.05) / (minL + 0.05);
+
+            results.push({ point: pt, contrastRatio, effectiveAlpha });
+          }
+
+          return results;
+        },
+        { activeTheme: theme },
+      );
+
+      // Assert at least 4.5:1 contrast against effective background at every sampled point
+      for (const res of contrastResults) {
+        expect(res.contrastRatio).toBeGreaterThanOrEqual(4.5);
+      }
+    }
   });
 
   test('WCAG 2.3.1 Safety Check: Digit flip cannot flash over large area > 3 times/sec', async ({

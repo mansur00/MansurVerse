@@ -122,6 +122,7 @@ export const cursorModule: MotionModule = {
 
       // Single consolidated mousemove listener with fast bounding-box exit
       const onMouseMove = (e: MouseEvent) => {
+        const t0 = performance.now();
         const mx = e.clientX;
         const my = e.clientY;
 
@@ -161,6 +162,19 @@ export const cursorModule: MotionModule = {
             item.xLabelTo?.(0);
             item.yLabelTo?.(0);
             item.isMagnetized = false;
+          }
+        }
+
+        if (import.meta.env.PUBLIC_E2E === 'true') {
+          const dt = performance.now() - t0;
+          const win = window as unknown as {
+            __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+          };
+          if (win.__pointerHandlerPerf) {
+            win.__pointerHandlerPerf.handlerTimes.push(dt);
+            if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
+              win.__pointerHandlerPerf.maxHandlerTime = dt;
+            }
           }
         }
       };
