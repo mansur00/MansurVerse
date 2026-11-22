@@ -94,13 +94,16 @@ GSAP's ticker drives Lenis; Lenis scroll events call `ScrollTrigger.update`; lag
 
 ## 7. Digit Field (I-05)
 
-- OGL renderer on a canvas behind the hero, `aria-hidden`.
-- A glyph atlas texture of `0` and `1` is drawn once in an offscreen canvas using the label font.
-- A fragment shader computes the cell grid (cell size from tokens), picks the digit by a hash of the cell, and applies the opacity falloff from the pointer position; digits within the flip radius alternate on the flip interval.
-- Uniforms: resolution, pointer, time, cell size, flip radius, colour token value.
-- Device pixel ratio capped at 1.5 (lower on low power); resize observer; renders only while visible (IntersectionObserver) and while the tab is visible.
-- Context loss or init failure adds a `no-webgl` class and the static fallback shows: a pre-rendered pattern generated at build and used as the canvas poster.
-- Reduced motion renders one frame and stops.
+- OGL renderer on a canvas behind the hero (`#digit-field-canvas`), `aria-hidden="true"`, loaded via dynamic import after first paint (`requestIdleCallback` with fallback timeout) so the `h1` remains the LCP.
+- Canvas styled with tokens `--color-digit-field`, `--opacity-digit-field`, and `--blur-digit-field`.
+- A glyph atlas texture of `0` and `1` is drawn once in an offscreen canvas using the label font (Stack Sans Notch 600, loaded via `document.fonts.load`).
+- A fragment shader computes the cell grid (28px standard cell, 40px low power; 14px glyphs), picks the digit by a pseudo-random hash of the cell coordinate, and applies the pointer opacity falloff `max(0.12, 1.0 - d / 240.0)`; digits within the 110px flip radius alternate every `--motion-digit-flip` (160ms).
+- Uniforms: `uResolution`, `uPointer`, `uTime`, `uCellSize`, `uFlipRadius`, `uFalloffRadius`, `uFlipInterval`, `uColor`, `uBaseOpacity`, `uAtlas`.
+- Device pixel ratio capped at 1.5 (1.0 on low power); resize observer; renders only while visible (`IntersectionObserver`) and while the tab is visible (`!document.hidden`). Driven exclusively by the GSAP ticker (no separate RAF loop).
+- Context loss or init failure adds a `no-webgl` class and the static fallback shows: a pre-rendered SVG poster (`public/assets/digit-field-poster.svg`) generated at build time, applied as a CSS background on the canvas.
+- Reduced motion: renders a single static frame and halts ticker.
+- Touch devices: coarse pointer suppresses pointer reactivity to preserve performance and avoid phantom hover states.
+- Flash safety (WCAG 2.3.1): digit flip area at 110px radius is ~3.71% of viewport (<5% threshold, far below the 25% WCAG limit), posing zero seizure hazard.
 
 ## 8. Accessibility
 

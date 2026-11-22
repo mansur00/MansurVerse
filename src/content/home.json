@@ -3,9 +3,9 @@
     "lead": "I craft interfaces for the",
     "headline": ["MODERN", "WEB"],
     "tags": [
-      { "label": "Code", "accent": "blue" },
-      { "label": "Motion", "accent": "primary" },
-      { "label": "Design", "accent": "secondary-1" }
+      { "label": "Code", "accent": "blue", "x": 26, "y": 10 },
+      { "label": "Motion", "accent": "primary", "x": 78, "y": 28 },
+      { "label": "Design", "accent": "secondary-1", "x": 56, "y": 80 }
     ],
     "intro": "Designer and frontend engineer building calm, high-performance interfaces with a system behind every detail."
   },
