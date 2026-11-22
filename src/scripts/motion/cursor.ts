@@ -58,6 +58,9 @@ export const cursorModule: MotionModule = {
 
       if (import.meta.env.PUBLIC_E2E === 'true') {
         const dt = performance.now() - t0;
+        if (typeof performance !== 'undefined' && performance.mark) {
+          performance.mark('cursor:pointermove');
+        }
         const win = window as unknown as {
           __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
         };
@@ -181,6 +184,9 @@ export const cursorModule: MotionModule = {
 
         if (import.meta.env.PUBLIC_E2E === 'true') {
           const dt = performance.now() - t0;
+          if (typeof performance !== 'undefined' && performance.mark) {
+            performance.mark('cursor:magnetic');
+          }
           const win = window as unknown as {
             __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
           };

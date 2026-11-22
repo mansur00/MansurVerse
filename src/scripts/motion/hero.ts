@@ -38,7 +38,18 @@ export const heroModule: MotionModule = {
       gsap.set(tags, { scale: 0, opacity: 0 });
       if (digitCanvas) gsap.set(digitCanvas, { opacity: 0 });
 
-      introTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      if (typeof performance !== 'undefined' && performance.mark) {
+        performance.mark('hero:intro-start');
+      }
+
+      introTimeline = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          if (typeof performance !== 'undefined' && performance.mark) {
+            performance.mark('hero:intro-end');
+          }
+        },
+      });
 
       // Heading lines rise from masks over 900ms, 120ms stagger
       introTimeline.to(headingLines, {
