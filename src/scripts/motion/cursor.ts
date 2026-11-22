@@ -42,6 +42,7 @@ export const cursorModule: MotionModule = {
     const yTo = gsap.quickTo(cursorEl, 'y', { duration: 0.15, ease: 'power3.out' });
 
     pointerListener = (e: PointerEvent) => {
+      const t0 = performance.now();
       xTo(e.clientX);
       yTo(e.clientY);
 
@@ -53,6 +54,19 @@ export const cursorModule: MotionModule = {
         cursorEl.classList.add('is-expanded');
       } else if (cursorEl) {
         cursorEl.classList.remove('is-expanded');
+      }
+
+      if (import.meta.env.PUBLIC_E2E === 'true') {
+        const dt = performance.now() - t0;
+        const win = window as unknown as {
+          __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+        };
+        if (win.__pointerHandlerPerf) {
+          win.__pointerHandlerPerf.handlerTimes.push(dt);
+          if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
+            win.__pointerHandlerPerf.maxHandlerTime = dt;
+          }
+        }
       }
     };
 
