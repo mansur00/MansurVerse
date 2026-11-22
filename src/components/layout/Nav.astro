@@ -41,7 +41,15 @@ const {
                 class:list={['nav-link', { 'is-active': isActive }]}
                 aria-current={isActive ? 'page' : undefined}
               >
-                {item.label}
+                <span class="sr-only">{item.label}</span>
+                <span class="roll-wrapper" aria-hidden="true">
+                  {item.label.split('').map((char, charIdx) => (
+                    <span class="roll-char" style={`--char-idx: ${charIdx};`}>
+                      <span class="roll-primary">{char === ' ' ? '\u00A0' : char}</span>
+                      <span class="roll-clone">{char === ' ' ? '\u00A0' : char}</span>
+                    </span>
+                  ))}
+                </span>
               </a>
             </li>
           );
@@ -139,6 +147,48 @@ const {
     color: var(--color-text-muted);
     text-decoration: none;
     transition: color var(--motion-fast) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .roll-wrapper {
+    display: inline-flex;
+    overflow: hidden;
+    line-height: 1.2;
+    height: 1.2em;
+  }
+
+  .roll-char {
+    display: inline-flex;
+    flex-direction: column;
+    transition: transform var(--motion-base) var(--ease-out);
+    transition-delay: calc(var(--char-idx) * 20ms);
+  }
+
+  .roll-primary,
+  .roll-clone {
+    display: inline-block;
+    height: 1.2em;
+    line-height: 1.2em;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover .roll-char,
+    .nav-link:focus-visible .roll-char {
+      transform: translateY(-1.2em);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roll-char {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  :root[data-motion='reduced'] .roll-char {
+    transition: none;
+    transform: none;
   }
 
   .nav-link:hover,

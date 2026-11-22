@@ -34,14 +34,16 @@ const {
     </summary>
 
     <div class="row-content">
-      <p class="row-desc text-body">{description}</p>
-      {tags.length > 0 && (
-        <ul class="row-tags" aria-label="Tools and skills">
-          {tags.map((tag) => (
-            <li class="row-tag text-body-small">{tag}</li>
-          ))}
-        </ul>
-      )}
+      <div class="row-content-inner">
+        <p class="row-desc text-body">{description}</p>
+        {tags.length > 0 && (
+          <ul class="row-tags" aria-label="Tools and skills">
+            {tags.map((tag) => (
+              <li class="row-tag text-body-small">{tag}</li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   </details>
   <Divider variant="on-feature" />
@@ -103,11 +105,44 @@ const {
   }
 
   .row-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--motion-base) var(--ease-out);
+    overflow: hidden;
+  }
+
+  .capability-row[open] .row-content,
+  .capability-row.is-expanded .row-content {
+    grid-template-rows: 1fr;
+  }
+
+  .capability-row:focus-within .row-title {
+    color: var(--color-accent-primary);
+  }
+
+  .capability-row[open] .row-title,
+  .capability-row.is-expanded .row-title {
+    color: var(--color-accent-primary);
+  }
+
+  .row-content-inner {
+    min-height: 0;
+    overflow: hidden;
     padding-top: var(--space-4);
     padding-left: var(--space-6);
     padding-bottom: var(--space-3);
     display: grid;
     gap: var(--space-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row-content {
+      transition: none;
+    }
+  }
+
+  :root[data-motion='reduced'] .row-content {
+    transition: none;
   }
 
   .row-desc {

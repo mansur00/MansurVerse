@@ -91,10 +91,11 @@ const artTransitionName =
     overflow: hidden;
     position: relative;
     display: grid;
-    transition: transform var(--motion-fast) var(--ease-out);
+    transition: transform var(--motion-base) var(--ease-out);
   }
 
-  .project-card:hover {
+  .project-card:hover,
+  .project-card:focus-visible {
     transform: translateY(-6px);
   }
 
@@ -202,12 +203,27 @@ const artTransitionName =
     flex-direction: column;
     justify-content: flex-start;
     gap: var(--space-2);
-    transition: transform var(--motion-fast) var(--ease-out);
+    transition: transform var(--motion-slow) var(--ease-out);
     z-index: 2;
   }
 
-  .project-card:hover .shot {
+  .project-card:hover .shot,
+  .project-card:focus-visible .shot {
     transform: translate(-8px, -8px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card,
+    .shot {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  :root[data-motion='reduced'] .project-card,
+  :root[data-motion='reduced'] .shot {
+    transition: none;
+    transform: none;
   }
 
   .card-image {

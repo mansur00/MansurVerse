@@ -9,7 +9,7 @@ interface Props {
 const { items, class: className = '' } = Astro.props;
 ---
 
-<div class:list={['marquee-container', className]} aria-hidden="true">
+<div class:list={['marquee-container', className]} data-motion="marquee" aria-hidden="true">
   <div class="marquee-track">
     {[0, 1].map(() => (
       <div class="marquee-group">
@@ -37,6 +37,27 @@ const { items, class: className = '' } = Astro.props;
   .marquee-track {
     display: flex;
     width: max-content;
+    animation: marquee-scroll var(--motion-marquee) linear infinite;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+
+  :root[data-motion='reduced'] .marquee-track {
+    animation: none;
   }
 
   .marquee-group {

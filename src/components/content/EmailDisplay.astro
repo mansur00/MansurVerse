@@ -11,6 +11,8 @@ const letters = email.split('');
 <a
   href={`mailto:${email}`}
   class:list={['email-display', 'text-email-display', className]}
+  data-copy={email}
+  data-motion="copy-clipboard"
   aria-label={email}
 >
   {letters.map((char) => (

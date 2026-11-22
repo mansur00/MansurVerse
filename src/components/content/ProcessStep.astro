@@ -12,7 +12,7 @@ const formattedNum =
   typeof stepNumber === 'number' && stepNumber < 10 ? `0${stepNumber}` : `${stepNumber}`;
 ---
 
-<article class:list={['process-step', className]}>
+<article class:list={['process-step', className]} data-motion="reveal">
   <span class="step-num" aria-hidden="true">
     {formattedNum}
   </span>

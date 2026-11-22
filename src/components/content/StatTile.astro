@@ -14,7 +14,7 @@ const { number, caption, variant = 'lime', staggered = false, class: className =
   class:list={['stat-tile', `stat-${variant}`, { 'is-staggered': staggered }, className]}
   aria-label={`${number} ${caption}`}
 >
-  <span class="stat-number text-stat" aria-hidden="true">
+  <span class="stat-number text-stat" data-motion="counter" data-target={number} aria-hidden="true">
     {number}
   </span>
   <span class="stat-caption text-body">{caption}</span>

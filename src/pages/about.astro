@@ -43,7 +43,9 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
 
         <div class="bio-paragraphs">
           {profileData.bio.map((paragraph) => (
-            <p class="bio-text text-body">{paragraph}</p>
+            <p class="bio-text text-body" data-motion="bio-scrub">
+              {paragraph}
+            </p>
           ))}
         </div>
 
