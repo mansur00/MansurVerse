@@ -12,7 +12,7 @@ const { sentence, words, highlightIndex = 0, class: className = '' } = Astro.pro
 <div class:list={['statement-container', className]}>
   <p class="sr-only">{sentence}</p>
 
-  <p class="statement-words text-statement" aria-hidden="true">
+  <p class="statement-words text-statement" data-motion="statement-scrub" aria-hidden="true">
     {words.map((word, index) => {
       const isFilled = index <= highlightIndex;
       return (

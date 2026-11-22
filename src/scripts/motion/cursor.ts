@@ -1,0 +1,138 @@
+// Custom Cursor (I-11) and Magnetic Buttons (I-12) per docs/01-design/interaction-motion.md.
+// Fine pointers only; system cursor remains visible; disabled on touch devices.
+import { gsap } from 'gsap';
+import type { MotionModule } from './registry';
+
+let pointerListener: ((e: PointerEvent) => void) | null = null;
+let pointerLeaveListener: (() => void) | null = null;
+let cursorEl: HTMLElement | null = null;
+let labelEl: HTMLElement | null = null;
+let magneticCleanups: (() => void)[] = [];
+
+export const cursorModule: MotionModule = {
+  init(root, ctx) {
+    if (!ctx.finePointer) {
+      if (cursorEl) cursorEl.style.display = 'none';
+      return;
+    }
+
+    // 1. Setup custom cursor element
+    cursorEl = document.querySelector<HTMLElement>('#custom-cursor');
+    if (!cursorEl) {
+      cursorEl = document.createElement('div');
+      cursorEl.id = 'custom-cursor';
+      cursorEl.className = 'custom-cursor';
+      cursorEl.setAttribute('aria-hidden', 'true');
+      labelEl = document.createElement('span');
+      labelEl.className = 'cursor-label';
+      cursorEl.appendChild(labelEl);
+      document.body.appendChild(cursorEl);
+    } else {
+      labelEl = cursorEl.querySelector<HTMLElement>('.cursor-label');
+    }
+
+    cursorEl.style.display = 'flex';
+
+    const xTo = gsap.quickTo(cursorEl, 'x', { duration: 0.15, ease: 'power3.out' });
+    const yTo = gsap.quickTo(cursorEl, 'y', { duration: 0.15, ease: 'power3.out' });
+
+    pointerListener = (e: PointerEvent) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+
+      // Check for [data-cursor] targets
+      const target = (e.target as HTMLElement)?.closest?.('[data-cursor]') as HTMLElement | null;
+      if (target && labelEl && cursorEl) {
+        const cursorText = target.getAttribute('data-cursor') || '';
+        labelEl.textContent = cursorText;
+        cursorEl.classList.add('is-expanded');
+      } else if (cursorEl) {
+        cursorEl.classList.remove('is-expanded');
+      }
+    };
+
+    pointerLeaveListener = () => {
+      if (cursorEl) cursorEl.classList.remove('is-active', 'is-expanded');
+    };
+
+    window.addEventListener('pointermove', pointerListener, { passive: true });
+    document.addEventListener('pointerleave', pointerLeaveListener);
+
+    // 2. I-12 Magnetic Buttons: Within 80px pulls up to 10px, label 1.4x further
+    if (!ctx.reduced) {
+      const magneticTargets = root.querySelectorAll<HTMLElement>(
+        '.button, [data-magnetic], .nav-link, button.theme-toggle, button.motion-toggle',
+      );
+
+      magneticTargets.forEach((btn) => {
+        const label = btn.querySelector<HTMLElement>('.button-label, span');
+        const xBtnTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power2.out' });
+        const yBtnTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power2.out' });
+        const xLabelTo = label
+          ? gsap.quickTo(label, 'x', { duration: 0.4, ease: 'power2.out' })
+          : null;
+        const yLabelTo = label
+          ? gsap.quickTo(label, 'y', { duration: 0.4, ease: 'power2.out' })
+          : null;
+
+        const onMouseMove = (e: MouseEvent) => {
+          const rect = btn.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const dx = e.clientX - cx;
+          const dy = e.clientY - cy;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 80) {
+            const pull = Math.min(10, (1 - dist / 80) * 10);
+            const angle = Math.atan2(dy, dx);
+            const moveX = Math.cos(angle) * pull;
+            const moveY = Math.sin(angle) * pull;
+
+            xBtnTo(moveX);
+            yBtnTo(moveY);
+            xLabelTo?.(moveX * 1.4);
+            yLabelTo?.(moveY * 1.4);
+          } else {
+            xBtnTo(0);
+            yBtnTo(0);
+            xLabelTo?.(0);
+            yLabelTo?.(0);
+          }
+        };
+
+        const onMouseLeave = () => {
+          xBtnTo(0);
+          yBtnTo(0);
+          xLabelTo?.(0);
+          yLabelTo?.(0);
+        };
+
+        window.addEventListener('mousemove', onMouseMove, { passive: true });
+        btn.addEventListener('mouseleave', onMouseLeave);
+
+        magneticCleanups.push(() => {
+          window.removeEventListener('mousemove', onMouseMove);
+          btn.removeEventListener('mouseleave', onMouseLeave);
+        });
+      });
+    }
+  },
+
+  cleanup() {
+    if (pointerListener) {
+      window.removeEventListener('pointermove', pointerListener);
+      pointerListener = null;
+    }
+    if (pointerLeaveListener) {
+      document.removeEventListener('pointerleave', pointerLeaveListener);
+      pointerLeaveListener = null;
+    }
+    magneticCleanups.forEach((fn) => fn());
+    magneticCleanups = [];
+    if (cursorEl) {
+      cursorEl.remove();
+      cursorEl = null;
+    }
+  },
+};

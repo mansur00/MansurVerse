@@ -33,7 +33,7 @@ const isAlt = surface === 'alt';
       <SlashLabel label={label} variant="on-light" />
     </div>
 
-    <div class="process-grid">
+    <div class="process-grid" data-motion-container="reveal">
       {items.map((item, index) => (
         <ProcessStep stepNumber={index + 1} title={item.title} text={item.text} />
       ))}

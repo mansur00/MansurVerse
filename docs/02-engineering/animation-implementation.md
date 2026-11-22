@@ -34,6 +34,21 @@ Files in `src/scripts/motion/`: `ticker.ts`, `lenis.ts`, `registry.ts`, `context
 - **`BaseLayout.astro` (I-34)**: `<ClientRouter fallback="swap" />` with `transition:persist` on `Nav` and `Footer`. Moves focus to page `h1` (`tabindex="-1"`) and announces document title in polite live region (`#page-announcer`). Reserved `transition:name` hook on `ProjectCard` and case-study header.
 - **`scripts/check-bundle-size.mjs`**: Automated build-output check verifying client JS remains under the 90KB compressed budget (57.2KB measured).
 
+### Phase 5b Supporting Interactions Modules
+
+Implemented in `src/scripts/motion/` and driven by `data-motion` attributes:
+- **`reveal.ts` (I-08, I-09, I-16)**: Scroll reveal rises 28px and fades in once at 15% visibility (`--motion-slow`, `--ease-out`); child elements in `[data-motion-container="reveal"]` stagger by `--motion-stagger` (100ms). Line reveal splits headings via `SplitText` inside overflow-hidden line masks; accessible heading name preserved via `aria-label`, split lines hidden via `aria-hidden="true"`.
+- **`scrub.ts` (I-10, I-30)**: ScrollTrigger scrub progressively shifts words from muted to primary colour as scroll progress enters the viewport. Under reduced motion, all words render filled immediately.
+- **`counter.ts` (I-17)**: Stat numbers count up from 0 to target over `--motion-count` (1200ms) with `power2.out` easing when scrolled into view. DOM and `aria-label` retain exact final string value upon completion and under reduced motion.
+- **`marquee.ts` (I-18)**: Infinite CSS loop at `--motion-marquee` (30s). Responsive to scroll velocity: playback speed scales up to 3x and eases back to 1x over 600ms via GSAP. Static (`animation: none`) under reduced motion.
+- **`capability.ts` (I-15)**: Capability row details element smoothly animated using `grid-template-rows: 0fr` to `1fr` over `--motion-base` (400ms). On fine pointers, hovering opens the row and drives `#capability-floating-visual` follower chip.
+- **`cursor.ts` (I-11, I-12)**: 14px lime dot follows fine pointers via `gsap.quickTo`. Over `[data-cursor]` targets, expands into an 84px pill displaying the cursor label. Disabled on touch (`@media (pointer: coarse)`). Magnetic buttons pull up to 10px within an 80px radius; inner label pulls 1.4x further; springs back over `--motion-base`.
+- **`clipboard.ts` (I-20)**: Copies email address to clipboard with fallback `textarea` selection; updates label to "Copied ✓" for 1800ms; announces action to screen readers in `#page-announcer` live region.
+- **`clock.ts` (I-21)**: Footer local time updates every 30s using `Intl.DateTimeFormat` with configured `site.timezone` (`timeZone: 'UTC'`).
+- **`KeywordTag.astro` (I-06)**: CSS keyframe ambient float (`@keyframes tag-float`) rotating ±2.5° and translating -10px over `--motion-float` (3.6s) with alternate easing and staggered delays. Disabled under reduced motion.
+- **`Nav.astro` (I-03)**: Desktop link letter-roll upward to duplicate glyph layer over `--motion-base` with 20ms character stagger. Accessible name preserved in `.sr-only`.
+- **`ProjectCard.astro` (I-13)**: Card lifts 6px on hover and `:focus-visible` over `--motion-base`; image block shifts `(-8px, -8px)` over `--motion-slow`. Reduced-motion bypasses transform.
+
 ## 4. Ticker and Lenis
 
 GSAP's ticker drives Lenis; Lenis scroll events call `ScrollTrigger.update`; lag smoothing is disabled so scroll and tweens stay in step. Lenis is not created when reduced motion is on. It stops while the menu overlay is open. CSS `scroll-behavior: smooth` is never set (D-32).

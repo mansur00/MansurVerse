@@ -12,6 +12,7 @@ interface Props {
   arrowDirection?: 'up-right' | 'right' | undefined;
   class?: string | undefined;
   ariaLabel?: string | undefined;
+  [key: string]: unknown;
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   arrowDirection = 'up-right',
   class: className = '',
   ariaLabel,
+  ...rest
 } = Astro.props;
 
 const isLink = Tag === 'a' || Boolean(href);
@@ -47,6 +49,7 @@ const surfaceClass = surface === 'feature' ? 'btn-on-feature' : '';
     aria-label={ariaLabel}
     aria-disabled={disabled ? 'true' : undefined}
     tabindex={disabled ? -1 : undefined}
+    {...rest}
   >
     <span class="btn-label">
       <slot />
@@ -69,6 +72,7 @@ const surfaceClass = surface === 'feature' ? 'btn-on-feature' : '';
       className,
     ]}
     aria-label={ariaLabel}
+    {...rest}
   >
     <span class="btn-label">
       <slot />

@@ -4,12 +4,31 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getMotionContext, type MotionContext } from './context';
 
+import { revealModule } from './reveal';
+import { scrubModule } from './scrub';
+import { counterModule } from './counter';
+import { marqueeModule } from './marquee';
+import { capabilityModule } from './capability';
+import { cursorModule } from './cursor';
+import { clipboardModule } from './clipboard';
+import { clockModule } from './clock';
+
 export interface MotionModule {
   init(root: HTMLElement | Document, ctx: MotionContext): void;
   cleanup(): void;
 }
 
-const registry = new Map<string, MotionModule>();
+const registry = new Map<string, MotionModule>([
+  ['reveal', revealModule],
+  ['scrub', scrubModule],
+  ['counter', counterModule],
+  ['marquee', marqueeModule],
+  ['capability', capabilityModule],
+  ['cursor', cursorModule],
+  ['clipboard', clipboardModule],
+  ['clock', clockModule],
+]);
+
 let pageMatchMedia: gsap.MatchMedia | null = null;
 
 /**

@@ -27,6 +27,7 @@ const { tagIndex = 1, class: className = '', style = '' } = Astro.props;
     white-space: nowrap;
     transition: transform var(--motion-fast) var(--ease-out);
     user-select: none;
+    animation: tag-float var(--motion-float) var(--ease-in-out) infinite alternate;
   }
 
   .keyword-tag:hover {
@@ -35,17 +36,41 @@ const { tagIndex = 1, class: className = '', style = '' } = Astro.props;
 
   .tag-1 {
     background: var(--tag-bg-1);
+    animation-delay: 0s;
   }
 
   .tag-2 {
     background: var(--tag-bg-2);
+    animation-delay: -0.9s;
   }
 
   .tag-3 {
     background: var(--tag-bg-3);
+    animation-delay: -1.8s;
   }
 
   .tag-4 {
     background: var(--tag-bg-4);
+    animation-delay: -2.7s;
+  }
+
+  @keyframes tag-float {
+    0% {
+      transform: translateY(0) rotate(-2.5deg);
+    }
+
+    100% {
+      transform: translateY(-10px) rotate(2.5deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .keyword-tag {
+      animation: none;
+    }
+  }
+
+  :root[data-motion='reduced'] .keyword-tag {
+    animation: none;
   }
 </style>

@@ -48,7 +48,12 @@ import { siteConfig } from '../config/site';
           </p>
 
           <div class="direct-email-row">
-            <Button href={`mailto:${profileData.email}`} variant="primary">
+            <Button
+              href={`mailto:${profileData.email}`}
+              variant="primary"
+              data-copy={profileData.email}
+              data-motion="copy-clipboard"
+            >
               {profileData.email}
             </Button>
           </div>
