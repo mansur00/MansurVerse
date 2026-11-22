@@ -102,6 +102,8 @@ const home = defineCollection({
               'secondary-4',
               'blue',
             ]),
+            x: z.number().min(0).max(100),
+            y: z.number().min(0).max(100),
           }),
         )
         .length(3),

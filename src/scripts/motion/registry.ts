@@ -12,6 +12,7 @@ import { capabilityModule } from './capability';
 import { cursorModule } from './cursor';
 import { clipboardModule } from './clipboard';
 import { clockModule } from './clock';
+import { heroModule } from './hero';
 
 export interface MotionModule {
   init(root: HTMLElement | Document, ctx: MotionContext): void;
@@ -27,6 +28,7 @@ const registry = new Map<string, MotionModule>([
   ['cursor', cursorModule],
   ['clipboard', clipboardModule],
   ['clock', clockModule],
+  ['hero', heroModule],
 ]);
 
 let pageMatchMedia: gsap.MatchMedia | null = null;

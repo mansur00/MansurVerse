@@ -42,7 +42,7 @@
 |---|---|---|
 | `hero.lead` | string | at most 60 chars |
 | `hero.headline` | array of 1 to 3 strings | Lines of the `h1`; each at most 14 chars |
-| `hero.tags` | array of 3 `{label, accent}` | `label` at most 12 chars |
+| `hero.tags` | array of 3 `{label, accent, x, y}` | `label` at most 12 chars; `x`, `y` percentages (0 to 100) |
 | `hero.intro` | string | at most 200 chars |
 | `statement.text` | string | at most 220 chars |
 | `statement.inline` | array of `{afterWord:int, kind:'shape'|'image', shape?, image?}` | At most 3 |

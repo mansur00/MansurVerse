@@ -1,11 +1,15 @@
 // Enforces JavaScript budget per docs/03-quality/performance-budget.md section 3.
-// JavaScript before interaction budget: 90KB (compressed).
+// Pre-interaction client JavaScript budget: 90KB (compressed).
+// Digit field chunk (OGL + shader) budget: 60KB (compressed).
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-const BUDGET_KB = 90;
-const BUDGET_BYTES = BUDGET_KB * 1024;
+const BUDGET_PRE_INTERACTION_KB = 90;
+const BUDGET_PRE_INTERACTION_BYTES = BUDGET_PRE_INTERACTION_KB * 1024;
+const BUDGET_DIGIT_FIELD_KB = 60;
+const BUDGET_DIGIT_FIELD_BYTES = BUDGET_DIGIT_FIELD_KB * 1024;
+
 const DIST_ASTRO = new URL('../dist/_astro/', import.meta.url).pathname;
 
 if (!existsSync(DIST_ASTRO)) {
@@ -22,35 +26,88 @@ if (jsFiles.length === 0) {
   process.exit(0);
 }
 
-let totalRaw = 0;
-let totalGzip = 0;
+const isDigitFieldChunk = (filename) =>
+  filename.toLowerCase().includes('digit-field') || filename.toLowerCase().includes('ogl');
 
-console.log('--- Client JavaScript Bundle Sizes ---');
+const preFiles = [];
+const digitFiles = [];
+
 for (const file of jsFiles) {
   const filePath = join(DIST_ASTRO, file);
   const content = readFileSync(filePath);
   const gzipped = gzipSync(content);
-  totalRaw += content.length;
-  totalGzip += gzipped.length;
+  const entry = {
+    file,
+    raw: content.length,
+    gzip: gzipped.length,
+  };
+
+  if (isDigitFieldChunk(file)) {
+    digitFiles.push(entry);
+  } else {
+    preFiles.push(entry);
+  }
+}
+
+let preRaw = 0;
+let preGzip = 0;
+console.log('--- Pre-Interaction Client JavaScript Bundle Sizes ---');
+for (const entry of preFiles) {
+  preRaw += entry.raw;
+  preGzip += entry.gzip;
   console.log(
-    `  ${file.padEnd(55)} ${(content.length / 1024).toFixed(2).padStart(6)} KB raw | ${(gzipped.length / 1024).toFixed(2).padStart(6)} KB gzip`,
+    `  ${entry.file.padEnd(55)} ${(entry.raw / 1024).toFixed(2).padStart(6)} KB raw | ${(entry.gzip / 1024).toFixed(2).padStart(6)} KB gzip`,
   );
 }
 
-const totalGzipKb = (totalGzip / 1024).toFixed(2);
-const totalRawKb = (totalRaw / 1024).toFixed(2);
-console.log('--------------------------------------');
+const preGzipKb = (preGzip / 1024).toFixed(2);
+const preRawKb = (preRaw / 1024).toFixed(2);
+console.log('------------------------------------------------------');
 console.log(
-  `Total Client JS: ${totalGzipKb} KB gzip (${totalRawKb} KB raw) / Budget: ${BUDGET_KB} KB`,
+  `Pre-Interaction Total: ${preGzipKb} KB gzip (${preRawKb} KB raw) / Budget: ${BUDGET_PRE_INTERACTION_KB} KB`,
 );
 
-if (totalGzip > BUDGET_BYTES) {
+let digitRaw = 0;
+let digitGzip = 0;
+console.log('\n--- Digit Field Chunk (OGL + Shader) Bundle Sizes ---');
+if (digitFiles.length === 0) {
+  console.log('  (No digit field chunk found in dist/_astro/)');
+} else {
+  for (const entry of digitFiles) {
+    digitRaw += entry.raw;
+    digitGzip += entry.gzip;
+    console.log(
+      `  ${entry.file.padEnd(55)} ${(entry.raw / 1024).toFixed(2).padStart(6)} KB raw | ${(entry.gzip / 1024).toFixed(2).padStart(6)} KB gzip`,
+    );
+  }
+}
+const digitGzipKb = (digitGzip / 1024).toFixed(2);
+const digitRawKb = (digitRaw / 1024).toFixed(2);
+console.log('------------------------------------------------------');
+console.log(
+  `Digit Field Total: ${digitGzipKb} KB gzip (${digitRawKb} KB raw) / Budget: ${BUDGET_DIGIT_FIELD_KB} KB`,
+);
+
+let hasError = false;
+
+if (preGzip > BUDGET_PRE_INTERACTION_BYTES) {
   console.error(
-    `check-bundle-size FAILED: Total client JS (${totalGzipKb} KB gzip) exceeds ${BUDGET_KB} KB budget!`,
+    `\ncheck-bundle-size FAILED: Pre-interaction client JS (${preGzipKb} KB gzip) exceeds ${BUDGET_PRE_INTERACTION_KB} KB budget!`,
   );
+  hasError = true;
+}
+
+if (digitGzip > BUDGET_DIGIT_FIELD_BYTES) {
+  console.error(
+    `\ncheck-bundle-size FAILED: Digit field chunk (${digitGzipKb} KB gzip) exceeds ${BUDGET_DIGIT_FIELD_KB} KB budget!`,
+  );
+  hasError = true;
+}
+
+if (hasError) {
   process.exit(1);
 }
 
 console.log(
-  `check-bundle-size PASSED: Bundle size is within the ${BUDGET_KB} KB compressed budget.`,
+  `\ncheck-bundle-size PASSED: All bundle chunks are within their respective compressed budgets.`,
 );

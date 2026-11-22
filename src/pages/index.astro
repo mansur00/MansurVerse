@@ -32,41 +32,38 @@ const marqueeItems = capabilitiesData.items.map((item, idx) => ({
 }));
 
 const statementWords = homeData.statement.text.split(' ');
-const tagPositions = [
-  { left: '20%', top: '12%' },
-  { right: '4%', top: '28%' },
-  { left: '12%', bottom: '6%' },
-];
 ---
 
 <BaseLayout title={`${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
   <!-- H2: Hero Section -->
   <section class="hero-section" aria-label="Hero">
+    <canvas id="digit-field-canvas" class="digit-field-canvas" aria-hidden="true"></canvas>
+    <noscript>
+      <style>
+        .digit-field-canvas {
+          background-image: url('/assets/digit-field-poster.svg');
+          background-size: 560px 560px;
+          background-repeat: repeat;
+        }
+      </style>
+    </noscript>
     <div class="hero-container">
       <div class="hero-lead-row">
         <p class="hero-lead text-label">{homeData.hero.lead}</p>
       </div>
 
       <div class="hero-headline-wrapper">
-        <h1 class="hero-title text-display-hero">
-          {homeData.hero.headline.map((line, idx) => (
-            <span class="hero-line">
-              {line}
-              {idx < homeData.hero.headline.length - 1 && <br />}
+        <h1 class="hero-title text-display-hero" aria-label={homeData.hero.headline.join(' ')}>
+          {homeData.hero.headline.map((line) => (
+            <span class="hero-line-mask" aria-hidden="true">
+              <span class="hero-line-inner">{line}</span>
             </span>
           ))}
         </h1>
 
         <div class="hero-tags" aria-hidden="true">
           {homeData.hero.tags.map((tag, idx) => (
-            <div
-              class="hero-tag-item"
-              style={
-                tagPositions[idx]
-                  ? `left: ${tagPositions[idx].left ?? 'auto'}; right: ${tagPositions[idx].right ?? 'auto'}; top: ${tagPositions[idx].top ?? 'auto'}; bottom: ${tagPositions[idx].bottom ?? 'auto'};`
-                  : ''
-              }
-            >
+            <div class="hero-tag-item" style={`left: ${tag.x}%; top: ${tag.y}%;`}>
               <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag.label}</KeywordTag>
             </div>
           ))}
@@ -173,6 +170,24 @@ const tagPositions = [
     overflow: hidden;
   }
 
+  .digit-field-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: var(--opacity-digit-field, 0.4);
+    filter: blur(var(--blur-digit-field, 0.7px));
+    color: var(--color-digit-field);
+    z-index: 0;
+  }
+
+  .digit-field-canvas.no-webgl {
+    background-image: url('/assets/digit-field-poster.svg');
+    background-size: 560px 560px;
+    background-repeat: repeat;
+  }
+
   .hero-container {
     max-width: var(--layout-max-width);
     margin: 0 auto;
@@ -180,6 +195,8 @@ const tagPositions = [
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    position: relative;
+    z-index: var(--z-content, 1);
   }
 
   .hero-lead-row {
@@ -189,11 +206,23 @@ const tagPositions = [
   .hero-headline-wrapper {
     position: relative;
     display: inline-block;
+    width: 100%;
   }
 
   .hero-title {
     margin: 0;
     line-height: 0.85;
+  }
+
+  .hero-line-mask {
+    display: block;
+    overflow: hidden;
+    line-height: 0.85;
+  }
+
+  .hero-line-inner {
+    display: block;
+    will-change: transform;
   }
 
   .hero-tags {
@@ -205,20 +234,7 @@ const tagPositions = [
   .hero-tag-item {
     position: absolute;
     pointer-events: auto;
-  }
-
-  @media (width < 768px) {
-    .hero-tags {
-      position: static;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      margin-top: var(--space-4);
-    }
-
-    .hero-tag-item {
-      position: static;
-    }
+    transform-origin: center center;
   }
 
   .hero-intro-row {
@@ -309,3 +325,47 @@ const tagPositions = [
     display: flex;
   }
 </style>
+
+<script>
+  let digitFieldCleanup: (() => void) | null = null;
+
+  function setupHeroDigitField(): void {
+    const canvas = document.getElementById('digit-field-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    const loadWebGL = () => {
+      import('../scripts/webgl/digit-field')
+        .then((m) => m.initDigitField(canvas))
+        .then((cleanup) => {
+          digitFieldCleanup = cleanup;
+          canvas.setAttribute('data-webgl-ready', 'true');
+        })
+        .catch((err) => {
+          console.error('Failed to load WebGL digit field:', err);
+          canvas.classList.add('no-webgl');
+          canvas.setAttribute('data-webgl-ready', 'false');
+        });
+    };
+
+    if (typeof window !== 'undefined') {
+      const win = window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      };
+      if (typeof win.requestIdleCallback === 'function') {
+        win.requestIdleCallback(loadWebGL, { timeout: 800 });
+      } else {
+        setTimeout(loadWebGL, 1);
+      }
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    document.addEventListener('astro:page-load', setupHeroDigitField);
+    document.addEventListener('astro:before-swap', () => {
+      if (digitFieldCleanup) {
+        digitFieldCleanup();
+        digitFieldCleanup = null;
+      }
+    });
+  }
+</script>

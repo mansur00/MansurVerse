@@ -210,6 +210,21 @@ for (const { name, limits, check } of jsonFiles) {
       warnings.push(`[placeholder] ${name} carries placeholder: true`);
     }
 
+    if (name === 'home.json' && data.hero?.tags) {
+      if (!Array.isArray(data.hero.tags) || data.hero.tags.length !== 3) {
+        errors.push('home.json: hero.tags must contain exactly 3 items');
+      } else {
+        data.hero.tags.forEach((tag, idx) => {
+          if (typeof tag.x !== 'number' || tag.x < 0 || tag.x > 100) {
+            errors.push(`home.json: hero.tags[${idx}].x must be a number between 0 and 100`);
+          }
+          if (typeof tag.y !== 'number' || tag.y < 0 || tag.y > 100) {
+            errors.push(`home.json: hero.tags[${idx}].y must be a number between 0 and 100`);
+          }
+        });
+      }
+    }
+
     if (check) {
       const err = check(data);
       if (err) errors.push(`${name}: ${err}`);
