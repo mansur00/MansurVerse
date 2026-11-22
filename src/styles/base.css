@@ -93,7 +93,7 @@ html.is-theme-fading * {
   height: 14px;
   margin-top: -7px;
   margin-left: -7px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-circle);
   background: var(--color-accent-primary);
   pointer-events: none;
   display: none;
@@ -124,6 +124,7 @@ html.is-theme-fading * {
   margin-top: -18px;
   margin-left: -42px;
   padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
   background: var(--color-text-primary);
 }
 
@@ -151,7 +152,7 @@ html.is-theme-fading * {
   font-family: var(--font-label);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-bold);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-pill);
   white-space: nowrap;
   user-select: none;
   opacity: 0;

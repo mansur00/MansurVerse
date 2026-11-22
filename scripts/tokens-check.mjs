@@ -118,6 +118,21 @@ for (const key of requiredPlacement) {
   }
 }
 
+// 3f. Validate digit-field tokens
+const requiredDigitField = [
+  'peak-opacity',
+  'min-alpha',
+  'falloff-radius',
+  'flip-radius',
+  'cell-size',
+  'glyph-size',
+];
+for (const key of requiredDigitField) {
+  if (!tokens['digit-field']?.[key]) {
+    errors.push(`digit-field.${key}: missing required digit-field token`);
+  }
+}
+
 // 4. Contrast pairs in both themes.
 for (const { fg, bg, min } of tokens.contrast) {
   for (const theme of ['light', 'dark']) {

@@ -42,3 +42,12 @@ export const zIndex = {
   "safe-area": 30,
   "cursor": 50
 } as const;
+
+export const digitFieldTokens = {
+  "peakOpacity": 0.45,
+  "minAlpha": 0.054,
+  "falloffRadius": 240,
+  "flipRadius": 110,
+  "cellSize": 28,
+  "glyphSize": 14
+} as const;

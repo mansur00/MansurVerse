@@ -265,13 +265,13 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
       expect(metrics.lcpElementTag).toBe('h1');
     }
 
-    // Ensure digit field dynamic import and initialization have settled before measuring pointer move performance
+    // Ensure digit field dynamic import and intro timeline have fully settled before measuring pointer move performance
     await page.waitForFunction(() => {
-      const canvas = document.querySelector('#digit-field-canvas');
-      return canvas && canvas.getAttribute('data-webgl-ready') !== null;
+      const canvas = document.querySelector('#digit-field-canvas') as HTMLElement | null;
+      return canvas && canvas.getAttribute('data-webgl-ready') === 'true' && !canvas.style.opacity;
     });
 
-    // Allow initial animations to settle completely
+    // Allow any remaining layout shifts or idle frames to settle completely
     await page.waitForTimeout(300);
 
     // Verify pointer movement across hero produces no long task over 50ms
@@ -341,5 +341,209 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
       );
     });
     expect(isReduced).toBe(true);
+  });
+
+  test('Cursor & Floating Visual Shapes: Custom cursor dot is circle (--radius-circle), expanded and floating visual are pills (--radius-pill)', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await page.waitForTimeout(300);
+
+    const cursor = page.locator('#custom-cursor');
+    await expect(cursor).toBeAttached();
+
+    const cursorShape = await cursor.evaluate((el) => ({
+      width: window.getComputedStyle(el).width,
+      height: window.getComputedStyle(el).height,
+      borderRadius: window.getComputedStyle(el).borderRadius,
+    }));
+
+    // Custom cursor dot is 14px circle (--radius-circle = 50%)
+    expect(cursorShape.borderRadius).toBe('50%');
+
+    // Expanded cursor is a pill (--radius-pill = 999px)
+    const expandedRadius = await page.evaluate(() => {
+      const el = document.getElementById('custom-cursor');
+      if (!el) return '';
+      el.classList.add('is-expanded');
+      const r = window.getComputedStyle(el).borderRadius;
+      el.classList.remove('is-expanded');
+      return r;
+    });
+    expect(expandedRadius).toBe('999px');
+
+    // Capability floating visual is a pill (--radius-pill = 999px)
+    const floatingRadius = await page.evaluate(() => {
+      const el = document.querySelector('.capability-floating-visual');
+      return el ? window.getComputedStyle(el).borderRadius : '';
+    });
+    expect(floatingRadius).toBe('999px');
+  });
+
+  test('Pixel Sampling: Digit field effective alpha, luminance, flip timing and token styles', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
+    });
+    await page.goto('/');
+
+    const canvas = page.locator('#digit-field-canvas');
+    await expect(canvas).toBeAttached();
+
+    // Wait until WebGL digit field has completed first frame and intro is settled
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas') as HTMLElement | null;
+      return el && el.getAttribute('data-webgl-ready') === 'true' && !el.style.opacity;
+    });
+
+    // 1. Verify canvas computed opacity and filter match tokens
+    const styles = await canvas.evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return {
+        opacity: cs.opacity,
+        filter: cs.filter,
+      };
+    });
+    expect(styles.opacity).toBe('0.45'); // --opacity-digit-field (0.45)
+    expect(styles.filter).toBe('blur(0.7px)'); // --blur-digit-field (0.7px)
+
+    // 2. Far from pointer: sample at (200, 250) when pointer is outside hero
+    const farSampleLight = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(farSampleLight).not.toBeNull();
+    if (farSampleLight) {
+      // Effective alpha should be quiet background (0.04 to 0.10)
+      expect(farSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(0.04);
+      expect(farSampleLight.effectiveAlpha).toBeLessThanOrEqual(0.1);
+      // Light theme uses dark/black text: luminance < 0.15
+      expect(farSampleLight.luminance).toBeLessThan(0.15);
+    }
+
+    // 3. Near pointer: move pointer to (200, 250)
+    await page.mouse.move(200, 250);
+    await page.waitForTimeout(100);
+
+    const nearSampleLight = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(nearSampleLight).not.toBeNull();
+    if (nearSampleLight && farSampleLight) {
+      // Effective alpha within 40px of pointer rises smoothly to >= 0.30
+      expect(nearSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(0.3);
+      // At least 3x the far value
+      expect(nearSampleLight.effectiveAlpha).toBeGreaterThanOrEqual(
+        3 * farSampleLight.effectiveAlpha,
+      );
+    }
+
+    // 4. Digit flips near pointer within 400ms, while far digit remains static
+    const initialNearDigit = nearSampleLight?.digit;
+    const initialFarDigit = await page.evaluate(
+      () => window.__sampleDigitCanvas?.(800, 500)?.digit,
+    );
+
+    let flippedNear = false;
+    for (let i = 0; i < 9; i++) {
+      await page.waitForTimeout(45);
+      const sample = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+      if (sample && sample.digit !== initialNearDigit) {
+        flippedNear = true;
+        break;
+      }
+    }
+    expect(flippedNear).toBe(true);
+
+    const endFarDigit = await page.evaluate(() => window.__sampleDigitCanvas?.(800, 500)?.digit);
+    expect(endFarDigit).toBe(initialFarDigit);
+
+    // 5. Dark theme test
+    await page.evaluate(() => {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    });
+    await page.waitForTimeout(150);
+
+    // Far in dark theme: park pointer away
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(50);
+
+    const farSampleDark = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(farSampleDark).not.toBeNull();
+    if (farSampleDark) {
+      expect(farSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(0.04);
+      expect(farSampleDark.effectiveAlpha).toBeLessThanOrEqual(0.1);
+      // Dark theme uses light/grey-100 text (#F1F1F1): luminance > 0.70
+      expect(farSampleDark.luminance).toBeGreaterThan(0.7);
+    }
+
+    // Near in dark theme
+    await page.mouse.move(200, 250);
+    await page.waitForTimeout(100);
+
+    const nearSampleDark = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(nearSampleDark).not.toBeNull();
+    if (nearSampleDark && farSampleDark) {
+      expect(nearSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(0.3);
+      expect(nearSampleDark.effectiveAlpha).toBeGreaterThanOrEqual(
+        3 * farSampleDark.effectiveAlpha,
+      );
+    }
+  });
+
+  test('Pixel Sampling: Reduced motion draws 1 frame with no pointer effect', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
+    });
+    await page.goto('/');
+
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas');
+      return el && el.getAttribute('data-webgl-ready') === 'true';
+    });
+
+    const sampleBefore = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(sampleBefore).not.toBeNull();
+
+    // Move mouse over coordinates
+    await page.mouse.move(200, 250);
+    await page.waitForTimeout(250);
+
+    const sampleAfter = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(sampleAfter).not.toBeNull();
+
+    // Under reduced motion, pointer effect and ticker are disabled
+    if (sampleBefore && sampleAfter) {
+      expect(sampleAfter.effectiveAlpha).toBe(sampleBefore.effectiveAlpha);
+      expect(sampleAfter.digit).toBe(sampleBefore.digit);
+    }
+  });
+
+  test('Pixel Sampling: Touch / coarse pointer disables pointer effects', async ({ browser }) => {
+    const context = await browser.newContext({
+      hasTouch: true,
+      isMobile: true,
+      viewport: { width: 375, height: 667 },
+    });
+    const page = await context.newPage();
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
+    });
+    await page.goto('/');
+
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas');
+      return el && el.getAttribute('data-webgl-ready') === 'true';
+    });
+
+    // Touch device tap/move
+    await page.touchscreen.tap(200, 250);
+    await page.waitForTimeout(100);
+
+    const sample = await page.evaluate(() => window.__sampleDigitCanvas?.(200, 250));
+    expect(sample).not.toBeNull();
+    if (sample) {
+      // Should remain at base far alpha without pointer brightening
+      expect(sample.effectiveAlpha).toBeLessThanOrEqual(0.1);
+    }
+
+    await context.close();
   });
 });

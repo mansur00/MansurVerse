@@ -1,6 +1,7 @@
 // Hero interactions (I-04 Hero Intro & I-06 Tag Shifts) per docs/01-design/interaction-motion.md.
 import { gsap } from 'gsap';
 import type { MotionModule } from './registry';
+import { DIGIT_FIELD } from '../webgl/constants';
 
 const HERO_INTRO_KEY = 'mansurverse:hero-intro';
 
@@ -63,9 +64,10 @@ export const heroModule: MotionModule = {
         introTimeline.to(
           digitCanvas,
           {
-            opacity: 1,
+            opacity: DIGIT_FIELD.peakOpacity,
             duration: 0.6,
             ease: 'power2.out',
+            clearProps: 'opacity',
           },
           '-=0.4',
         );
@@ -74,7 +76,7 @@ export const heroModule: MotionModule = {
       // Immediate final state
       gsap.set(headingLines, { yPercent: 0 });
       gsap.set(tags, { scale: 1, opacity: 1 });
-      if (digitCanvas) gsap.set(digitCanvas, { opacity: 1 });
+      if (digitCanvas) digitCanvas.style.opacity = '';
     }
 
     // 2. I-06 Hero Keyword Tags pointer shift (Fine pointers only)
