@@ -194,3 +194,16 @@ import { siteConfig } from '../config/site';
     }
   }
 </style>
+
+<script>
+  const init = async () => {
+    const { initContactPage } = await import('../scripts/motion/contact');
+    initContactPage();
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
+</script>

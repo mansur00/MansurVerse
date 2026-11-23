@@ -28,13 +28,21 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
   <!-- A1: Intro Section (Portrait & Bio) -->
   <section class="about-intro-section" aria-label="About Intro">
     <div class="about-intro-container">
-      <div class="about-portrait-wrapper">
+      <div class="about-portrait-wrapper" data-spotlight="true">
         <img
           src={profileData.portrait.image}
           alt={profileData.portrait.alt}
-          class="about-portrait"
+          class="about-portrait base-layer"
           loading="eager"
         />
+        <div class="portrait-color-layer" aria-hidden="true">
+          <img
+            src={profileData.portrait.image}
+            alt=""
+            class="about-portrait color-layer"
+            loading="eager"
+          />
+        </div>
       </div>
 
       <div class="about-bio-column">
@@ -108,8 +116,13 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
   }
 
   .about-portrait-wrapper {
+    --spotlight-x: 50%;
+    --spotlight-y: 50%;
+
+    position: relative;
     background: var(--color-bg-surface);
     overflow: hidden;
+    user-select: none;
   }
 
   .about-portrait {
@@ -118,6 +131,37 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     display: block;
     aspect-ratio: 4 / 5;
     object-fit: cover;
+  }
+
+  .base-layer {
+    filter: grayscale(100%) contrast(1.1);
+  }
+
+  .portrait-color-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(
+      circle 130px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+      var(--palette-black) 0%,
+      transparent 100%
+    );
+  }
+
+  @media (pointer: coarse) {
+    .portrait-color-layer {
+      mask-image: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-color-layer {
+      mask-image: none;
+    }
+  }
+
+  :global(:root[data-motion='reduced'] .portrait-color-layer) {
+    mask-image: none;
   }
 
   .about-bio-column {
@@ -169,6 +213,24 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     flex-direction: column;
   }
 
+  .experience-list:hover :global(.experience-row-wrapper) {
+    opacity: 0.6;
+  }
+
+  .experience-list :global(.experience-row-wrapper:hover) {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .experience-list:hover :global(.experience-row-wrapper) {
+      opacity: 1;
+    }
+  }
+
+  :global(:root[data-motion='reduced'] .experience-list:hover .experience-row-wrapper) {
+    opacity: 1;
+  }
+
   @media (width < 900px) {
     .about-intro-container {
       grid-template-columns: 1fr;
@@ -176,3 +238,16 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     }
   }
 </style>
+
+<script>
+  const init = async () => {
+    const { initAboutPage } = await import('../scripts/motion/about');
+    initAboutPage();
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
+</script>

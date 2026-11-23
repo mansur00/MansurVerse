@@ -105,6 +105,8 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
         <SlashLabel label="Comparison" variant="on-light" />
         <h2 class="compare-heading text-heading-section">Before and After</h2>
         <CompareSlider
+          beforeImage={project.data.compare.before.image}
+          afterImage={project.data.compare.after.image}
           beforeLabel={project.data.compare.before.alt}
           afterLabel={project.data.compare.after.alt}
         />
@@ -148,8 +150,16 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
 
   <!-- C7: Next Project Navigation & CTA Band -->
   {nextProject && (
-    <section class="case-next-section" aria-label="Next Project">
+    <section
+      class="case-next-section"
+      aria-label="Next Project"
+      data-pull-next="true"
+      data-next-url={`/work/${nextProject.id}`}
+    >
       <div class="case-next-container">
+        <div class="pull-next-meter" aria-hidden="true">
+          <div class="pull-next-progress"></div>
+        </div>
         <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
           Next project: {nextProject.data.title}
         </Button>
@@ -287,7 +297,24 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
     max-width: var(--layout-max-width);
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .pull-next-meter {
+    width: 220px;
+    height: 3px;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .pull-next-progress {
+    height: 100%;
+    width: var(--pull-progress, 0%);
+    background: var(--color-accent-primary);
   }
 
   @media (width < 900px) {
@@ -324,3 +351,16 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
     margin: 0;
   }
 </style>
+
+<script>
+  const init = async () => {
+    const { initCaseStudyPage } = await import('../../scripts/motion/case-study');
+    initCaseStudyPage();
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
+</script>

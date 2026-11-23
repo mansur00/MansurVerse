@@ -58,3 +58,16 @@ import { siteConfig } from '../config/site';
     display: flex;
   }
 </style>
+
+<script>
+  const init = async () => {
+    const { initNotFoundPage } = await import('../scripts/motion/not-found');
+    initNotFoundPage();
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
+</script>
