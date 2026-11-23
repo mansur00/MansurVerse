@@ -343,16 +343,21 @@ const statementWords = homeData.statement.text.split(' ');
   import { isFeatureDisabled } from '../scripts/debug/features';
 
   let digitFieldCleanup: (() => void) | null = null;
+  let isDigitFieldInitializing = false;
 
   function setupHeroDigitField(): void {
     const canvas = document.getElementById('digit-field-canvas') as HTMLCanvasElement | null;
-    if (!canvas) return;
+    if (!canvas || isDigitFieldInitializing || canvas.hasAttribute('data-webgl-initialized'))
+      return;
 
     if (isFeatureDisabled('digitfield')) {
       canvas.classList.add('no-webgl');
       canvas.setAttribute('data-webgl-ready', 'false');
       return;
     }
+
+    isDigitFieldInitializing = true;
+    canvas.setAttribute('data-webgl-initialized', 'true');
 
     const loadWebGL = () => {
       import('../scripts/webgl/digit-field')
@@ -365,6 +370,9 @@ const statementWords = homeData.statement.text.split(' ');
           console.error('Failed to load WebGL digit field:', err);
           canvas.classList.add('no-webgl');
           canvas.setAttribute('data-webgl-ready', 'false');
+        })
+        .finally(() => {
+          isDigitFieldInitializing = false;
         });
     };
 
@@ -373,7 +381,7 @@ const statementWords = homeData.statement.text.split(' ');
         requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       };
       if (typeof win.requestIdleCallback === 'function') {
-        win.requestIdleCallback(loadWebGL, { timeout: 800 });
+        win.requestIdleCallback(loadWebGL, { timeout: 300 });
       } else {
         setTimeout(loadWebGL, 1);
       }
@@ -387,6 +395,11 @@ const statementWords = homeData.statement.text.split(' ');
         digitFieldCleanup();
         digitFieldCleanup = null;
       }
+      isDigitFieldInitializing = false;
     });
+    // Immediately invoke if DOM is already ready
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setupHeroDigitField();
+    }
   }
 </script>

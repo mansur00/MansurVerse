@@ -72,6 +72,8 @@ export default {
       'oklch',
     ],
     'color-named': 'never',
+    // Astro uses :global() for global selector scoping
+    'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
     // Rule 1: fonts only through tokens.
     'declaration-property-value-disallowed-list': {
       '/^(font-family|font-size)$/': ['/^(?!var\\()/'],

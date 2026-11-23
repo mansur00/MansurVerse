@@ -918,13 +918,112 @@ test.describe('Phase 5c Hero & WebGL Digit Field', () => {
 
     await expect(canvas).toHaveClass(/no-webgl/);
 
-    // 2. ?perf=1 renders performance HUD overlay
+    // 2. ?perf=1 renders performance HUD overlay with diagnostic line
     await page.goto('/?perf=1');
     const hud = page.locator('#perf-overlay');
     await expect(hud).toBeAttached();
     await expect(hud).toContainText('MansurVerse Perf HUD');
     await expect(hud).toContainText('FPS:');
     await expect(hud).toContainText('Canvas:');
+    await expect(hud).toContainText('Status:');
+    await expect(hud).toContainText('Guard:');
+    await expect(hud).toContainText('Pointer:');
+    await expect(hud).toContainText('Mode:');
+  });
+
+  test('Audit: Pointer events delivery across empty hero area updates shader pointer tracking', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
+    });
+    await page.goto('/');
+
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas');
+      return el && el.getAttribute('data-webgl-ready') === 'true';
+    });
+
+    // Move pointer over empty hero area
+    await page.mouse.move(500, 350);
+    await page.waitForTimeout(100);
+
+    const ptrState = await page.evaluate(() => {
+      const dbg = window.__digitFieldDebug;
+      const canvas = document.getElementById('digit-field-canvas');
+      const rect = canvas?.getBoundingClientRect();
+      return {
+        lastPointer: dbg?.lastPointer,
+        status: dbg?.status,
+        canvasTop: rect?.top,
+        canvasLeft: rect?.left,
+      };
+    });
+
+    expect(ptrState.status).toBe('running');
+    expect(ptrState.lastPointer).not.toBeNull();
+    // lastPointer coordinates should match 500 - canvasLeft, 350 - canvasTop
+    const expectedX = Math.round(500 - (ptrState.canvasLeft || 0));
+    const expectedY = Math.round(350 - (ptrState.canvasTop || 0));
+    expect(ptrState.lastPointer?.[0]).toBe(expectedX);
+    expect(ptrState.lastPointer?.[1]).toBe(expectedY);
+  });
+
+  test('Audit: Pause motion toggle in footer updates state, button label, storage, and ticker', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('mansurverse:hero-intro', 'true');
+    });
+    await page.goto('/');
+
+    await page.waitForFunction(() => {
+      const el = document.querySelector('#digit-field-canvas');
+      return el && el.getAttribute('data-webgl-ready') === 'true';
+    });
+
+    const toggleBtn = page.locator('#motion-toggle');
+    await expect(toggleBtn).toBeAttached();
+    await expect(toggleBtn).toHaveAttribute('aria-pressed', 'false');
+    await expect(toggleBtn).toContainText('Pause motion');
+
+    // Click to pause motion
+    await toggleBtn.click();
+    await page.waitForTimeout(100);
+
+    await expect(toggleBtn).toHaveAttribute('aria-pressed', 'true');
+    await expect(toggleBtn).toContainText('Play motion');
+
+    const pausedState = await page.evaluate(() => ({
+      htmlMotion: document.documentElement.getAttribute('data-motion'),
+      storageMotion: localStorage.getItem('motion'),
+      status: window.__digitFieldDebug?.status,
+    }));
+
+    expect(pausedState.htmlMotion).toBe('reduced');
+    expect(pausedState.storageMotion).toBe('reduced');
+    expect(pausedState.status).toBe('paused');
+
+    // Click to resume motion
+    await toggleBtn.click();
+    await page.waitForTimeout(100);
+
+    // Scroll back to top so hero section is visible and intersecting
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(200);
+
+    await expect(toggleBtn).toHaveAttribute('aria-pressed', 'false');
+    await expect(toggleBtn).toContainText('Pause motion');
+
+    const resumedState = await page.evaluate(() => ({
+      htmlMotion: document.documentElement.getAttribute('data-motion'),
+      storageMotion: localStorage.getItem('motion'),
+      status: window.__digitFieldDebug?.status,
+    }));
+
+    expect(resumedState.htmlMotion).toBe('normal');
+    expect(resumedState.storageMotion).toBe('normal');
+    expect(resumedState.status).toBe('running');
   });
 
   test('Pixel Sampling: Reduced motion draws 1 frame with no pointer effect', async ({ page }) => {

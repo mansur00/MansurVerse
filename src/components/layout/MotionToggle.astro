@@ -37,6 +37,12 @@ const {
     const isReduced = isReducedMotion();
     document.querySelectorAll<HTMLButtonElement>('[data-motion-toggle]').forEach((btn) => {
       btn.setAttribute('aria-pressed', isReduced ? 'true' : 'false');
+      const pauseLabel = btn.querySelector<HTMLElement>('.motion-label-pause');
+      const playLabel = btn.querySelector<HTMLElement>('.motion-label-play');
+      if (pauseLabel && playLabel) {
+        pauseLabel.style.display = isReduced ? 'none' : 'inline';
+        playLabel.style.display = isReduced ? 'inline' : 'none';
+      }
     });
   }
 
@@ -87,11 +93,11 @@ const {
     display: inline;
   }
 
-  :root[data-motion='reduced'] .motion-label-pause {
-    display: none;
+  :global(:root[data-motion='reduced']) .motion-label-pause {
+    display: none !important;
   }
 
-  :root[data-motion='reduced'] .motion-label-play {
-    display: inline;
+  :global(:root[data-motion='reduced']) .motion-label-play {
+    display: inline !important;
   }
 </style>
