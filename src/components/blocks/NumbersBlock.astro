@@ -64,7 +64,7 @@ const {
 
 <style>
   .numbers-header {
-    max-width: var(--measure-body, 60ch);
+    width: 100%;
   }
 
   .numbers-heading {
@@ -88,12 +88,6 @@ const {
   @media (width < 900px) {
     .stats-grid {
       grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (width < 600px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
     }
   }
 </style>

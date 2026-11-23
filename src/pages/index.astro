@@ -48,7 +48,7 @@ const statementWords = homeData.statement.text.split(' ');
   description={homeData.hero.intro}
 >
   <!-- H2: Hero Section -->
-  <Section size="none" class="hero-section" aria-label="Hero">
+  <Section size="default" class="hero-section" aria-label="Hero">
     <Grid class="hero-container">
       <Cell placement="full">
         <div class="hero-lead-row">
@@ -177,8 +177,6 @@ const statementWords = homeData.statement.text.split(' ');
     position: relative;
     isolation: isolate;
     min-height: 85vh;
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-8);
     display: flex;
     flex-direction: column;
     justify-content: space-between;

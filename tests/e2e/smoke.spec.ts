@@ -245,4 +245,55 @@ test.describe('Production Smoke Suite', () => {
 
     expect(errors).toEqual([]);
   });
+
+  // 7. Production layout invariants on Home page
+  test('Home page satisfies production layout invariants and padding geometry', async ({
+    page,
+  }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle');
+
+    const check = await page.evaluate(() => {
+      const refSec = document.querySelector<HTMLElement>('.layout-section.section-size-default');
+      const refComp = refSec ? getComputedStyle(refSec) : null;
+      const pad = refComp ? parseFloat(refComp.paddingLeft) : 16;
+      const sectionY = refComp ? parseFloat(refComp.paddingTop) : 56;
+
+      // Hero section padding check
+      const hero = document.querySelector<HTMLElement>('.hero-section');
+      const heroPadTop = hero ? parseFloat(getComputedStyle(hero).paddingTop) : 0;
+
+      // Capabilities closed on load
+      const capRows = Array.from(
+        document.querySelectorAll<HTMLDetailsElement>('details.capability-row'),
+      );
+      const allCapClosed = capRows.every((r) => !r.open && !r.classList.contains('is-expanded'));
+
+      // Statement width & height
+      const stmt = document.querySelector<HTMLElement>('.statement-container');
+      const stmtRect = stmt ? stmt.getBoundingClientRect() : null;
+
+      return {
+        pad,
+        sectionY,
+        heroPadTop,
+        allCapClosed,
+        stmtRect: stmtRect ? { width: stmtRect.width, height: stmtRect.height } : null,
+      };
+    });
+
+    expect(
+      Math.abs(check.heroPadTop - check.sectionY),
+      `Hero top padding (${check.heroPadTop}) should match --layout-section-y (${check.sectionY})`,
+    ).toBeLessThanOrEqual(2);
+
+    expect(check.allCapClosed, 'Capability rows must be closed on initial load').toBe(true);
+
+    if (check.stmtRect) {
+      expect(
+        check.stmtRect.height,
+        `Statement height (${check.stmtRect.height}px) must be below 600px`,
+      ).toBeLessThan(600);
+    }
+  });
 });

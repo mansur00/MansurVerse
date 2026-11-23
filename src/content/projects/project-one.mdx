@@ -1,48 +1,48 @@
 ---
-title: Project One
+title: Design System & Core Primitives
 order: 1
 featured: true
 category: Web
 year: 2026
-role: Design and frontend
-tools: [Astro, GSAP, Figma]
+role: Design systems & frontend
+tools: [Astro, TypeScript, Figma, Tailwind]
 links:
-  - label: Live prototype
+  - label: System docs
     url: https://example.com/project-one
-summary: Design system and frontend architecture for a high-performance publishing platform.
+summary: Multi-brand design token architecture and accessible component library for web applications.
 accent: primary
 cover:
   image: /assets/projects/project-one.svg
-  alt: Project One interface mockup on desktop
+  alt: Design system primitives and component library showcase
 compare:
   before:
     image: /assets/projects/compare-before.svg
-    alt: Legacy interface before redesign
+    alt: Legacy inconsistent UI components before token migration
   after:
     image: /assets/projects/compare-after.svg
-    alt: New redesigned interface
+    alt: Modern tokenized primitives with strict design tokens
 results:
   - value: 40
     suffix: '%'
-    label: Faster load time
-  - value: 98
-    suffix: ''
-    label: Lighthouse score
+    label: Faster UI delivery
+  - value: 100
+    suffix: '%'
+    label: Token coverage
 placeholder: true
 ---
 
 ## Overview
 
-Generic overview describing Project One, the editorial client goals, and core system requirements. The objective was to replace an aging content architecture with a tokenized frontend that loads instantaneously.
+A foundational design system engineered for scalable product teams. The goal was to unify fragmented interfaces into a cohesive set of accessible tokens, layout primitives, and interactive UI patterns.
 
 ## Problem
 
-Editorial writers and readers experienced severe layout shifts and slow navigation across heavy articles. Design tokens were inconsistent, and typography hierarchy varied between web pages.
+Multiple engineering squads built isolated components with duplicate styles and arbitrary color values, leading to visual drift and difficult accessibility compliance across platforms.
 
 ## Solution
 
-Constructed a unified design system in Astro and Tailwind with strict token boundaries. Replaced layout shifts with responsive aspect ratios, optimized font loading with preloaded woff2 files, and engineered smooth section reveals.
+Constructed a centralized design token repository with automatic generation of CSS variables, strict spacing primitives, and verified WCAG 2.2 AA contrast pairs across light and dark themes.
 
 ## Results
 
-Page performance reached a consistent 98 on Lighthouse mobile audits. Asset payloads decreased substantially, enabling instant page transitions and accessible content consumption.
+Frontend delivery cycles improved by 40%, redundant styling was eliminated, and all digital products achieved consistent theme switching and zero hardcoded magic numbers.

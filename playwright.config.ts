@@ -1,6 +1,8 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices, type PlaywrightTestConfig } from '@playwright/test';
 
-export default defineConfig({
+const baseURL = process.env.BASE_URL || 'http://localhost:4321';
+
+const config: PlaywrightTestConfig = {
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -8,7 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 2,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL,
     trace: 'retain-on-failure',
   },
   projects: [
@@ -17,10 +19,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
     },
   ],
-  webServer: {
+};
+
+if (!process.env.BASE_URL) {
+  config.webServer = {
     command: 'pnpm run preview',
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
-  },
-});
+  };
+}
+
+export default defineConfig(config);

@@ -26,11 +26,20 @@
 - Huge headings wrap instead of overflowing, including at zoom.
 - Text spacing overrides (line height, letter and word spacing) do not break layouts.
 
-## 5. Motion
+## 5. Motion and Pause Control (WCAG 2.2.2)
 
 - `prefers-reduced-motion` follows the fallback matrix; content is complete without motion.
-- **Pause control (WCAG 2.2.2).** Automatic motion that lasts more than 5 seconds (digit field, floating tags, marquee) must be pausable. The footer has a motion toggle (I-37) that sets `data-motion="reduced"`, persists the choice, and starts from the OS preference.
-- Nothing flashes more than three times per second over a large area. The digit field changes small, low-contrast areas near the cursor only; the check is repeated in Phase 7.
+- **Pause control (WCAG 2.2.2).** Conforming to WCAG 2.2.2 (Pause, Stop, Hide, Level A), the site provides a persistent motion toggle in the footer (`#motion-toggle`) that sets `data-motion="reduced"`, persists the choice to `localStorage('motion')`, and initializes from the OS preference.
+  - **What Pause motion controls and why:**
+    - **Marquee Ticker (I-18)**: Stops continuous horizontal marquee loop; items remain static so text can be read without scrolling motion.
+    - **Keyword Tags Floating (I-06)**: Cancels infinite floating oscillation keyframes so tags stay stationary.
+    - **Scroll & Line Reveals (I-08, I-09)**: Content appears instantly in its final layout position without upward rise or opacity fades.
+    - **Statement & Bio Scrub (I-10, I-30)**: Words render fully opaque immediately without requiring scroll scrub progression.
+    - **Stat Counters (I-17)**: Numbers display final target values directly without rolling animation.
+    - **Custom Cursor & Magnetic Buttons (I-11, I-12)**: Fine-pointer cursor remains a static circle; magnetic displacement on interactive elements is disabled.
+    - **Accordion & Disclosure Animation (I-15)**: Capability rows expand and collapse instantaneously (`duration: 0s`).
+    - **Parallax & Mockup Scroll (I-27)**: Transforms are set to identity; media remains anchored to normal document flow.
+- Nothing flashes more than three times per second over a large area (WCAG 2.3.1).
 
 ## 6. Pointer and Touch
 

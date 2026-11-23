@@ -1,13 +1,14 @@
 {
   "items": [
-    "Figma",
-    "Astro",
+    "Design Systems",
+    "UI Architecture",
     "TypeScript",
+    "Astro",
     "Tailwind CSS",
-    "GSAP",
-    "WebGL",
-    "Design systems",
-    "Accessibility",
+    "GSAP Motion",
+    "Web Accessibility (WCAG)",
+    "Figma to Code",
+    "Performance Optimization",
     "Semantic HTML"
   ],
   "placeholder": true

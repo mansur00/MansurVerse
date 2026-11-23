@@ -56,19 +56,20 @@ export const cursorModule: MotionModule = {
         cursorEl.classList.remove('is-expanded');
       }
 
-      if (import.meta.env.PUBLIC_E2E === 'true') {
+      const win =
+        typeof window !== 'undefined'
+          ? (window as unknown as {
+              __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+            })
+          : undefined;
+      if (win?.__pointerHandlerPerf) {
         const dt = performance.now() - t0;
         if (typeof performance !== 'undefined' && performance.mark) {
           performance.mark('cursor:pointermove');
         }
-        const win = window as unknown as {
-          __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
-        };
-        if (win.__pointerHandlerPerf) {
-          win.__pointerHandlerPerf.handlerTimes.push(dt);
-          if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
-            win.__pointerHandlerPerf.maxHandlerTime = dt;
-          }
+        win.__pointerHandlerPerf.handlerTimes.push(dt);
+        if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
+          win.__pointerHandlerPerf.maxHandlerTime = dt;
         }
       }
     };
@@ -182,19 +183,20 @@ export const cursorModule: MotionModule = {
           }
         }
 
-        if (import.meta.env.PUBLIC_E2E === 'true') {
+        const win =
+          typeof window !== 'undefined'
+            ? (window as unknown as {
+                __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
+              })
+            : undefined;
+        if (win?.__pointerHandlerPerf) {
           const dt = performance.now() - t0;
           if (typeof performance !== 'undefined' && performance.mark) {
             performance.mark('cursor:magnetic');
           }
-          const win = window as unknown as {
-            __pointerHandlerPerf?: { handlerTimes: number[]; maxHandlerTime: number };
-          };
-          if (win.__pointerHandlerPerf) {
-            win.__pointerHandlerPerf.handlerTimes.push(dt);
-            if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
-              win.__pointerHandlerPerf.maxHandlerTime = dt;
-            }
+          win.__pointerHandlerPerf.handlerTimes.push(dt);
+          if (dt > win.__pointerHandlerPerf.maxHandlerTime) {
+            win.__pointerHandlerPerf.maxHandlerTime = dt;
           }
         }
       };
