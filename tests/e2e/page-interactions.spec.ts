@@ -214,7 +214,7 @@ test.describe('Phase 5d Page Interactions Suite', () => {
     expect(box).toBeTruthy();
 
     if (box) {
-      await page.mouse.move(box.x + box.width * 0.25, box.y + box.height * 0.75);
+      await wrapper.hover({ position: { x: box.width * 0.5, y: box.height * 0.5 } });
       await page.waitForTimeout(200);
 
       const spotX = await wrapper.evaluate((el) => el.style.getPropertyValue('--spotlight-x'));

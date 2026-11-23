@@ -1,6 +1,8 @@
 ---
 // Shared Block: Process (used on Home, Work, Case study, and Contact)
 // 4-step sequential reveal layout per docs/01-design/page-specs.md
+import Section from '../layout-primitives/Section.astro';
+import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import ProcessStep from '../content/ProcessStep.astro';
 import processData from '../../content/process.json';
@@ -23,12 +25,10 @@ const {
   surface = 'base',
   class: className = '',
 } = Astro.props;
-
-const isAlt = surface === 'alt';
 ---
 
-<section class:list={['process-block', { 'is-alt': isAlt }, className]} data-surface={surface}>
-  <div class="block-container">
+<Section id="process" surface={surface} size="default" class={className}>
+  <Stack gap="section">
     <div class="block-header">
       <SlashLabel label={label} variant="on-light" />
     </div>
@@ -38,28 +38,10 @@ const isAlt = surface === 'alt';
         <ProcessStep stepNumber={index + 1} title={item.title} text={item.text} />
       ))}
     </div>
-  </div>
-</section>
+  </Stack>
+</Section>
 
 <style>
-  .process-block {
-    background: var(--color-bg-base);
-    color: var(--color-text-primary);
-    padding: var(--space-12) var(--layout-page-gutter);
-  }
-
-  .process-block.is-alt {
-    background: var(--color-bg-alt);
-  }
-
-  .block-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-  }
-
   .block-header {
     margin-bottom: var(--space-2);
   }
@@ -67,7 +49,8 @@ const isAlt = surface === 'alt';
   .process-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-4);
+    gap: var(--layout-gap-wide);
+    width: 100%;
   }
 
   @media (width < 900px) {

@@ -1,7 +1,11 @@
 ---
-// About page (/about) per docs/01-design/page-specs.md.
-// Renders sections A1 to A7: Intro, Skills, Experience, Values, Numbers, Open to, CTA band.
+// About page template (/about) per docs/01-design/page-specs.md and docs/01-design/layout-system.md.
+// Renders sections A1 to A7: intro with spotlight portrait, bio scrub, skills, experience, and shared blocks.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/layout-primitives/Section.astro';
+import Grid from '../components/layout-primitives/Grid.astro';
+import Cell from '../components/layout-primitives/Cell.astro';
+import Stack from '../components/layout-primitives/Stack.astro';
 import SlashLabel from '../components/primitives/SlashLabel.astro';
 import SkillChips from '../components/content/SkillChips.astro';
 import ExperienceRow from '../components/content/ExperienceRow.astro';
@@ -9,6 +13,7 @@ import ValuesBlock from '../components/blocks/ValuesBlock.astro';
 import NumbersBlock from '../components/blocks/NumbersBlock.astro';
 import OpenToBlock from '../components/blocks/OpenToBlock.astro';
 import CTABand from '../components/layout/CTABand.astro';
+
 import profileData from '../content/profile.json';
 import skillsData from '../content/skills.json';
 import experienceData from '../content/experience.json';
@@ -26,48 +31,52 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
   ogImage={profileData.portrait.image}
 >
   <!-- A1: Intro Section (Portrait & Bio) -->
-  <section class="about-intro-section" aria-label="About Intro">
-    <div class="about-intro-container">
-      <div class="about-portrait-wrapper" data-spotlight="true">
-        <img
-          src={profileData.portrait.image}
-          alt={profileData.portrait.alt}
-          class="about-portrait base-layer"
-          loading="eager"
-        />
-        <div class="portrait-color-layer" aria-hidden="true">
+  <Section surface="base" size="default" class="about-intro-section" aria-label="About Intro">
+    <Grid>
+      <Cell placement="half-a" from="desktop">
+        <div class="about-portrait-wrapper" data-spotlight="true" data-motion="spotlight-portrait">
           <img
             src={profileData.portrait.image}
-            alt=""
-            class="about-portrait color-layer"
+            alt={profileData.portrait.alt}
+            class="about-portrait base-layer"
             loading="eager"
           />
+          <div class="portrait-color-layer" aria-hidden="true">
+            <img
+              src={profileData.portrait.image}
+              alt=""
+              class="about-portrait color-layer"
+              loading="eager"
+            />
+          </div>
         </div>
-      </div>
+      </Cell>
 
-      <div class="about-bio-column">
-        <SlashLabel label="About" variant="on-light" />
-        <h1 class="about-title text-display-page">Designer who codes.</h1>
+      <Cell placement="half-b" from="desktop">
+        <Stack gap="loose">
+          <SlashLabel label="About" variant="on-light" />
+          <h1 class="about-title text-display-page">Designer who codes.</h1>
 
-        <div class="bio-paragraphs">
-          {profileData.bio.map((paragraph) => (
-            <p class="bio-text text-body" data-motion="bio-scrub">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+          <div class="bio-paragraphs">
+            {profileData.bio.map((paragraph) => (
+              <p class="bio-text text-body" data-motion="bio-scrub">
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
-        <!-- A2: Skills -->
-        <div class="about-skills-block">
-          <SkillChips skills={formattedSkills} surface="base" />
-        </div>
-      </div>
-    </div>
-  </section>
+          <!-- A2: Skills -->
+          <div class="about-skills-block">
+            <SkillChips skills={formattedSkills} surface="base" />
+          </div>
+        </Stack>
+      </Cell>
+    </Grid>
+  </Section>
 
   <!-- A3: Experience Section -->
-  <section class="experience-section" aria-label="Experience">
-    <div class="experience-container">
+  <Section surface="base" size="default" class="experience-section" aria-label="Experience">
+    <Stack gap="section">
       <SlashLabel label="Experience" variant="on-light" />
       <h2 class="experience-heading text-heading-section">Experience</h2>
 
@@ -76,8 +85,8 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
           <ExperienceRow period={exp.period} role={exp.role} company={exp.place} />
         ))}
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 
   <!-- A4: Values Block -->
   <ValuesBlock />
@@ -100,21 +109,6 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
 </BaseLayout>
 
 <style>
-  /* A1: Intro */
-  .about-intro-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-base);
-  }
-
-  .about-intro-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: var(--space-12);
-    align-items: start;
-  }
-
   .about-portrait-wrapper {
     --spotlight-x: 50%;
     --spotlight-y: 50%;
@@ -123,6 +117,7 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     background: var(--color-bg-surface);
     overflow: hidden;
     user-select: none;
+    width: 100%;
   }
 
   .about-portrait {
@@ -160,16 +155,6 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     }
   }
 
-  :global(:root[data-motion='reduced'] .portrait-color-layer) {
-    mask-image: none;
-  }
-
-  .about-bio-column {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
   .about-title {
     margin: 0;
   }
@@ -178,32 +163,19 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    max-width: 50ch;
+    max-width: var(--measure-body, 60ch);
   }
 
   .bio-text {
     margin: 0;
-    color: var(--color-text-primary);
+    color: var(--color-text-muted);
   }
 
   .about-skills-block {
-    margin-top: var(--space-4);
+    margin-top: var(--space-2);
   }
 
   /* A3: Experience */
-  .experience-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-alt);
-  }
-
-  .experience-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
   .experience-heading {
     margin: 0;
   }
@@ -211,31 +183,17 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
   .experience-list {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
+  /* I-32: Sibling dimming when hovering experience rows */
   .experience-list:hover :global(.experience-row-wrapper) {
     opacity: 0.6;
+    transition: opacity var(--motion-fast) var(--ease-out);
   }
 
-  .experience-list :global(.experience-row-wrapper:hover) {
+  .experience-list:hover :global(.experience-row-wrapper:hover) {
     opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .experience-list:hover :global(.experience-row-wrapper) {
-      opacity: 1;
-    }
-  }
-
-  :global(:root[data-motion='reduced'] .experience-list:hover .experience-row-wrapper) {
-    opacity: 1;
-  }
-
-  @media (width < 900px) {
-    .about-intro-container {
-      grid-template-columns: 1fr;
-      gap: var(--space-8);
-    }
   }
 </style>
 

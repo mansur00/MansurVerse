@@ -1,93 +1,114 @@
 ---
-// Home page (H1 to H11) per docs/01-design/page-specs.md and docs/00-overview/project-brief.md.
-// Driven strictly by content collections and design tokens; no hardcoded copy or styles.
+// Home page template (/) per docs/01-design/page-specs.md and docs/01-design/layout-system.md.
+// Renders sections H1 to H11 strictly driven by content collections and design tokens.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/layout/SectionHeader.astro';
-import ProjectCard from '../components/content/ProjectCard.astro';
-import StatementText from '../components/content/StatementText.astro';
-import Marquee from '../components/content/Marquee.astro';
-import EmailDisplay from '../components/content/EmailDisplay.astro';
+import Section from '../components/layout-primitives/Section.astro';
+import Grid from '../components/layout-primitives/Grid.astro';
+import Cell from '../components/layout-primitives/Cell.astro';
+import Stack from '../components/layout-primitives/Stack.astro';
+import Bleed from '../components/layout-primitives/Bleed.astro';
 import KeywordTag from '../components/primitives/KeywordTag.astro';
+import StatementText from '../components/content/StatementText.astro';
+import ProjectCard from '../components/content/ProjectCard.astro';
+import SectionHeader from '../components/layout/SectionHeader.astro';
 import Button from '../components/primitives/Button.astro';
-import SlashLabel from '../components/primitives/SlashLabel.astro';
 import CapabilitiesBlock from '../components/blocks/CapabilitiesBlock.astro';
 import ProcessBlock from '../components/blocks/ProcessBlock.astro';
 import ValuesBlock from '../components/blocks/ValuesBlock.astro';
 import NumbersBlock from '../components/blocks/NumbersBlock.astro';
+import Marquee from '../components/content/Marquee.astro';
+import SlashLabel from '../components/primitives/SlashLabel.astro';
+import EmailDisplay from '../components/content/EmailDisplay.astro';
+
 import homeData from '../content/home.json';
 import profileData from '../content/profile.json';
 import capabilitiesData from '../content/capabilities.json';
 import { siteConfig } from '../config/site';
 
+// Fetch projects sorted by order (first 4 for Home)
 const allProjects = await getCollection('projects');
 const featuredProjects = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 4);
 
+// Prepare marquee items from capabilities with 1-based index numbers
 const marqueeItems = capabilitiesData.items.map((item, idx) => ({
   name: item.title,
   number: idx + 1,
 }));
 
+// Word tokens for statement scrub animation
 const statementWords = homeData.statement.text.split(' ');
 ---
 
-<BaseLayout title={`${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
+<BaseLayout
+  title={`${siteConfig.brand.primary}${siteConfig.brand.secondary} | Frontend Designer & Developer`}
+  description={homeData.hero.intro}
+>
   <!-- H2: Hero Section -->
-  <section class="hero-section" aria-label="Hero">
-    <div class="hero-container">
-      <div class="hero-lead-row">
-        <p class="hero-lead text-label">{homeData.hero.lead}</p>
-      </div>
-
-      <div class="hero-headline-wrapper">
-        <h1 class="hero-title text-display-hero" aria-label={homeData.hero.headline.join(' ')}>
-          {homeData.hero.headline.map((line) => (
-            <span class="hero-line-mask" aria-hidden="true">
-              <span class="hero-line-inner">{line}</span>
-            </span>
-          ))}
-        </h1>
-
-        <div class="hero-tags" aria-hidden="true">
-          {homeData.hero.tags.map((tag, idx) => (
-            <div class="hero-tag-item" style={`left: ${tag.x}%; top: ${tag.y}%;`}>
-              <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag.label}</KeywordTag>
-            </div>
-          ))}
+  <Section size="none" class="hero-section" aria-label="Hero">
+    <Grid class="hero-container">
+      <Cell placement="full">
+        <div class="hero-lead-row">
+          <span class="hero-lead text-label">{homeData.hero.lead}</span>
         </div>
-      </div>
 
-      <div class="hero-intro-row">
-        <p class="hero-intro text-body">{homeData.hero.intro}</p>
-      </div>
-    </div>
-  </section>
+        <div class="hero-headline-wrapper">
+          <h1 class="hero-title text-display-hero">
+            {homeData.hero.headline.map((line, idx) => (
+              <span class="hero-line-mask">
+                <span class="hero-line-inner">
+                  {line}
+                  {idx < homeData.hero.headline.length - 1 && <br />}
+                </span>
+              </span>
+            ))}
+          </h1>
+
+          <div class="hero-tags" aria-hidden="true">
+            {homeData.hero.tags.map((tag, idx) => (
+              <div class="hero-tag-item" style={`left: ${tag.x}%; top: ${tag.y}%;`}>
+                <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag.label}</KeywordTag>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Cell>
+
+      <Cell placement="intro">
+        <div class="hero-intro-row">
+          <p class="hero-intro text-body">{homeData.hero.intro}</p>
+        </div>
+      </Cell>
+    </Grid>
+  </Section>
 
   <!-- H3: Statement Section -->
-  <section class="statement-section" aria-label="Philosophy">
-    <div class="statement-container">
-      <StatementText
-        sentence={homeData.statement.text}
-        words={statementWords}
-        highlightIndex={statementWords.length}
-      />
-      <div class="statement-action">
-        <Button href={homeData.statement.link.href} variant="outlined" showArrow={true}>
-          {homeData.statement.link.label}
-        </Button>
-      </div>
-    </div>
-  </section>
+  <Section surface="base" size="default" aria-label="Philosophy">
+    <Grid>
+      <Cell placement="statement">
+        <Stack gap="loose">
+          <StatementText
+            sentence={homeData.statement.text}
+            words={statementWords}
+            highlightIndex={statementWords.length}
+          />
+          <div class="statement-action">
+            <Button href={homeData.statement.link.href} variant="outlined" showArrow={true}>
+              {homeData.statement.link.label}
+            </Button>
+          </div>
+        </Stack>
+      </Cell>
+    </Grid>
+  </Section>
 
   <!-- H4: Selected Work -->
-  <section class="work-section" aria-label="Selected Work">
-    <div class="work-container">
-      <div class="work-header">
-        <SectionHeader slashLabel={homeData.work.label} title={homeData.work.heading} />
-      </div>
+  <Section surface="alt" size="default" aria-label="Selected Work">
+    <Stack gap="section">
+      <SectionHeader slashLabel={homeData.work.label} title={homeData.work.heading} />
 
       <div class="projects-stack">
         {featuredProjects.map((project, idx) => (
@@ -111,8 +132,8 @@ const statementWords = homeData.statement.text.split(' ');
           {homeData.work.ctaLabel}
         </Button>
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 
   <!-- H5: Capabilities -->
   <CapabilitiesBlock />
@@ -127,13 +148,15 @@ const statementWords = homeData.statement.text.split(' ');
   <NumbersBlock />
 
   <!-- H9: Marquee -->
-  <section class="marquee-section" aria-hidden="true">
-    <Marquee items={marqueeItems} />
-  </section>
+  <Section size="compact" surface="base" aria-hidden="true">
+    <Bleed>
+      <Marquee items={marqueeItems} />
+    </Bleed>
+  </Section>
 
   <!-- H10: Contact CTA -->
-  <section class="contact-cta-section" aria-label="Contact">
-    <div class="contact-cta-container">
+  <Section surface="base" size="default" aria-label="Contact">
+    <Stack gap="base" class="contact-cta-stack">
       <SlashLabel label={homeData.contactCta.label} variant="on-light" />
       <h2 class="contact-cta-heading text-heading-section">{homeData.contactCta.heading}</h2>
       <div class="email-wrapper">
@@ -144,8 +167,8 @@ const statementWords = homeData.statement.text.split(' ');
           {siteConfig.form.labels.email}
         </Button>
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 </BaseLayout>
 
 <style>
@@ -154,7 +177,8 @@ const statementWords = homeData.statement.text.split(' ');
     position: relative;
     isolation: isolate;
     min-height: 85vh;
-    padding: var(--space-12) var(--layout-page-gutter);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-8);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -162,20 +186,16 @@ const statementWords = homeData.statement.text.split(' ');
   }
 
   .hero-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
     position: relative;
     z-index: var(--z-content, 1);
+    width: 100%;
   }
 
   .hero-lead-row {
     position: relative;
     z-index: var(--z-content, 1);
     color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
   }
 
   .hero-lead {
@@ -212,6 +232,7 @@ const statementWords = homeData.statement.text.split(' ');
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: var(--z-tag, 2);
   }
 
   .hero-tag-item {
@@ -224,79 +245,51 @@ const statementWords = homeData.statement.text.split(' ');
   .hero-intro-row {
     position: relative;
     z-index: var(--z-content, 1);
-    margin-left: auto;
-    max-width: 36ch;
+    margin-top: var(--space-6);
+  }
+
+  .hero-intro {
+    max-width: var(--measure-narrow, 34ch);
+    margin: 0;
     color: var(--color-text-muted);
   }
 
   @media (width < 768px) {
-    .hero-intro-row {
-      margin-left: 0;
+    .hero-tags {
+      position: relative;
+      inset: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    .hero-tag-item {
+      position: static !important;
+      transform: none !important;
     }
   }
 
   /* H3: Statement */
-  .statement-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-base);
-  }
-
-  .statement-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-  }
-
   .statement-action {
     display: flex;
   }
 
   /* H4: Work */
-  .work-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-alt);
-  }
-
-  .work-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-  }
-
   .projects-stack {
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    width: 100%;
   }
 
   .work-action {
-    margin-top: var(--space-4);
     display: flex;
-  }
-
-  /* H9: Marquee */
-  .marquee-section {
-    padding: var(--space-8) 0;
-    background: var(--color-bg-base);
-    overflow: hidden;
   }
 
   /* H10: Contact CTA */
-  .contact-cta-section {
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-alt);
-  }
-
-  .contact-cta-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
+  .contact-cta-stack {
+    max-width: var(--measure-body, 60ch);
   }
 
   .contact-cta-heading {
@@ -304,10 +297,11 @@ const statementWords = homeData.statement.text.split(' ');
   }
 
   .email-wrapper {
-    margin: var(--space-4) 0;
+    margin-top: var(--space-4);
   }
 
   .contact-cta-action {
+    margin-top: var(--space-4);
     display: flex;
   }
 </style>

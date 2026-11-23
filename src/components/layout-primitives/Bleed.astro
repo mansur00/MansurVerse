@@ -1,0 +1,24 @@
+---
+// Bleed primitive per docs/01-design/layout-system.md section 4.4.
+// The ONLY way to leave the section padding box (edge-to-edge content).
+interface Props {
+  as?: 'div' | 'section' | 'article' | 'aside' | 'figure' | undefined;
+  id?: string | undefined;
+  class?: string | undefined;
+}
+
+const { as: Component = 'div', id, class: className = '' } = Astro.props;
+---
+
+<Component id={id} class:list={['layout-bleed', className]}>
+  <slot />
+</Component>
+
+<style>
+  .layout-bleed {
+    margin-inline: calc(-1 * var(--layout-pad));
+    width: calc(100% + (2 * var(--layout-pad)));
+    max-width: none;
+    box-sizing: border-box;
+  }
+</style>

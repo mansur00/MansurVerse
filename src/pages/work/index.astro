@@ -1,48 +1,62 @@
 ---
-// Work catalog index page (/work) per docs/01-design/page-specs.md.
-// Shows all projects with category filter chips, grid view, shared blocks and CTA band.
+// Work index page template (/work) per docs/01-design/page-specs.md and docs/01-design/layout-system.md.
+// Renders sections W1 to W6: full project index with animated filter and layout toggles.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/layout-primitives/Section.astro';
+import Stack from '../../components/layout-primitives/Stack.astro';
+import Cluster from '../../components/layout-primitives/Cluster.astro';
 import SlashLabel from '../../components/primitives/SlashLabel.astro';
-import SuperscriptNumber from '../../components/primitives/SuperscriptNumber.astro';
 import Chip from '../../components/primitives/Chip.astro';
+import SuperscriptNumber from '../../components/primitives/SuperscriptNumber.astro';
 import ProjectCard from '../../components/content/ProjectCard.astro';
 import CapabilitiesBlock from '../../components/blocks/CapabilitiesBlock.astro';
 import ProcessBlock from '../../components/blocks/ProcessBlock.astro';
 import CTABand from '../../components/layout/CTABand.astro';
 import { siteConfig } from '../../config/site';
 
+// Fetch all projects sorted by order
 const allProjects = await getCollection('projects');
-const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
-const categories = ['All', ...siteConfig.categories];
+const sortedProjects = [...allProjects].sort((a, b) => a.data.order - b.data.order);
+
+// Extract unique categories for filter chips
+const rawCategories = Array.from(new Set(allProjects.map((p) => p.data.category)));
+const categories = ['All', ...rawCategories];
 ---
 
-<BaseLayout title={`Work | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
-  <!-- W1: Header -->
-  <section class="work-header-section" aria-label="Work Catalog">
-    <div class="work-header-container">
-      <SlashLabel label="Work" variant="on-light" />
-      <h1 class="work-title text-display-page">
-        Work
-        <span class="count-wrapper" aria-live="polite">
-          <SuperscriptNumber number={sortedProjects.length} />
-        </span>
-      </h1>
+<BaseLayout
+  title={`Work | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`}
+  description="Explore selected design and engineering projects across product, web, and systems."
+>
+  <!-- W1: Header & W2: Toolbar -->
+  <Section surface="base" size="default" class="work-header-section">
+    <Stack gap="section">
+      <div class="work-header-top">
+        <SlashLabel label="Portfolio" variant="on-light" />
+        <h1 class="work-title text-display-page">
+          Selected work
+          <span class="count-wrapper" aria-live="polite">
+            <SuperscriptNumber number={sortedProjects.length} />
+          </span>
+        </h1>
+      </div>
 
-      <!-- W2: Toolbar -->
-      <div class="work-toolbar" role="toolbar" aria-label="Project catalog tools">
-        <div class="filter-chips" role="group" aria-label="Filter by category">
+      <div class="work-toolbar">
+        <Cluster gap="tight" class="filter-chips">
+          <span id="filter-live-count" class="sr-only" aria-live="polite">
+            Showing all {sortedProjects.length} projects
+          </span>
           {categories.map((cat, idx) => (
             <Chip
-              as="button"
               variant={idx === 0 ? 'accent' : 'outlined'}
-              active={idx === 0}
+              as="button"
               data-filter-chip={cat}
+              class:list={[{ 'is-active': idx === 0 }]}
             >
               {cat}
             </Chip>
           ))}
-        </div>
+        </Cluster>
 
         <div class="view-toggle" role="group" aria-label="Layout view">
           <button
@@ -53,10 +67,10 @@ const categories = ['All', ...siteConfig.categories];
             aria-pressed="true"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <rect x="1" y="1" width="6" height="6" />
-              <rect x="9" y="1" width="6" height="6" />
-              <rect x="1" y="9" width="6" height="6" />
-              <rect x="9" y="9" width="6" height="6" />
+              <rect x="1" y="1" width="6" height="6"></rect>
+              <rect x="9" y="1" width="6" height="6"></rect>
+              <rect x="1" y="9" width="6" height="6"></rect>
+              <rect x="9" y="9" width="6" height="6"></rect>
             </svg>
           </button>
           <button
@@ -67,48 +81,46 @@ const categories = ['All', ...siteConfig.categories];
             aria-pressed="false"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <rect x="1" y="2" width="14" height="2.5" />
-              <rect x="1" y="7" width="14" height="2.5" />
-              <rect x="1" y="12" width="14" height="2.5" />
+              <rect x="1" y="2" width="14" height="2.5"></rect>
+              <rect x="1" y="7" width="14" height="2.5"></rect>
+              <rect x="1" y="12" width="14" height="2.5"></rect>
             </svg>
           </button>
         </div>
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 
   <!-- W3: Projects Grid -->
-  <section class="projects-grid-section" aria-label="Projects">
-    <div class="projects-grid-container">
-      <div class="empty-state" hidden aria-live="polite">
-        <p class="empty-state-text text-body">No projects found in this category.</p>
-        <button type="button" class="empty-state-reset text-label" data-reset-filter>
-          Show all projects
-        </button>
-      </div>
-
-      <div class="projects-grid">
-        {sortedProjects.map((project, idx) => (
-          <ProjectCard
-            title={project.data.title}
-            number={idx + 1}
-            description={project.data.summary}
-            category={project.data.category}
-            year={String(project.data.year)}
-            href={`/work/${project.id}`}
-            accent={project.data.accent}
-            imageSrc={project.data.cover.image}
-            imageAlt={project.data.cover.alt}
-            variant="grid"
-          />
-        ))}
-      </div>
-
-      <div class="list-preview-follower" aria-hidden="true">
-        <img src="" alt="" class="follower-image" />
-      </div>
+  <Section surface="base" size="none" class="projects-grid-section" aria-label="Projects">
+    <div class="empty-state" hidden aria-live="polite">
+      <p class="empty-state-text text-body">No projects found in this category.</p>
+      <button type="button" class="empty-state-reset text-label" data-reset-filter>
+        Show all projects
+      </button>
     </div>
-  </section>
+
+    <div class="projects-grid">
+      {sortedProjects.map((project, idx) => (
+        <ProjectCard
+          title={project.data.title}
+          number={idx + 1}
+          description={project.data.summary}
+          category={project.data.category}
+          year={String(project.data.year)}
+          href={`/work/${project.id}`}
+          accent={project.data.accent}
+          imageSrc={project.data.cover.image}
+          imageAlt={project.data.cover.alt}
+          variant="grid"
+        />
+      ))}
+    </div>
+
+    <div class="list-preview-follower" aria-hidden="true">
+      <img src="" alt="" class="follower-image" />
+    </div>
+  </Section>
 
   <!-- W4: Capabilities Block -->
   <CapabilitiesBlock />
@@ -128,17 +140,10 @@ const categories = ['All', ...siteConfig.categories];
 </BaseLayout>
 
 <style>
-  .work-header-section {
-    padding: var(--space-12) var(--layout-page-gutter) var(--space-6);
-    background: var(--color-bg-base);
-  }
-
-  .work-header-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
+  .work-header-top {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-4);
   }
 
   .work-title {
@@ -158,61 +163,34 @@ const categories = ['All', ...siteConfig.categories];
     align-items: center;
     gap: var(--space-4);
     flex-wrap: wrap;
-    margin-top: var(--space-4);
+    width: 100%;
   }
 
   .filter-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .projects-grid-section {
-    padding: var(--space-6) var(--layout-page-gutter) var(--space-12);
-    background: var(--color-bg-base);
-  }
-
-  .projects-grid-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-6);
-  }
-
-  @media (width < 768px) {
-    .projects-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   .view-toggle {
     display: flex;
-    align-items: center;
     gap: var(--space-1);
     background: var(--color-bg-surface);
-    border-radius: var(--radius-pill);
     padding: var(--space-1);
   }
 
   .view-toggle-btn {
     all: unset;
     box-sizing: border-box;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-pill);
-    background: transparent;
     color: var(--color-text-muted);
     cursor: pointer;
     transition:
-      background var(--motion-fast) var(--ease-out),
-      color var(--motion-fast) var(--ease-out);
+      color var(--motion-fast) var(--ease-out),
+      background-color var(--motion-fast) var(--ease-out);
   }
 
   .view-toggle-btn:hover {
@@ -220,64 +198,53 @@ const categories = ['All', ...siteConfig.categories];
   }
 
   .view-toggle-btn.is-active {
-    background: var(--color-accent-primary);
-    color: var(--color-text-on-accent);
+    color: var(--color-text-primary);
+    background: var(--color-bg-base);
+  }
+
+  .projects-grid-section {
+    padding-bottom: var(--layout-section-y);
+    width: 100%;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--layout-gap-wide);
+    width: 100%;
+  }
+
+  /* List view layout */
+  :global([data-view='list']) .projects-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  @media (width < 900px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .empty-state {
     padding: var(--space-12) 0;
-    text-align: center;
+    text-align: left;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-4);
   }
 
   .empty-state[hidden] {
-    display: none !important;
-  }
-
-  .empty-state-text {
-    margin: 0;
-    color: var(--color-text-muted);
+    display: none;
   }
 
   .empty-state-reset {
     all: unset;
-    box-sizing: border-box;
-    background: var(--color-bg-surface);
-    color: var(--color-text-primary);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-pill);
     cursor: pointer;
-    font-family: var(--font-body);
-    font-size: var(--text-chip-size);
-  }
-
-  .empty-state-reset:hover {
-    background: var(--color-accent-primary);
-    color: var(--color-text-on-accent);
-  }
-
-  .projects-grid-section.is-list-view .projects-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  :global(.projects-grid-section.is-list-view .project-card) {
-    grid-template-columns: 1fr !important;
-    padding: var(--space-4) var(--space-6) !important;
-    background: transparent !important;
-    min-height: 0 !important;
-  }
-
-  :global(.projects-grid-section.is-list-view .project-card .card-art) {
-    display: none !important;
-  }
-
-  :global(.projects-grid-section.is-list-view .project-card:hover) {
-    background: var(--color-bg-surface) !important;
+    color: var(--color-accent-primary);
+    text-decoration: underline;
+    font-weight: var(--font-weight-bold);
   }
 
   .list-preview-follower {
@@ -285,19 +252,25 @@ const categories = ['All', ...siteConfig.categories];
     top: 0;
     left: 0;
     width: 200px;
-    height: 130px;
+    height: 125px;
     pointer-events: none;
+    z-index: var(--z-cursor, 999);
     opacity: 0;
-    z-index: var(--z-modal);
+    visibility: hidden;
     overflow: hidden;
-    border-radius: var(--radius-none);
-    background: var(--color-bg-surface);
+    transform: translate(-50%, -50%);
+  }
+
+  .list-preview-follower.is-active {
+    opacity: 1;
+    visibility: visible;
   }
 
   .follower-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 </style>
 

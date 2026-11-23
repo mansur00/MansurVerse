@@ -1,15 +1,17 @@
 ---
-// 404 Not Found page per docs/01-design/page-specs.md and docs/02-engineering/pages-and-routing.md.
+// 404 Not Found page per docs/01-design/page-specs.md and docs/01-design/layout-system.md.
 // Served for all unrecognized routes.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/layout-primitives/Section.astro';
+import Stack from '../components/layout-primitives/Stack.astro';
 import SlashLabel from '../components/primitives/SlashLabel.astro';
 import Button from '../components/primitives/Button.astro';
 import { siteConfig } from '../config/site';
 ---
 
 <BaseLayout title={`404 | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`} noindex={true}>
-  <section class="not-found-section" aria-label="Page Not Found">
-    <div class="not-found-container">
+  <Section surface="base" size="default" class="not-found-section" aria-label="Page Not Found">
+    <Stack gap="base" class="not-found-stack">
       <SlashLabel label="404" variant="on-light" />
       <h1 class="not-found-title text-display-hero">404</h1>
       <p class="not-found-text text-body">{siteConfig.notFound.text}</p>
@@ -18,28 +20,19 @@ import { siteConfig } from '../config/site';
           {siteConfig.notFound.button.label}
         </Button>
       </div>
-    </div>
-  </section>
+    </Stack>
+  </Section>
 </BaseLayout>
 
 <style>
   .not-found-section {
     min-height: 70vh;
-    padding: var(--space-12) var(--layout-page-gutter);
-    background: var(--color-bg-base);
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 
-  .not-found-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--space-6);
+  .not-found-stack {
+    max-width: var(--measure-narrow, 34ch);
   }
 
   .not-found-title {
@@ -49,7 +42,6 @@ import { siteConfig } from '../config/site';
 
   .not-found-text {
     margin: 0;
-    max-width: 36ch;
     color: var(--color-text-muted);
   }
 

@@ -78,6 +78,7 @@ export default {
     'declaration-property-value-disallowed-list': {
       '/^(font-family|font-size)$/': ['/^(?!var\\()/'],
       '/^(filter|backdrop-filter)$/': ['/drop-shadow/'],
+      '/^margin$/': ['/\\b0\\s+auto\\b/'],
     },
     // Rule 2: flat look. Shadows never; strokes only in the exception files below.
     'property-disallowed-list': [...shadowProps, ...strokeProps],
