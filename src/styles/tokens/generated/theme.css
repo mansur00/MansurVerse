@@ -40,7 +40,6 @@
   --color-chip-outline-stroke-on-feature: var(--color-divider-on-feature);
   --color-focus: var(--palette-black);
   --color-focus-on-feature: var(--palette-lime);
-  --color-digit-field: var(--palette-black);
   --color-error: var(--palette-coral);
   --font-display: 'Jersey 20', ui-monospace, monospace;
   --font-label: 'Stack Sans Notch Variable', 'Stack Sans Notch', system-ui, sans-serif;
@@ -52,7 +51,6 @@
   --radius-none: 0;
   --radius-pill: 999px;
   --radius-circle: 50%;
-  --blur-digit-field: 0.7px;
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
   --breakpoint-tablet: 721px;

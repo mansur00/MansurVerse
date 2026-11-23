@@ -37,16 +37,6 @@ const statementWords = homeData.statement.text.split(' ');
 <BaseLayout title={`${siteConfig.brand.primary}${siteConfig.brand.secondary}`}>
   <!-- H2: Hero Section -->
   <section class="hero-section" aria-label="Hero">
-    <canvas id="digit-field-canvas" class="digit-field-canvas" aria-hidden="true"></canvas>
-    <noscript>
-      <style>
-        .digit-field-canvas {
-          background-image: url('/assets/digit-field-poster.svg');
-          background-size: 560px 560px;
-          background-repeat: repeat;
-        }
-      </style>
-    </noscript>
     <div class="hero-container">
       <div class="hero-lead-row">
         <p class="hero-lead text-label">{homeData.hero.lead}</p>
@@ -169,23 +159,6 @@ const statementWords = homeData.statement.text.split(' ');
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
-  }
-
-  .digit-field-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    opacity: var(--opacity-digit-field, 0.45);
-    color: var(--color-digit-field);
-    z-index: 0;
-  }
-
-  .digit-field-canvas.no-webgl {
-    background-image: url('/assets/digit-field-poster.svg');
-    background-size: 560px 560px;
-    background-repeat: repeat;
   }
 
   .hero-container {
@@ -338,68 +311,3 @@ const statementWords = homeData.statement.text.split(' ');
     display: flex;
   }
 </style>
-
-<script>
-  import { isFeatureDisabled } from '../scripts/debug/features';
-
-  let digitFieldCleanup: (() => void) | null = null;
-  let isDigitFieldInitializing = false;
-
-  function setupHeroDigitField(): void {
-    const canvas = document.getElementById('digit-field-canvas') as HTMLCanvasElement | null;
-    if (!canvas || isDigitFieldInitializing || canvas.hasAttribute('data-webgl-initialized'))
-      return;
-
-    if (isFeatureDisabled('digitfield')) {
-      canvas.classList.add('no-webgl');
-      canvas.setAttribute('data-webgl-ready', 'false');
-      return;
-    }
-
-    isDigitFieldInitializing = true;
-    canvas.setAttribute('data-webgl-initialized', 'true');
-
-    const loadWebGL = () => {
-      import('../scripts/webgl/digit-field')
-        .then((m) => m.initDigitField(canvas))
-        .then((cleanup) => {
-          digitFieldCleanup = cleanup;
-          canvas.setAttribute('data-webgl-ready', 'true');
-        })
-        .catch((err) => {
-          console.error('Failed to load WebGL digit field:', err);
-          canvas.classList.add('no-webgl');
-          canvas.setAttribute('data-webgl-ready', 'false');
-        })
-        .finally(() => {
-          isDigitFieldInitializing = false;
-        });
-    };
-
-    if (typeof window !== 'undefined') {
-      const win = window as Window & {
-        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      };
-      if (typeof win.requestIdleCallback === 'function') {
-        win.requestIdleCallback(loadWebGL, { timeout: 300 });
-      } else {
-        setTimeout(loadWebGL, 1);
-      }
-    }
-  }
-
-  if (typeof window !== 'undefined') {
-    document.addEventListener('astro:page-load', setupHeroDigitField);
-    document.addEventListener('astro:before-swap', () => {
-      if (digitFieldCleanup) {
-        digitFieldCleanup();
-        digitFieldCleanup = null;
-      }
-      isDigitFieldInitializing = false;
-    });
-    // Immediately invoke if DOM is already ready
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      setupHeroDigitField();
-    }
-  }
-</script>

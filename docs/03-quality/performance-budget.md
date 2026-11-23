@@ -26,7 +26,6 @@
 | HTML per page | 30KB |
 | CSS total | 40KB |
 | JavaScript before interaction | 90KB (framework-free scripts, GSAP core, Lenis) |
-| WebGL chunk (OGL plus shader), lazy after first paint | 60KB |
 | Fonts | At most three families, 150KB total WOFF2 (Latin subset) |
 | Project image at displayed size | 120KB (AVIF or WebP) |
 | Requests before interaction | 40 |

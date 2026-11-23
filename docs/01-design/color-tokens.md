@@ -50,7 +50,6 @@
 | `--color-divider` | `rgba(0,0,0,.14)` | `rgba(255,255,255,.16)` | Hairline divider |
 | `--color-divider-on-feature` | `rgba(255,255,255,.18)` | same | Divider on dark sections |
 | `--color-focus` | current text colour | current text colour | Focus ring; lime on feature sections |
-| `--color-digit-field` | black (`#000000`) | grey-100 (`#F1F1F1`) | Hero digit field opaque theme text colour; visible strength is driven by shader falloff and `--opacity-digit-field` |
 
 ## 3. Component Bindings (layer 3, examples)
 

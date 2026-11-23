@@ -11,7 +11,7 @@
 | Styling | Tailwind CSS 4.x, theme generated from tokens | 4.3.5 pinned | CSS-first config maps cleanly onto the token pipeline; defaults are disabled so only tokens exist (see `tokens-implementation.md`) | Decided |
 | Animation | GSAP 3.x with ScrollTrigger, Flip, SplitText, Draggable as needed | 3.15.1 pinned | GSAP and all its plugins are now free, including commercial use. Import only the plugins used | Decided |
 | Smooth scroll | Lenis | 1.3.27 pinned | MIT licence; the chosen scroll engine (D-06). GSAP's ScrollSmoother is also free now, but Lenis stays unless it causes a conflict | Decided |
-| WebGL | OGL by default | 1.0.11 pinned | Very small compared with Three.js, enough for a digit-field shader. Final choice stays open (O-04) | Open (default OGL) |
+| WebGL | None (removed) | N/A | WebGL digit field removed per owner decision (see decision log D-116); OGL dependency dropped; work preserved at git tag `digit-field-v1` | Removed |
 | Content | Astro content collections with Zod schemas | Built in | Build fails on invalid content, so agents cannot ship broken data | Decided |
 | MDX | `@astrojs/mdx` | 8.1.6 pinned | Case-study bodies | Decided |
 | Images | Astro image pipeline (sharp) | Built in | Responsive sizes, modern formats, explicit dimensions | Decided |

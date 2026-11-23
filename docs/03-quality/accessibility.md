@@ -47,7 +47,7 @@
 
 ## 8. Images and Media
 
-- Informative images have meaningful alt text; decorative shapes and the digit field are `aria-hidden`.
+- Informative images have meaningful alt text; decorative shapes are `aria-hidden`.
 - Animated or split text keeps its full string in the accessible name (`animation-implementation.md`).
 - Screenshots that contain important text are described in the alt text or surrounding copy.
 

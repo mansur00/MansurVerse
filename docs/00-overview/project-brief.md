@@ -54,7 +54,7 @@ Full per-section specs (states, timings, fallbacks) live in `docs/01-design/page
 ### 6.1 Home (in order)
 
 1. **Nav.** Sticky; hides on scroll down and returns on scroll up. Theme toggle. Magnetic links. Full-screen menu on mobile with letter-roll hover.
-2. **Hero.** Large `h1` headline. A minimal field of small, slightly blurred `0` and `1` digits fills the background (WebGL, with a canvas/static fallback); digits near the cursor brighten and flip. Three highlighted keywords (Code, Motion, Design) sit on the heading as coloured tags that float gently and shift slightly with the cursor. Short intro text to the right. Intro animation on load.
+2. **Hero.** Large `h1` headline. Clean, solid background matching the ollyo reference (the experimental WebGL digit field was removed per owner decision and preserved at git tag `digit-field-v1`). Three highlighted keywords (Code, Motion, Design) sit on the heading as coloured tags that float gently and shift slightly with the cursor. Short intro text to the right. Intro animation on load.
 3. **Statement.** One large sentence; words fill with colour as you scroll. Planned: inline shape and image blocks inside the sentence and an "About me" link with a pixel arrow.
 4. **Selected work.** Vertical list of four full-width project cards. Each card has a white background, number, title, short description and chips on the left; on the right a flat colour shape, a pixel-stepped shape and the project image on top. Cursor becomes a "View" label on hover; click opens the case study with a shared-element transition.
 5. **Core capabilities.** Charcoal section; numbered rows with "/" labels. Hover or focus expands the description; a floating visual follows the cursor. Alternative layout (flowing inline list with "/" and superscripts) is under consideration.
@@ -97,7 +97,7 @@ Short branded message and a "Take me home" pill; cursor-reactive distortion plan
 
 ## 8. Interaction Tiers
 
-- **Signature** (full effort, tuned for performance): hero digit field, project cards and transitions, contact letter repel.
+- **Signature** (full effort, tuned for performance): project cards and transitions, contact letter repel.
 - **Supporting** (lighter, CSS-first where possible): reveals, counters, tags, accordions, marquee.
 
 On touch devices and low-power hardware, signature effects degrade to their static or reduced forms (rules in `interaction-motion.md`).
