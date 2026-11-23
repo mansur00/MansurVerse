@@ -1,7 +1,6 @@
 // Hero interactions (I-04 Hero Intro & I-06 Tag Shifts) per docs/01-design/interaction-motion.md.
 import { gsap } from 'gsap';
 import type { MotionModule } from './registry';
-import { DIGIT_FIELD } from '../webgl/constants';
 import { isFeatureDisabled } from '../debug/features';
 
 const HERO_INTRO_KEY = 'mansurverse:hero-intro';
@@ -16,7 +15,6 @@ export const heroModule: MotionModule = {
 
     const headingLines = heroSection.querySelectorAll<HTMLElement>('.hero-line-inner');
     const tags = heroSection.querySelectorAll<HTMLElement>('.hero-tag-item');
-    const digitCanvas = heroSection.querySelector<HTMLElement>('#digit-field-canvas');
 
     // 1. I-04 Hero Intro (Once per session via sessionStorage)
     let seenIntro = false;
@@ -36,7 +34,6 @@ export const heroModule: MotionModule = {
       // Initial intro state
       gsap.set(headingLines, { yPercent: 100 });
       gsap.set(tags, { scale: 0, opacity: 0 });
-      if (digitCanvas) gsap.set(digitCanvas, { opacity: 0 });
 
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('hero:intro-start');
@@ -70,25 +67,10 @@ export const heroModule: MotionModule = {
         },
         '-=0.5',
       );
-
-      // Digit field fades in over 600ms
-      if (digitCanvas) {
-        introTimeline.to(
-          digitCanvas,
-          {
-            opacity: DIGIT_FIELD.peakOpacity,
-            duration: 0.6,
-            ease: 'power2.out',
-            clearProps: 'opacity',
-          },
-          '-=0.4',
-        );
-      }
     } else {
       // Immediate final state
       gsap.set(headingLines, { yPercent: 0 });
       gsap.set(tags, { scale: 1, opacity: 1 });
-      if (digitCanvas) digitCanvas.style.opacity = '';
     }
 
     // 2. I-06 Hero Keyword Tags pointer shift (Fine pointers only)

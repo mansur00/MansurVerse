@@ -73,70 +73,14 @@ export function initPerfOverlay(): void {
     }
     const maxLongTask5s = recentTasks.reduce((max, t) => Math.max(max, t.duration), 0);
 
-    // Canvas info
-    const canvas = document.querySelector<HTMLCanvasElement>('#digit-field-canvas');
-    let canvasInfo = 'Canvas: Not mounted';
-    let gpuInfo = 'GPU: Unknown';
-    let qualityInfo = 'Quality: Normal (1.5x / 28px)';
-    let guardInfo = 'Guard: Normal';
-    let statusInfo = 'Status: Unknown';
-    let pointerInfo = 'Pointer: None';
-    let envInfo = 'Env: Normal';
-
     const currentMotion = document.documentElement.getAttribute('data-motion') || 'normal';
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    envInfo = `Mode: motion=${currentMotion}, theme=${currentTheme}`;
-
-    if (canvas) {
-      const dpr = window.devicePixelRatio || 1;
-      const cssW = canvas.clientWidth;
-      const cssH = canvas.clientHeight;
-      const bufW = canvas.width;
-      const bufH = canvas.height;
-      const isPoster = canvas.classList.contains('no-webgl');
-      canvasInfo = `Canvas: ${cssW}x${cssH} CSS (${bufW}x${bufH} px, DPR ${dpr.toFixed(1)})`;
-
-      const glInfo = (
-        window as unknown as {
-          __digitFieldDebug?: {
-            status?: 'running' | 'paused' | 'poster' | 'failed';
-            gpu?: string;
-            quality?: string;
-            steppedDown?: boolean;
-            dpr?: number;
-            lastPointer?: [number, number];
-            guardStep?: 'normal' | 'stepped-down' | 'halted';
-            motion?: string;
-            theme?: string;
-          };
-        }
-      ).__digitFieldDebug;
-
-      if (glInfo) {
-        statusInfo = `Status: ${glInfo.status?.toUpperCase() || (isPoster ? 'POSTER' : 'IDLE')}`;
-        if (glInfo.gpu) gpuInfo = `GPU: ${glInfo.gpu}`;
-        if (glInfo.quality) qualityInfo = `Quality: ${glInfo.quality}`;
-        guardInfo = `Guard: ${glInfo.guardStep?.toUpperCase() || (glInfo.steppedDown ? 'STEPPED DOWN' : 'NORMAL')}`;
-        if (glInfo.lastPointer) {
-          const [px, py] = glInfo.lastPointer;
-          pointerInfo = px > -500 ? `Pointer: ${px}px, ${py}px` : 'Pointer: Outside';
-        }
-      } else if (isPoster) {
-        statusInfo = 'Status: POSTER (Static fallback)';
-        guardInfo = 'Guard: HALTED';
-      }
-    }
+    const envInfo = `Mode: motion=${currentMotion}, theme=${currentTheme}`;
 
     overlay.innerHTML = `
       <div style="font-weight: bold; margin-bottom: 4px; color: #fff;">MansurVerse Perf HUD (?perf=1)</div>
       <div>FPS: ${currentFps} (${lastFrameTime.toFixed(1)}ms)</div>
       <div>Max Long Task (5s): ${maxLongTask5s.toFixed(1)}ms</div>
-      <div style="color: #66e0ff; font-weight: bold;">${statusInfo}</div>
-      <div>${canvasInfo}</div>
-      <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${gpuInfo}</div>
-      <div>${qualityInfo}</div>
-      <div>${guardInfo}</div>
-      <div>${pointerInfo}</div>
       <div style="color: #aaa;">${envInfo}</div>
     `;
 

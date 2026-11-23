@@ -24,7 +24,7 @@ Blocks are one component each, parameterised by content; never copied markup.
 | ID | Section | Content | Layout and components | Interactions | States and notes |
 |---|---|---|---|---|---|
 | H1 | Nav | `site.nav`, wordmark | Nav, Logo, ThemeToggle, MenuOverlay | I-01 to I-03, I-12 | Mobile overlay; focus trap |
-| H2 | Hero | `home.hero`: lead line, headline words, three tags (Code, Motion, Design), intro | Hero heading (`display-hero`), KeywordTag x3, DigitField, intro text right | I-04, I-05, I-06, I-09 | Heading wraps at any width; tags never cover the first letters of a word at mobile (tag positions are percentages from content) |
+| H2 | Hero | `home.hero`: lead line, headline words, three tags (Code, Motion, Design), intro | Hero heading (`display-hero`), KeywordTag x3, intro text right | I-04, I-06, I-09 | Heading wraps at any width; tags never cover the first letters of a word at mobile (tag positions are percentages from content). Clean background; WebGL digit field deferred/removed (tag `digit-field-v1`) |
 | H3 | Statement | `home.statement`: sentence, inline blocks (position index, kind), link to About | StatementText, inline PixelShape or image, link with pixel arrow | I-10 | Reduced motion: fully filled. Max 22ch |
 | H4 | Selected work | `projects` where `featured`, ordered, first four | SectionHeader, ProjectCard x4 stacked full width, "All work" pill | I-08, I-13, I-14 | Fewer than four featured: show what exists; none: hide the section |
 | H5 | Capabilities | `capabilities` | Feature surface, SlashLabel, CapabilityRow x n | I-15 | No JS: all rows open |

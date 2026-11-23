@@ -16,6 +16,16 @@ export function getLenis(): Lenis | null {
 }
 
 /**
+ * Tears down Lenis instance completely.
+ */
+export function destroyLenis(): void {
+  if (lenisInstance) {
+    lenisInstance.destroy();
+    lenisInstance = null;
+  }
+}
+
+/**
  * Initializes Lenis smooth scrolling if motion is not reduced.
  */
 export function initLenis(): Lenis | null {
@@ -62,16 +72,6 @@ export function stopLenis(): void {
 export function startLenis(): void {
   isStoppedForMenu = false;
   lenisInstance?.start();
-}
-
-/**
- * Tears down Lenis instance completely.
- */
-export function destroyLenis(): void {
-  if (lenisInstance) {
-    lenisInstance.destroy();
-    lenisInstance = null;
-  }
 }
 
 // React to motion changes in real-time

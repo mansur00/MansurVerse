@@ -111,6 +111,11 @@ export default [
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+      'no-use-before-define': 'off',
+      '@typescript-eslint/no-use-before-define': [
+        'error',
+        { functions: true, classes: true, variables: true },
+      ],
       'custom/no-arbitrary-values': 'error',
     },
   },

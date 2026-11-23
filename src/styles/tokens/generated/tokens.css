@@ -72,15 +72,7 @@
   --z-nav: 20;
   --z-safe-area: 30;
   --z-cursor: 50;
-  --digit-field-peak-opacity: 0.45;
-  --digit-field-min-alpha: 0.054;
-  --digit-field-falloff-radius: 240px;
-  --digit-field-flip-radius: 110px;
-  --digit-field-cell-size: 28px;
-  --digit-field-glyph-size: 14px;
   --opacity-shape: 0.5;
-  --opacity-digit-field: var(--digit-field-peak-opacity);
-  --blur-digit-field: 0.7px;
   --motion-fast: 250ms;
   --motion-base: 400ms;
   --motion-slow: 800ms;
@@ -88,7 +80,6 @@
   --motion-stagger: 100ms;
   --motion-float: 3.6s;
   --motion-marquee: 30s;
-  --motion-digit-flip: 160ms;
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
   --placement-full-start: 1;
@@ -135,7 +126,6 @@
   --color-chip-outline-stroke-on-feature: var(--color-divider-on-feature);
   --color-focus: var(--palette-black);
   --color-focus-on-feature: var(--palette-lime);
-  --color-digit-field: var(--palette-black);
   --color-error: var(--palette-coral);
   --card-bg: var(--color-bg-card);
   --card-text: var(--color-text-on-accent);
@@ -170,7 +160,6 @@
   --color-text-muted: var(--palette-grey-400);
   --color-divider: var(--palette-white-16);
   --color-focus: var(--palette-grey-100);
-  --color-digit-field: var(--palette-grey-100);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -184,7 +173,6 @@
     --color-text-muted: var(--palette-grey-400);
     --color-divider: var(--palette-white-16);
     --color-focus: var(--palette-grey-100);
-    --color-digit-field: var(--palette-grey-100);
   }
 }
 

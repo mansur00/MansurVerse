@@ -6,8 +6,7 @@ export const motionMs = {
   "count": 1200,
   "stagger": 100,
   "float": 3600,
-  "marquee": 30000,
-  "digit-flip": 160
+  "marquee": 30000
 } as const;
 
 export const ease = {
@@ -41,13 +40,4 @@ export const zIndex = {
   "nav": 20,
   "safe-area": 30,
   "cursor": 50
-} as const;
-
-export const digitFieldTokens = {
-  "peakOpacity": 0.45,
-  "minAlpha": 0.054,
-  "falloffRadius": 240,
-  "flipRadius": 110,
-  "cellSize": 28,
-  "glyphSize": 14
 } as const;

@@ -45,7 +45,6 @@ src/
   pages/                    index, work/index, work/[slug], about, contact, 404, styleguide
   scripts/
     motion/                 ticker, lenis, registry, reveal, text-split, scrub, counters, magnetic, ...
-    webgl/                  digit-field
     theme.ts                inline pre-paint theme script
   assets/                   images, fonts
 public/                     static files (favicons, OG fallbacks)

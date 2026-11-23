@@ -18,7 +18,7 @@
 | D-10 | Flat look: no shadows, no strokes on filled elements; outlined elements have no fill; hairline divider token is the only line | Decided | Owner rule, consistent with ollyo screenshots |
 | D-11 | Fonts: Jersey 20 for `h1` only; Stack Sans Notch for `h2` to `h6`, labels, stat numbers; Plus Jakarta Sans for body | Decided | Owner |
 | D-12 | Type is large; headings use the unique font at big sizes as on ollyo | Decided | Owner |
-| D-13 | Hero background: minimal field of small, slightly blurred `0`/`1` digits, cursor-reactive | Decided | Replaces dots; canvas fallback |
+| D-13 | Hero background: minimal field of small, slightly blurred `0`/`1` digits, cursor-reactive | Superseded | Replaced by clean solid background per owner decision (see D-116); implementation archived at git tag `digit-field-v1` |
 | D-14 | Hero highlights three keywords (Code, Motion, Design) as animated, gently floating tags | Decided | Owner |
 | D-15 | Home work section is vertical: four full-width project cards stacked | Decided | Owner |
 | D-16 | Project cards: white background, decorative pixelated shapes, project image on top | Decided | Owner, from ollyo Tutor LMS reference |
@@ -51,7 +51,7 @@
 | D-43 | pnpm; exact version pins; only releases at least 14 days old | Assumed | Supply-chain safety |
 | D-44 | Tooling: ESLint, Prettier, Stylelint, Vitest, Playwright, axe-core, Lighthouse CI | Assumed | |
 | D-45 | Tailwind theme defaults are reset so only tokens exist; shadow utilities are removed | Assumed | Enforces the flat look |
-| D-46 | OGL is the default WebGL library | Assumed | O-04 remains open |
+| D-46 | OGL is the default WebGL library | Superseded | WebGL and OGL removed per owner decision (see D-116); dependency dropped; archived at git tag `digit-field-v1` |
 | D-47 | Batch 4 engineering docs approved | Decided | Owner, 2026-11-19 |
 | D-48 | Route transitions use Astro `<ClientRouter />` with `transition:name` and `transition:persist`; page scripts init on `astro:page-load` | Assumed | Closes O-18; verified against Astro's docs |
 | D-49 | Wordmark parts live in site config (`brand.primary`, `brand.secondary`) | Assumed | No hardcoded logo text |
@@ -121,6 +121,7 @@
 | D-113 | Phase 5c Hero digit field fix 2: standardized all shader inputs, resolution, and distance calculations strictly in CSS pixels, eliminating display-scale compression at Retina DPR 1.5/2.0; eliminated CSS filter blur on canvas (softness from linear texture atlas filtering); coarse pointers render a single static frame with zero ongoing render loop; rendering is paused during scrolling across all devices (resuming 150ms after scroll ends); optimized statement scrub to single ScrollTrigger per block with dirty-checking and index-based word reveals; added debug HUD (`?perf=1`) and feature toggles (`?fx=off:<name>`) via `PUBLIC_ENABLE_DEBUG`; live theme and motion toggle listeners update shader state immediately; mobile scroll profile achieves 0 long tasks >50ms | Decided | Resolves Retina scaling, live toggle reactivity, and mobile scroll performance |
 | D-114 | Hero stacking context, lead line contrast, and CI stability: added `isolation: isolate` to `.hero-section`, set `.hero-container`, `.hero-lead-row`, `.hero-lead`, `.hero-headline-wrapper`, and `.hero-intro-row` to `position: relative; z-index: var(--z-content, 1);`, tags to `z-index: var(--z-tag, 2);`, and canvas to `z-index: 0;`; upgraded lead line color to `var(--color-text-primary)` (`#000000` / `#F1F1F1`) guaranteeing >= 4.5:1 contrast against effective background including underlying digits; stabilized CI pointermove performance test by waiting for deferred dynamic import module compilation/GC to settle before sampling; added stacking order and multi-point contrast Playwright test across DPR 1 and 2 in light and dark themes; verified 10x repeated run with 160/160 passing tests | Decided | Resolves hero lead line overlap defect and CI test flakiness |
 | D-115 | Restored whole-page long-task guard and User Timing correlation: calibrated pointer movement window to 3 seconds with 5 independent 600ms sample windows; restored page-level long-task tolerance (<= 2 tasks > 100ms, no single task > 250ms, sample median worst task <= 100ms) while keeping strict <= 50ms checks on application code (render frame <= 50ms, pointer handler <= 50ms); instrumented application marks (`digit-field:atlas-upload`, `digit-field:resize`, `cursor:pointermove`, `cursor:magnetic`, `hero:intro-start`, `hero:intro-end`) to correlate long tasks with closest application activity; verified 160-run stress suite with 100% pass rate, median worst task 0ms, and max overall 149ms | Decided | Restores whole-page long-task guard while preventing runner GC false positives |
+| D-116 | Remove 0/1 WebGL digit field from Home hero: removed canvas, shader, OGL dependency, poster generation, and digit-field tokens per owner decision (reasons: repeated production-only defects, phone scroll performance, Pause motion issues; Ollyo reference hero has no background effect); work preserved at git tag `digit-field-v1`; hero preserves h1 headline, 3 floating keyword tags, lead line, intro text, and intro animation; added production smoke suite (`tests/e2e/smoke.spec.ts`) and ESLint `no-use-before-define` rule | Decided | Clean hero removal and production smoke suite |
 
 ## Open Items
 
@@ -129,7 +130,7 @@
 | O-01 | Verify remaining ollyo tokens: type scale, per-element fonts, spacing, radii, borders, pink/cyan/blue colours | Phase 2 | Colours and font families verified (D-28). Owner can copy computed styles of the hero h1, a section heading, a project card and a keyword tag from DevTools |
 | O-02 | Confirm font licences and self-hosting plan for all three fonts | Closed | Resolved by D-74 (OFL-1.1 via Fontsource) |
 | O-03 | Hosting: Cloudflare or Vercel | Closed | Resolved by D-86 (Vercel chosen) |
-| O-04 | WebGL library: Three.js, OGL or a custom shader | Closed | Resolved by D-110: OGL chosen |
+| O-04 | WebGL library: Three.js, OGL or a custom shader | Closed | WebGL digit field removed per owner decision; dependency on OGL removed; archived at tag `digit-field-v1` (see D-116) |
 | O-05 | Contact form provider and spam protection | Phase 5 | |
 | O-06 | Analytics: none or a privacy-friendly option | Phase 8 | |
 | O-07 | Skill chips with physics (draggable) | Phase 5 | Optional |
