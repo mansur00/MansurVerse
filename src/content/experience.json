@@ -1,19 +1,19 @@
 {
   "items": [
     {
-      "period": "2024 — Now",
-      "role": "Senior Frontend Designer",
-      "place": "Studio placeholder"
+      "period": "2024 — Present",
+      "role": "Lead Frontend Designer",
+      "place": "Digital Product Studio"
     },
     {
       "period": "2021 — 2024",
-      "role": "UI Engineer",
-      "place": "Company placeholder"
+      "role": "Senior UI Engineer",
+      "place": "Design Systems Agency"
     },
     {
       "period": "2019 — 2021",
-      "role": "Web Designer",
-      "place": "Agency placeholder"
+      "role": "Frontend Developer",
+      "place": "Web Creative Studio"
     }
   ],
   "placeholder": true

@@ -27,7 +27,7 @@ const {
 } = Astro.props;
 ---
 
-<Section as="footer" surface="base" size="none" class:list={['footer', className]}>
+<Section as="footer" surface="base" size="default" class:list={['footer', className]}>
   <Stack gap="section" class="footer-stack">
     <div class="footer-columns">
       <div class="footer-col">
@@ -83,8 +83,6 @@ const {
 <style>
   .footer {
     width: 100%;
-    padding-top: var(--layout-section-y);
-    padding-bottom: var(--space-6);
   }
 
   .footer-stack {

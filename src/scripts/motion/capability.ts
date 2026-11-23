@@ -39,6 +39,7 @@ export const capabilityModule: MotionModule = {
           row.classList.add('is-expanded');
         } else {
           row.classList.remove('is-expanded');
+          delete row.dataset.hoverOpened;
         }
       };
       row.addEventListener('toggle', toggleHandler);
@@ -47,8 +48,11 @@ export const capabilityModule: MotionModule = {
       // Fine pointer: expand on hover and drive floating follower
       if (ctx.finePointer) {
         const mouseEnter = (e: MouseEvent) => {
-          row.open = true;
-          row.classList.add('is-expanded');
+          if (!row.open) {
+            row.dataset.hoverOpened = 'true';
+            row.open = true;
+            row.classList.add('is-expanded');
+          }
           if (visualEl) {
             const rowTitle = row.querySelector('.row-title')?.textContent?.trim() || '';
             visualEl.textContent = rowTitle;
@@ -70,23 +74,50 @@ export const capabilityModule: MotionModule = {
           if (visualEl) {
             visualEl.classList.remove('is-active');
           }
+          if (row.dataset.hoverOpened === 'true') {
+            delete row.dataset.hoverOpened;
+            row.open = false;
+            row.classList.remove('is-expanded');
+          }
         };
 
         const focusIn = () => {
-          row.open = true;
-          row.classList.add('is-expanded');
+          if (!row.open) {
+            row.dataset.hoverOpened = 'true';
+            row.open = true;
+            row.classList.add('is-expanded');
+          }
         };
 
+        const focusOut = (e: FocusEvent) => {
+          if (!row.contains(e.relatedTarget as Node | null)) {
+            if (row.dataset.hoverOpened === 'true') {
+              delete row.dataset.hoverOpened;
+              row.open = false;
+              row.classList.remove('is-expanded');
+            }
+          }
+        };
+
+        const clickSummary = () => {
+          // If clicked by user, it is an explicit toggle, not a transient hover
+          delete row.dataset.hoverOpened;
+        };
+
+        summary.addEventListener('click', clickSummary);
         row.addEventListener('mouseenter', mouseEnter);
         row.addEventListener('mousemove', mouseMove);
         row.addEventListener('mouseleave', mouseLeave);
         row.addEventListener('focusin', focusIn);
+        row.addEventListener('focusout', focusOut);
 
         cleanups.push(() => {
+          summary.removeEventListener('click', clickSummary);
           row.removeEventListener('mouseenter', mouseEnter);
           row.removeEventListener('mousemove', mouseMove);
           row.removeEventListener('mouseleave', mouseLeave);
           row.removeEventListener('focusin', focusIn);
+          row.removeEventListener('focusout', focusOut);
         });
       }
     });

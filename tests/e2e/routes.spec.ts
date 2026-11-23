@@ -3,12 +3,12 @@ import { test, expect } from '@playwright/test';
 const routes = [
   { path: '/', title: 'MansurVerse' },
   { path: '/work', title: 'Work' },
-  { path: '/work/project-one', title: 'Project One' },
-  { path: '/work/project-two', title: 'Project Two' },
-  { path: '/work/project-three', title: 'Project Three' },
-  { path: '/work/project-four', title: 'Project Four' },
-  { path: '/work/project-five', title: 'Project Five' },
-  { path: '/work/project-six', title: 'Project Six' },
+  { path: '/work/project-one', title: 'Design System' },
+  { path: '/work/project-two', title: 'Analytics' },
+  { path: '/work/project-three', title: 'Mobile Banking' },
+  { path: '/work/project-four', title: 'Editorial Platform' },
+  { path: '/work/project-five', title: 'Cloud Workspace' },
+  { path: '/work/project-six', title: 'Creative' },
   { path: '/about', title: 'About' },
   { path: '/contact', title: 'Contact' },
 ];

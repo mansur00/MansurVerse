@@ -30,5 +30,23 @@ jobs:
             test-results/
           retention-days: 7
       - run: pnpm audit --audit-level=high
+
+  verify-deployed:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Run layout and smoke tests against deployed production URL
+        run: |
+          sleep 30
+          BASE_URL=https://mansurverse.vercel.app pnpm exec playwright test tests/e2e/layout.spec.ts tests/e2e/smoke.spec.ts
 # Later phases add: Playwright e2e and a11y (Phase 4), Lighthouse and size checks (Phase 7), preview deploys (Phase 8).
 # Check for newer major versions of the actions above when setting up.

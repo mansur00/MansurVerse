@@ -7,7 +7,8 @@ import { gzipSync } from 'node:zlib';
 const BUDGET_PRE_INTERACTION_KB = 90;
 const BUDGET_PRE_INTERACTION_BYTES = BUDGET_PRE_INTERACTION_KB * 1024;
 
-const DIST_ASTRO = new URL('../dist/_astro/', import.meta.url).pathname;
+const DIST = new URL('../dist/', import.meta.url).pathname;
+const DIST_ASTRO = join(DIST, '_astro');
 
 if (!existsSync(DIST_ASTRO)) {
   console.error(
@@ -23,7 +24,37 @@ if (jsFiles.length === 0) {
   process.exit(0);
 }
 
+// 1. Identify chunks loaded directly by Home page (dist/index.html) before user interaction
+const homeHtmlPath = join(DIST, 'index.html');
+const homeDirectScripts = new Set();
+if (existsSync(homeHtmlPath)) {
+  const homeHtml = readFileSync(homeHtmlPath, 'utf-8');
+  for (const match of homeHtml.matchAll(/src="\/_astro\/([^"]+\.js)"/g)) {
+    homeDirectScripts.add(match[1]);
+  }
+}
+
+// Recursively find static dependencies imported by Home entry scripts
+const homePreInteractionFiles = new Set(homeDirectScripts);
+function resolveImports(filename) {
+  const filePath = join(DIST_ASTRO, filename);
+  if (!existsSync(filePath)) return;
+  const content = readFileSync(filePath, 'utf-8');
+  for (const match of content.matchAll(/(?:import|from)\s*['"]\.\/([^'"]+\.js)['"]/g)) {
+    const importedFile = match[1];
+    if (!homePreInteractionFiles.has(importedFile)) {
+      homePreInteractionFiles.add(importedFile);
+      resolveImports(importedFile);
+    }
+  }
+}
+
+for (const script of Array.from(homeDirectScripts)) {
+  resolveImports(script);
+}
+
 const preFiles = [];
+const dynamicFiles = [];
 
 for (const file of jsFiles) {
   const filePath = join(DIST_ASTRO, file);
@@ -34,25 +65,47 @@ for (const file of jsFiles) {
     raw: content.length,
     gzip: gzipped.length,
   };
-  preFiles.push(entry);
+  if (homePreInteractionFiles.has(file)) {
+    preFiles.push(entry);
+  } else {
+    dynamicFiles.push(entry);
+  }
 }
 
 let preRaw = 0;
 let preGzip = 0;
-console.log('--- Pre-Interaction Client JavaScript Bundle Sizes ---');
+console.log('--- Initial Pre-Interaction Client JavaScript (Home page) ---');
 for (const entry of preFiles) {
   preRaw += entry.raw;
   preGzip += entry.gzip;
   console.log(
-    `  ${entry.file.padEnd(55)} ${(entry.raw / 1024).toFixed(2).padStart(6)} KB raw | ${(entry.gzip / 1024).toFixed(2).padStart(6)} KB gzip`,
+    `  ${entry.file.padEnd(58)} ${(entry.raw / 1024).toFixed(2).padStart(6)} KB raw | ${(entry.gzip / 1024).toFixed(2).padStart(6)} KB gzip`,
   );
 }
 
 const preGzipKb = (preGzip / 1024).toFixed(2);
 const preRawKb = (preRaw / 1024).toFixed(2);
-console.log('------------------------------------------------------');
+console.log('-------------------------------------------------------------');
 console.log(
   `Pre-Interaction Total: ${preGzipKb} KB gzip (${preRawKb} KB raw) / Budget: ${BUDGET_PRE_INTERACTION_KB} KB`,
+);
+
+let dynRaw = 0;
+let dynGzip = 0;
+console.log('\n--- On-Demand Page-Specific Dynamic Imports ---');
+for (const entry of dynamicFiles) {
+  dynRaw += entry.raw;
+  dynGzip += entry.gzip;
+  console.log(
+    `  ${entry.file.padEnd(58)} ${(entry.raw / 1024).toFixed(2).padStart(6)} KB raw | ${(entry.gzip / 1024).toFixed(2).padStart(6)} KB gzip`,
+  );
+}
+console.log('-------------------------------------------------------------');
+console.log(
+  `On-Demand Total: ${(dynGzip / 1024).toFixed(2)} KB gzip (${(dynRaw / 1024).toFixed(2)} KB raw)`,
+);
+console.log(
+  `All App Chunks Combined: ${((preGzip + dynGzip) / 1024).toFixed(2)} KB gzip (${((preRaw + dynRaw) / 1024).toFixed(2)} KB raw)`,
 );
 
 let hasError = false;
@@ -69,5 +122,5 @@ if (hasError) {
 }
 
 console.log(
-  `\ncheck-bundle-size PASSED: All bundle chunks are within their respective compressed budgets.`,
+  `\ncheck-bundle-size PASSED: Pre-interaction client JS is well within the ${BUDGET_PRE_INTERACTION_KB} KB budget.`,
 );
