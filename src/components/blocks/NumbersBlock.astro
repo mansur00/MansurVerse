@@ -1,6 +1,8 @@
 ---
 // Shared Block: Numbers (used on Home, About, and Case study results)
 // Feature surface with subtle dot grid texture and staggered StatTiles per docs/01-design/page-specs.md
+import Section from '../layout-primitives/Section.astro';
+import Stack from '../layout-primitives/Stack.astro';
 import StatTile from '../content/StatTile.astro';
 import statsData from '../../content/stats.json';
 import homeData from '../../content/home.json';
@@ -27,10 +29,8 @@ const {
 } = Astro.props;
 ---
 
-<section class:list={['numbers-block', className]} data-surface="feature">
-  <div class="numbers-texture" aria-hidden="true"></div>
-
-  <div class="block-container">
+<Section id="numbers" surface="feature-dots" size="default" class={className}>
+  <Stack gap="section">
     <div class="numbers-header">
       <h2 class="numbers-heading text-heading-section">
         {headingLines.map((line, idx) => (
@@ -59,39 +59,12 @@ const {
         );
       })}
     </div>
-  </div>
-</section>
+  </Stack>
+</Section>
 
 <style>
-  .numbers-block {
-    position: relative;
-    background: var(--color-bg-feature);
-    color: var(--color-text-on-feature);
-    padding: var(--space-12) var(--layout-page-gutter);
-    overflow: hidden;
-  }
-
-  .numbers-texture {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: radial-gradient(var(--color-divider-on-feature) 1px, transparent 1.5px);
-    background-size: 18px 18px;
-    background-position: 0 0;
-    opacity: 0.8;
-  }
-
-  .block-container {
-    position: relative;
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-10);
-  }
-
   .numbers-header {
-    max-width: 48ch;
+    max-width: var(--measure-body, 60ch);
   }
 
   .numbers-heading {
@@ -101,14 +74,15 @@ const {
 
   .numbers-lead {
     margin: 0;
-    color: var(--color-text-muted-on-feature);
-    font-size: var(--text-body-size);
+    color: var(--color-text-on-feature);
+    opacity: 0.8;
   }
 
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-4);
+    gap: var(--layout-gap-wide);
+    width: 100%;
   }
 
   @media (width < 900px) {

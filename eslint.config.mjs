@@ -100,6 +100,8 @@ export default [
       'reference',
       'src/styles/tokens/generated',
       'tests/guardrails/fixtures/bad.astro',
+      'playwright-report',
+      'test-results',
     ],
   },
   ...tseslint.configs.recommended,

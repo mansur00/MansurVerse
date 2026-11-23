@@ -123,6 +123,12 @@ export interface StyleguideFixtures {
       valuesSlash: string;
       numbersHeading: string;
       numbersSlash: string;
+      layoutHeading: string;
+      layoutSlash: string;
+      cellLeftLabel: string;
+      cellRightLabel: string;
+      clusterItems: string[];
+      stackItems: string[];
     };
   };
   brand: {
@@ -642,6 +648,12 @@ export const styleguideFixtures: StyleguideFixtures = {
       valuesSlash: 'Principles',
       numbersHeading: 'Key Metrics & Impact',
       numbersSlash: 'Numbers',
+      layoutHeading: 'Primitives System',
+      layoutSlash: 'Layout',
+      cellLeftLabel: 'Cell half-a',
+      cellRightLabel: 'Cell half-b',
+      clusterItems: ['Cluster 1', 'Cluster 2', 'Cluster 3'],
+      stackItems: ['Stack item 1', 'Stack item 2'],
     },
   },
   brand: {

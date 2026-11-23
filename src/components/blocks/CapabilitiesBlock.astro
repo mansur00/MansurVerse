@@ -1,6 +1,8 @@
 ---
 // Shared Block: Capabilities (used on Home and Work)
 // Feature surface with SlashLabel and accordion CapabilityRow items per docs/01-design/page-specs.md
+import Section from '../layout-primitives/Section.astro';
+import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import CapabilityRow from '../content/CapabilityRow.astro';
 import capabilitiesData from '../../content/capabilities.json';
@@ -23,8 +25,8 @@ const {
 } = Astro.props;
 ---
 
-<section class:list={['capabilities-block', className]} data-surface="feature">
-  <div class="block-container">
+<Section id="capabilities" surface="feature" size="default" class={className}>
+  <Stack gap="section">
     <div class="block-header">
       <SlashLabel label={label} variant="on-feature" />
     </div>
@@ -39,30 +41,17 @@ const {
         />
       ))}
     </div>
-  </div>
-</section>
+  </Stack>
+</Section>
 
 <style>
-  .capabilities-block {
-    background: var(--color-bg-feature);
-    color: var(--color-text-on-feature);
-    padding: var(--space-12) var(--layout-page-gutter);
-  }
-
-  .block-container {
-    max-width: var(--layout-max-width);
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-8);
-  }
-
   .block-header {
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
   }
 
   .capabilities-list {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 </style>

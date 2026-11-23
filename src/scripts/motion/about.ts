@@ -27,7 +27,7 @@ export function initAboutPage(): void {
 
   // 1. Portrait spotlight (I-29)
   if (isFinePointer() && !isReducedMotion() && !isFeatureDisabled('spotlight')) {
-    const handlePointerMove = (e: PointerEvent) => {
+    const handlePointerMove = (e: MouseEvent | PointerEvent) => {
       const rect = wrapper.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -40,12 +40,16 @@ export function initAboutPage(): void {
       wrapper.style.setProperty('--spotlight-y', '50%');
     };
 
-    wrapper.addEventListener('pointermove', handlePointerMove, { passive: true });
+    wrapper.addEventListener('pointermove', handlePointerMove as EventListener, { passive: true });
+    wrapper.addEventListener('mousemove', handlePointerMove as EventListener, { passive: true });
     wrapper.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+    wrapper.addEventListener('mouseleave', handlePointerLeave, { passive: true });
 
     cleanups.push(() => {
-      wrapper.removeEventListener('pointermove', handlePointerMove);
+      wrapper.removeEventListener('pointermove', handlePointerMove as EventListener);
+      wrapper.removeEventListener('mousemove', handlePointerMove as EventListener);
       wrapper.removeEventListener('pointerleave', handlePointerLeave);
+      wrapper.removeEventListener('mouseleave', handlePointerLeave);
       wrapper.style.removeProperty('--spotlight-x');
       wrapper.style.removeProperty('--spotlight-y');
     });

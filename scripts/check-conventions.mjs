@@ -63,6 +63,48 @@ try {
       );
     }
   }
+
+  // 4. Layout system convention checks (docs/01-design/layout-system.md)
+  // Check no 'margin: 0 auto' in components, blocks, or pages
+  const srcDirPath = new URL('../src/', import.meta.url);
+  const scanForMarginAuto = (dirUrl) => {
+    if (!existsSync(dirUrl)) return;
+    for (const entry of readdirSync(dirUrl, { withFileTypes: true })) {
+      const entryUrl = new URL(entry.name, dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/');
+      if (entry.isDirectory()) {
+        scanForMarginAuto(
+          new URL(entry.name + '/', dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/'),
+        );
+      } else if (entry.name.endsWith('.astro')) {
+        const content = readFileSync(entryUrl, 'utf-8');
+        if (/margin\s*:\s*0\s+auto/i.test(content) || /margin-inline\s*:\s*auto/i.test(content)) {
+          errors.push(
+            `${entry.name}: Layout violation - 'margin: 0 auto' is disallowed. Use layout primitives and left alignment per layout-system.md`,
+          );
+        }
+      }
+    }
+  };
+  scanForMarginAuto(srcDirPath);
+
+  // Check Nav and Footer use var(--layout-pad) for horizontal alignment
+  const navPath = new URL('../src/components/layout/Nav.astro', import.meta.url);
+  if (existsSync(navPath)) {
+    const navContent = readFileSync(navPath, 'utf-8');
+    if (!navContent.includes('var(--layout-pad)')) {
+      errors.push('Nav.astro: must use var(--layout-pad) so left edge matches layout Section');
+    }
+  }
+
+  const footerPath = new URL('../src/components/layout/Footer.astro', import.meta.url);
+  if (existsSync(footerPath)) {
+    const footerContent = readFileSync(footerPath, 'utf-8');
+    if (!footerContent.includes('Section') && !footerContent.includes('var(--layout-pad)')) {
+      errors.push(
+        'Footer.astro: must use Section or var(--layout-pad) so left edge matches layout Section',
+      );
+    }
+  }
 } catch (error) {
   warnings.push(`Component convention checks skipped: ${error.message}`);
 }

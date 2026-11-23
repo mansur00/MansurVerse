@@ -65,6 +65,34 @@ const f = styleguideFixtures;
         ))}
       </div>
     </div>
+
+    <!-- Layout Primitives Demo: Grid, Cell, Stack, Cluster, Bleed -->
+    <div class="composition-card">
+      <SectionHeader
+        slashLabel={f.sections.composition.layoutSlash}
+        title={f.sections.composition.layoutHeading}
+      />
+      <div class="layout-demo-box">
+        <div class="layout-demo-grid">
+          <div class="demo-cell demo-cell-half">
+            <span class="text-label">{f.sections.composition.cellLeftLabel}</span>
+            <div class="demo-cluster">
+              {f.sections.composition.clusterItems.map((item) => (
+                <span class="demo-pill text-body-small">{item}</span>
+              ))}
+            </div>
+          </div>
+          <div class="demo-cell demo-cell-half">
+            <span class="text-label">{f.sections.composition.cellRightLabel}</span>
+            <div class="demo-stack">
+              {f.sections.composition.stackItems.map((item) => (
+                <span class="text-body-small">{item}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -148,5 +176,51 @@ const f = styleguideFixtures;
     .stats-grid {
       grid-template-columns: repeat(4, 1fr);
     }
+  }
+
+  .layout-demo-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background: var(--color-bg-base);
+    padding: var(--space-4);
+  }
+
+  .layout-demo-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--layout-gap-wide);
+  }
+
+  @media (width >= 721px) {
+    .layout-demo-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .demo-cell {
+    background: var(--color-bg-surface);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .demo-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--stack-tight);
+  }
+
+  .demo-pill {
+    background: var(--color-bg-alt);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+  }
+
+  .demo-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-base);
   }
 </style>
