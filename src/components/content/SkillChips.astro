@@ -28,4 +28,22 @@ const { skills, surface = 'base', class: className = '' } = Astro.props;
     gap: var(--space-2);
     align-items: center;
   }
+
+  :global(.skill-chips-container .chip) {
+    transition: transform var(--motion-fast) var(--ease-out);
+  }
+
+  :global(.skill-chips-container .chip:hover) {
+    transform: translateY(-4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.skill-chips-container .chip:hover) {
+      transform: none;
+    }
+  }
+
+  :global(:root[data-motion='reduced'] .skill-chips-container .chip:hover) {
+    transform: none;
+  }
 </style>

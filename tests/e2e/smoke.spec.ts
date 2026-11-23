@@ -207,4 +207,42 @@ test.describe('Production Smoke Suite', () => {
 
     expect(errors).toEqual([]);
   });
+
+  // 6. Phase 5d Page Interactions smoke checks
+  test('Phase 5d page interactions render cleanly and interact without errors', async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') errors.push(`[Smoke Error] ${msg.text()}`);
+    });
+    page.on('pageerror', (err) => errors.push(`[Smoke Exception] ${err.message}`));
+
+    // Work page
+    await page.goto('/work');
+    const filterChip = page.locator('[data-filter-chip]').first();
+    await expect(filterChip).toBeVisible();
+    await filterChip.click();
+
+    const viewToggle = page.locator('[data-view-toggle="list"]');
+    await expect(viewToggle).toBeVisible();
+    await viewToggle.click();
+
+    // Case study
+    await page.goto('/work/project-one');
+    const compareSlider = page.locator('.compare-slider');
+    await expect(compareSlider).toBeVisible();
+
+    // About page
+    await page.goto('/about');
+    const portrait = page.locator('.about-portrait-wrapper');
+    await expect(portrait).toBeVisible();
+
+    // Contact page
+    await page.goto('/contact');
+    const form = page.locator('.contact-form');
+    await expect(form).toBeVisible();
+
+    expect(errors).toEqual([]);
+  });
 });

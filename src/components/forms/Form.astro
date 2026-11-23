@@ -50,6 +50,7 @@ const isFailed = state === 'failed';
   method={method}
   class:list={['contact-form', `is-${state}`, className]}
   data-form-state={state}
+  data-fallback-email={fallbackEmail}
   novalidate
 >
   <div class="form-fields">

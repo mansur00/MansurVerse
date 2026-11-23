@@ -1,7 +1,26 @@
 // Feature flags and debug switches (?fx=off:<name>) per docs/02-engineering/dev-environment.md.
 // Active in preview, development, and test builds; tree-shaken in production.
 
-export type FeatureName = 'scrub' | 'reveal' | 'marquee' | 'cursor' | 'lenis' | 'tags';
+export type FeatureName =
+  | 'scrub'
+  | 'reveal'
+  | 'marquee'
+  | 'cursor'
+  | 'lenis'
+  | 'tags'
+  | 'filter'
+  | 'view'
+  | 'tilt'
+  | 'scrollspy'
+  | 'compare'
+  | 'parallax'
+  | 'pull'
+  | 'spotlight'
+  | 'skills'
+  | 'experience'
+  | 'repel'
+  | 'distortion'
+  | 'form';
 
 let disabledCache: Set<string> | null = null;
 
