@@ -53,6 +53,6 @@
   --radius-circle: 50%;
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
-  --breakpoint-tablet: 721px;
-  --breakpoint-desktop: 1101px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 992px;
 }

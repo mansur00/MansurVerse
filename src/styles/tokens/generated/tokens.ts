@@ -30,8 +30,8 @@ export const easePoints = {
 } as const;
 
 export const breakpoints = {
-  "tablet": 721,
-  "desktop": 1101
+  "tablet": 768,
+  "desktop": 992
 } as const;
 
 export const zIndex = {

@@ -1,5 +1,6 @@
 ---
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import Button from '../primitives/Button.astro';
@@ -34,22 +35,24 @@ const isFeature = variant === 'on-feature';
 ---
 
 <Section surface={surfaceMap[variant]} size="default" class={className}>
-  <Stack gap="base" class="cta-inner">
-    <SlashLabel
-      label={slashLabel}
-      variant={isFeature ? 'on-feature' : 'on-light'}
-      class="cta-label"
-    />
-    <h2 class:list={['cta-heading', 'text-heading-section', { 'text-feature': isFeature }]}>
-      {heading}
-    </h2>
-    <p class:list={['cta-text', 'text-body', { 'text-muted-feature': isFeature }]}>{text}</p>
-    <div class="cta-action">
-      <Button href={buttonHref} variant="primary" showArrow={true}>
-        {buttonLabel}
-      </Button>
-    </div>
-  </Stack>
+  <Container>
+    <Stack gap="base" class="cta-inner">
+      <SlashLabel
+        label={slashLabel}
+        variant={isFeature ? 'on-feature' : 'on-light'}
+        class="cta-label"
+      />
+      <h2 class:list={['cta-heading', 'text-heading-section', { 'text-feature': isFeature }]}>
+        {heading}
+      </h2>
+      <p class:list={['cta-text', 'text-body', { 'text-muted-feature': isFeature }]}>{text}</p>
+      <div class="cta-action">
+        <Button href={buttonHref} variant="primary" showArrow={true}>
+          {buttonLabel}
+        </Button>
+      </div>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

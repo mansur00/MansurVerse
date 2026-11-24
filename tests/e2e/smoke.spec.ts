@@ -246,7 +246,7 @@ test.describe('Production Smoke Suite', () => {
     expect(errors).toEqual([]);
   });
 
-  // 7. Production layout invariants on Home page
+  // 7. Production layout invariants on Home page per ollyo.com layout reference
   test('Home page satisfies production layout invariants and padding geometry', async ({
     page,
   }) => {
@@ -254,14 +254,13 @@ test.describe('Production Smoke Suite', () => {
     await page.waitForLoadState('networkidle');
 
     const check = await page.evaluate(() => {
-      const refSec = document.querySelector<HTMLElement>('.layout-section.section-size-default');
-      const refComp = refSec ? getComputedStyle(refSec) : null;
-      const pad = refComp ? parseFloat(refComp.paddingLeft) : 16;
-      const sectionY = refComp ? parseFloat(refComp.paddingTop) : 56;
-
-      // Hero section padding check
       const hero = document.querySelector<HTMLElement>('.hero-section');
-      const heroPadTop = hero ? parseFloat(getComputedStyle(hero).paddingTop) : 0;
+      const heroComp = hero ? getComputedStyle(hero) : null;
+      const heroPadTop = heroComp ? parseFloat(heroComp.paddingTop) : 0;
+      const heroPadBottom = heroComp ? parseFloat(heroComp.paddingBottom) : 0;
+
+      const heroLead = document.querySelector<HTMLElement>('.hero-lead');
+      const heroLeadTop = heroLead ? heroLead.getBoundingClientRect().top : 0;
 
       // Capabilities closed on load
       const capRows = Array.from(
@@ -274,17 +273,24 @@ test.describe('Production Smoke Suite', () => {
       const stmtRect = stmt ? stmt.getBoundingClientRect() : null;
 
       return {
-        pad,
-        sectionY,
         heroPadTop,
+        heroPadBottom,
+        heroLeadTop,
         allCapClosed,
         stmtRect: stmtRect ? { width: stmtRect.width, height: stmtRect.height } : null,
       };
     });
 
+    // Distance from top of page to first hero line = 200px (desktop)
     expect(
-      Math.abs(check.heroPadTop - check.sectionY),
-      `Hero top padding (${check.heroPadTop}) should match --layout-section-y (${check.sectionY})`,
+      Math.abs(check.heroLeadTop - 200),
+      `Hero lead top position (${check.heroLeadTop}) should be 200px per ollyo reference`,
+    ).toBeLessThanOrEqual(5.5);
+
+    // Hero bottom padding = 120px
+    expect(
+      Math.abs(check.heroPadBottom - 120),
+      `Hero bottom padding (${check.heroPadBottom}) should match --layout-hero-bottom (120px)`,
     ).toBeLessThanOrEqual(2);
 
     expect(check.allCapClosed, 'Capability rows must be closed on initial load').toBe(true);

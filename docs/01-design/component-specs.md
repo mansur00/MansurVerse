@@ -26,12 +26,14 @@
 
 | Component | Anatomy | States | Notes |
 |---|---|---|---|
-| Nav | Logo left, links and ThemeToggle right | Visible, hidden on scroll, menu open | Sticky at the safe-area top; base-colour cover bar behind the status area |
+| Section | Full-bleed background surface (`base`, `alt`, `feature`, `feature-dots`) with vertical padding (`default`, `compact`, `hero`, `none`) | | Owns surface colour and vertical spacing only |
+| Container | Layout width limiter (`--layout-container-max` [1539px], `--layout-container-max-narrow` [800px] $\le 991$px), fixed horizontal padding (`--layout-pad` [20px]), auto-centered | | The ONLY element allowed auto margins (`margin-inline: auto`) |
+| Nav | Logo left, links and ThemeToggle right | Visible, hidden on scroll, menu open | Sticky at the safe-area top; wraps in Container; base-colour cover bar behind the status area |
 | MenuOverlay | Full-screen base surface, large links | Open, closed | Esc closes; focus trap; entrance stagger 80ms |
 | ThemeToggle | Button with accessible name "Toggle theme" | Light, dark | Persists choice (I-01) |
 | SectionHeader | SlashLabel + heading (`heading-section`) | | Heading level is chosen per page for correct outline |
-| Footer | Three columns: pages, elsewhere, local time; copyright | | Collapses to one column on mobile |
-| CTABand | Centred label, heading, text, primary Button | | Content from `site.cta` |
+| Footer | Three columns: pages, elsewhere, local time; copyright | | Wraps in Container; collapses to one column on mobile |
+| CTABand | Centred label, heading, text, primary Button | | Content from `site.cta`; wraps in Container |
 | MotionToggle | Button labelled "Pause motion" or "Play motion", in the footer | On, off | Sets `data-motion` on `<html>`, persists (I-37); state also follows `prefers-reduced-motion` |
 
 ## 4. Content Components

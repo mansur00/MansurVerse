@@ -1,16 +1,16 @@
 # UI Layout
 
-> Layout patterns copied in spirit from ollyo.com. Governed globally by `docs/01-design/layout-system.md`. Offsets and breakpoints are **Assumed** from the prototype and screenshots until verified (O-01). Last updated: 2026-11-21.
+> Layout patterns copied from ollyo.com DevTools verified measurements (see `docs/01-design/ollyo-layout-reference.md`). Governed globally by `docs/01-design/layout-system.md`. Last updated: 2026-11-24.
 
 ## 1. Breakpoints and Grid
 
 | Name | Range | Notes |
 |---|---|---|
-| Mobile | up to 720px | Single column; hover-only features need tap equivalents |
-| Tablet | 721–1100px | Assumed; two-column patterns stay |
-| Desktop | above 1100px | Full layouts |
+| Narrow / Mobile | up to 991px | Single column for most grids; Container bounds to 800px; Stat tiles & process steps 2 columns |
+| Tablet (Assumed) | 768–991px | Intermediate range within the narrow band |
+| Desktop | 992px and above | Full 12-column layouts; Container bounds to 1539px |
 
-The prototype switches layouts at 720px only; add the tablet range when verifying. Grid: 12 columns, gaps from `--layout-gap`. Sections are full-bleed backgrounds with horizontal padding `--layout-pad`; content is asymmetric rather than centred.
+Content bounds to `Container` (`width: 100%`, `max-width: var(--layout-container-max)` [1539px] or `var(--layout-container-max-narrow)` [800px], `margin-inline: auto`, `padding-inline: var(--layout-pad)` [20px]). Sections are full-bleed backgrounds with vertical padding only. Grid: 12 columns, gaps from `--layout-gap` and `--layout-gap-wide`.
 
 ## 2. Placement Patterns
 

@@ -4,6 +4,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/layout-primitives/Section.astro';
+import Container from '../../components/layout-primitives/Container.astro';
 import Stack from '../../components/layout-primitives/Stack.astro';
 import Cluster from '../../components/layout-primitives/Cluster.astro';
 import SlashLabel from '../../components/primitives/SlashLabel.astro';
@@ -30,96 +31,112 @@ const categories = ['All', ...rawCategories];
 >
   <!-- W1: Header & W2: Toolbar -->
   <Section surface="base" size="default" class="work-header-section">
-    <Stack gap="section">
-      <div class="work-header-top">
-        <SlashLabel label="Portfolio" variant="on-light" />
-        <h1 class="work-title text-display-page">
-          Selected work
-          <span class="count-wrapper" aria-live="polite">
-            <SuperscriptNumber number={sortedProjects.length} />
-          </span>
-        </h1>
-      </div>
-
-      <div class="work-toolbar">
-        <Cluster gap="tight" class="filter-chips">
-          <span id="filter-live-count" class="sr-only" aria-live="polite">
-            Showing all {sortedProjects.length} projects
-          </span>
-          {categories.map((cat, idx) => (
-            <Chip
-              variant={idx === 0 ? 'accent' : 'outlined'}
-              as="button"
-              data-filter-chip={cat}
-              class:list={[{ 'is-active': idx === 0 }]}
-            >
-              {cat}
-            </Chip>
-          ))}
-        </Cluster>
-
-        <div class="view-toggle" role="group" aria-label="Layout view">
-          <button
-            type="button"
-            class="view-toggle-btn is-active"
-            data-view-toggle="grid"
-            aria-label="Grid view"
-            aria-pressed="true"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <rect x="1" y="1" width="6" height="6"></rect>
-              <rect x="9" y="1" width="6" height="6"></rect>
-              <rect x="1" y="9" width="6" height="6"></rect>
-              <rect x="9" y="9" width="6" height="6"></rect>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="view-toggle-btn"
-            data-view-toggle="list"
-            aria-label="List view"
-            aria-pressed="false"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <rect x="1" y="2" width="14" height="2.5"></rect>
-              <rect x="1" y="7" width="14" height="2.5"></rect>
-              <rect x="1" y="12" width="14" height="2.5"></rect>
-            </svg>
-          </button>
+    <Container>
+      <Stack gap="section">
+        <div class="work-header-top">
+          <SlashLabel label="Portfolio" variant="on-light" />
+          <h1 class="work-title text-display-page">
+            Selected work
+            <span class="count-wrapper" aria-live="polite">
+              <SuperscriptNumber number={sortedProjects.length} />
+            </span>
+          </h1>
         </div>
-      </div>
-    </Stack>
+
+        <div class="work-toolbar">
+          <Cluster gap="tight" class="filter-chips">
+            <span id="filter-live-count" class="sr-only" aria-live="polite">
+              Showing all {sortedProjects.length} projects
+            </span>
+            {categories.map((cat, idx) => (
+              <Chip
+                variant={idx === 0 ? 'accent' : 'outlined'}
+                as="button"
+                data-filter-chip={cat}
+                class:list={[{ 'is-active': idx === 0 }]}
+              >
+                {cat}
+              </Chip>
+            ))}
+          </Cluster>
+
+          <div class="view-toggle" role="group" aria-label="Layout view">
+            <button
+              type="button"
+              class="view-toggle-btn is-active"
+              data-view-toggle="grid"
+              aria-label="Grid view"
+              aria-pressed="true"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <rect x="1" y="1" width="6" height="6"></rect>
+                <rect x="9" y="1" width="6" height="6"></rect>
+                <rect x="1" y="9" width="6" height="6"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="view-toggle-btn"
+              data-view-toggle="list"
+              aria-label="List view"
+              aria-pressed="false"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <rect x="1" y="2" width="14" height="2.5"></rect>
+                <rect x="1" y="7" width="14" height="2.5"></rect>
+                <rect x="1" y="12" width="14" height="2.5"></rect>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </Stack>
+    </Container>
   </Section>
 
   <!-- W3: Projects Grid -->
   <Section surface="base" size="none" class="projects-grid-section" aria-label="Projects">
-    <div class="empty-state" hidden aria-live="polite">
-      <p class="empty-state-text text-body">No projects found in this category.</p>
-      <button type="button" class="empty-state-reset text-label" data-reset-filter>
-        Show all projects
-      </button>
-    </div>
+    <Container>
+      <div class="empty-state" hidden aria-live="polite">
+        <p class="empty-state-text text-body">No projects found in this category.</p>
+        <button type="button" class="empty-state-reset text-label" data-reset-filter>
+          Show all projects
+        </button>
+      </div>
 
-    <div class="projects-grid">
-      {sortedProjects.map((project, idx) => (
-        <ProjectCard
-          title={project.data.title}
-          number={idx + 1}
-          description={project.data.summary}
-          category={project.data.category}
-          year={String(project.data.year)}
-          href={`/work/${project.id}`}
-          accent={project.data.accent}
-          imageSrc={project.data.cover.image}
-          imageAlt={project.data.cover.alt}
-          variant="grid"
-        />
-      ))}
-    </div>
+      <div class="projects-grid">
+        {sortedProjects.map((project, idx) => (
+          <ProjectCard
+            title={project.data.title}
+            number={idx + 1}
+            description={project.data.summary}
+            category={project.data.category}
+            year={String(project.data.year)}
+            href={`/work/${project.id}`}
+            accent={project.data.accent}
+            imageSrc={project.data.cover.image}
+            imageAlt={project.data.cover.alt}
+            variant="grid"
+          />
+        ))}
+      </div>
 
-    <div class="list-preview-follower" aria-hidden="true">
-      <img src="" alt="" class="follower-image" />
-    </div>
+      <div class="list-preview-follower" aria-hidden="true">
+        <img src="" alt="" class="follower-image" />
+      </div>
+    </Container>
   </Section>
 
   <!-- W4: Capabilities Block -->

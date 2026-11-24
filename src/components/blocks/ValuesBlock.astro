@@ -2,6 +2,7 @@
 // Shared Block: Values (used on Home and About)
 // Feature surface with large heading, KeywordTags, ValueRows and flat colour shapes per docs/01-design/page-specs.md
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import KeywordTag from '../primitives/KeywordTag.astro';
 import ValueRow from '../content/ValueRow.astro';
@@ -29,35 +30,37 @@ const {
 ---
 
 <Section id="values" surface="feature" size="default" class={className}>
-  <Stack gap="section">
-    <div class="values-header">
-      <h2 class="values-heading text-heading-section">
-        {headingLines.map((line, idx) => (
-          <span class="heading-line">
-            {line}
-            {idx < headingLines.length - 1 && <br />}
-          </span>
-        ))}
-      </h2>
+  <Container>
+    <Stack gap="section">
+      <div class="values-header">
+        <h2 class="values-heading text-heading-section">
+          {headingLines.map((line, idx) => (
+            <span class="heading-line">
+              {line}
+              {idx < headingLines.length - 1 && <br />}
+            </span>
+          ))}
+        </h2>
 
-      <div class="values-tags" aria-hidden="true">
-        {tags.map((tag, idx) => (
-          <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag}</KeywordTag>
-        ))}
+        <div class="values-tags" aria-hidden="true">
+          {tags.map((tag, idx) => (
+            <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag}</KeywordTag>
+          ))}
+        </div>
+
+        <div class="decorative-shapes" aria-hidden="true">
+          <div class="shape-lime"></div>
+          <div class="shape-pink"></div>
+        </div>
       </div>
 
-      <div class="decorative-shapes" aria-hidden="true">
-        <div class="shape-lime"></div>
-        <div class="shape-pink"></div>
+      <div class="values-list">
+        {items.map((item) => (
+          <ValueRow slashLabel={item.label} text={item.text} variant="on-feature" />
+        ))}
       </div>
-    </div>
-
-    <div class="values-list">
-      {items.map((item) => (
-        <ValueRow slashLabel={item.label} text={item.text} variant="on-feature" />
-      ))}
-    </div>
-  </Stack>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

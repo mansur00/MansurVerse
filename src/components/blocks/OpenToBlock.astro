@@ -2,6 +2,7 @@
 // Shared Block: Open to (used on About and Contact)
 // Career/project engagement rows with "Let's talk" action per docs/01-design/page-specs.md
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import JobRow from '../content/JobRow.astro';
@@ -33,23 +34,25 @@ const {
 ---
 
 <Section id="open-to" surface={surface} size="default" class={className}>
-  <Stack gap="section">
-    <div class="block-header">
-      <SlashLabel label={label} variant="on-light" />
-    </div>
+  <Container>
+    <Stack gap="section">
+      <div class="block-header">
+        <SlashLabel label={label} variant="on-light" />
+      </div>
 
-    <div class="jobs-list">
-      {items.map((job) => (
-        <JobRow
-          category={job.category}
-          title={job.title}
-          meta={job.meta}
-          ctaLabel={ctaLabel}
-          ctaHref={ctaHref}
-        />
-      ))}
-    </div>
-  </Stack>
+      <div class="jobs-list">
+        {items.map((job) => (
+          <JobRow
+            category={job.category}
+            title={job.title}
+            meta={job.meta}
+            ctaLabel={ctaLabel}
+            ctaHref={ctaHref}
+          />
+        ))}
+      </div>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

@@ -4,6 +4,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/layout-primitives/Section.astro';
+import Container from '../components/layout-primitives/Container.astro';
 import Grid from '../components/layout-primitives/Grid.astro';
 import Cell from '../components/layout-primitives/Cell.astro';
 import Stack from '../components/layout-primitives/Stack.astro';
@@ -48,91 +49,97 @@ const statementWords = homeData.statement.text.split(' ');
   description={homeData.hero.intro}
 >
   <!-- H2: Hero Section -->
-  <Section size="default" class="hero-section" aria-label="Hero">
-    <Grid class="hero-container">
-      <Cell placement="full">
-        <div class="hero-lead-row">
-          <span class="hero-lead text-label">{homeData.hero.lead}</span>
-        </div>
-
-        <div class="hero-headline-wrapper">
-          <h1 class="hero-title text-display-hero">
-            {homeData.hero.headline.map((line, idx) => (
-              <span class="hero-line-mask">
-                <span class="hero-line-inner">
-                  {line}
-                  {idx < homeData.hero.headline.length - 1 && <br />}
-                </span>
-              </span>
-            ))}
-          </h1>
-
-          <div class="hero-tags" aria-hidden="true">
-            {homeData.hero.tags.map((tag, idx) => (
-              <div class="hero-tag-item" style={`left: ${tag.x}%; top: ${tag.y}%;`}>
-                <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag.label}</KeywordTag>
-              </div>
-            ))}
+  <Section size="hero" class="hero-section" aria-label="Hero">
+    <Container>
+      <Grid class="hero-container">
+        <Cell placement="full">
+          <div class="hero-lead-row">
+            <span class="hero-lead text-label">{homeData.hero.lead}</span>
           </div>
-        </div>
-      </Cell>
 
-      <Cell placement="intro">
-        <div class="hero-intro-row">
-          <p class="hero-intro text-body">{homeData.hero.intro}</p>
-        </div>
-      </Cell>
-    </Grid>
+          <div class="hero-headline-wrapper">
+            <h1 class="hero-title text-display-hero">
+              {homeData.hero.headline.map((line, idx) => (
+                <span class="hero-line-mask">
+                  <span class="hero-line-inner">
+                    {line}
+                    {idx < homeData.hero.headline.length - 1 && <br />}
+                  </span>
+                </span>
+              ))}
+            </h1>
+
+            <div class="hero-tags" aria-hidden="true">
+              {homeData.hero.tags.map((tag, idx) => (
+                <div class="hero-tag-item" style={`left: ${tag.x}%; top: ${tag.y}%;`}>
+                  <KeywordTag tagIndex={((idx % 4) + 1) as 1 | 2 | 3 | 4}>{tag.label}</KeywordTag>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Cell>
+
+        <Cell placement="intro">
+          <div class="hero-intro-row">
+            <p class="hero-intro text-body">{homeData.hero.intro}</p>
+          </div>
+        </Cell>
+      </Grid>
+    </Container>
   </Section>
 
   <!-- H3: Statement Section -->
   <Section surface="base" size="default" aria-label="Philosophy">
-    <Grid>
-      <Cell placement="statement">
-        <Stack gap="loose">
-          <StatementText
-            sentence={homeData.statement.text}
-            words={statementWords}
-            highlightIndex={statementWords.length}
-          />
-          <div class="statement-action">
-            <Button href={homeData.statement.link.href} variant="outlined" showArrow={true}>
-              {homeData.statement.link.label}
-            </Button>
-          </div>
-        </Stack>
-      </Cell>
-    </Grid>
+    <Container>
+      <Grid>
+        <Cell placement="statement">
+          <Stack gap="loose">
+            <StatementText
+              sentence={homeData.statement.text}
+              words={statementWords}
+              highlightIndex={statementWords.length}
+            />
+            <div class="statement-action">
+              <Button href={homeData.statement.link.href} variant="outlined" showArrow={true}>
+                {homeData.statement.link.label}
+              </Button>
+            </div>
+          </Stack>
+        </Cell>
+      </Grid>
+    </Container>
   </Section>
 
   <!-- H4: Selected Work -->
   <Section surface="alt" size="default" aria-label="Selected Work">
-    <Stack gap="section">
-      <SectionHeader slashLabel={homeData.work.label} title={homeData.work.heading} />
+    <Container>
+      <Stack gap="section">
+        <SectionHeader slashLabel={homeData.work.label} title={homeData.work.heading} />
 
-      <div class="projects-stack">
-        {featuredProjects.map((project, idx) => (
-          <ProjectCard
-            title={project.data.title}
-            number={idx + 1}
-            description={project.data.summary}
-            category={project.data.category}
-            year={String(project.data.year)}
-            href={`/work/${project.id}`}
-            accent={project.data.accent}
-            imageSrc={project.data.cover.image}
-            imageAlt={project.data.cover.alt}
-            variant="stack"
-          />
-        ))}
-      </div>
+        <div class="projects-stack">
+          {featuredProjects.map((project, idx) => (
+            <ProjectCard
+              title={project.data.title}
+              number={idx + 1}
+              description={project.data.summary}
+              category={project.data.category}
+              year={String(project.data.year)}
+              href={`/work/${project.id}`}
+              accent={project.data.accent}
+              imageSrc={project.data.cover.image}
+              imageAlt={project.data.cover.alt}
+              variant="stack"
+            />
+          ))}
+        </div>
 
-      <div class="work-action">
-        <Button href="/work" variant="primary" showArrow={true}>
-          {homeData.work.ctaLabel}
-        </Button>
-      </div>
-    </Stack>
+        <div class="work-action">
+          <Button href="/work" variant="primary" showArrow={true}>
+            {homeData.work.ctaLabel}
+          </Button>
+        </div>
+      </Stack>
+    </Container>
   </Section>
 
   <!-- H5: Capabilities -->
@@ -156,18 +163,20 @@ const statementWords = homeData.statement.text.split(' ');
 
   <!-- H10: Contact CTA -->
   <Section surface="base" size="default" aria-label="Contact">
-    <Stack gap="base" class="contact-cta-stack">
-      <SlashLabel label={homeData.contactCta.label} variant="on-light" />
-      <h2 class="contact-cta-heading text-heading-section">{homeData.contactCta.heading}</h2>
-      <div class="email-wrapper">
-        <EmailDisplay email={profileData.email} />
-      </div>
-      <div class="contact-cta-action">
-        <Button href={`mailto:${profileData.email}`} variant="primary">
-          {siteConfig.form.labels.email}
-        </Button>
-      </div>
-    </Stack>
+    <Container>
+      <Stack gap="base" class="contact-cta-stack">
+        <SlashLabel label={homeData.contactCta.label} variant="on-light" />
+        <h2 class="contact-cta-heading text-heading-section">{homeData.contactCta.heading}</h2>
+        <div class="email-wrapper">
+          <EmailDisplay email={profileData.email} />
+        </div>
+        <div class="contact-cta-action">
+          <Button href={`mailto:${profileData.email}`} variant="primary">
+            {siteConfig.form.labels.email}
+          </Button>
+        </div>
+      </Stack>
+    </Container>
   </Section>
 </BaseLayout>
 
@@ -176,10 +185,7 @@ const statementWords = homeData.statement.text.split(' ');
   .hero-section {
     position: relative;
     isolation: isolate;
-    min-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    width: 100%;
     overflow: hidden;
   }
 

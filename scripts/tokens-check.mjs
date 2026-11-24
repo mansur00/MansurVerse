@@ -67,7 +67,12 @@ if (tokens.text?.['logo-secondary']?.font !== 'label') {
 
 // 3b. Validate layout tokens (layout-system.md)
 const requiredLayout = [
+  'container-max',
+  'container-max-narrow',
   'pad',
+  'hero-top',
+  'hero-top-narrow',
+  'hero-bottom',
   'section-y',
   'section-y-compact',
   'gap',
@@ -77,6 +82,13 @@ const requiredLayout = [
 ];
 for (const key of requiredLayout) {
   if (!tokens.layout?.[key]) errors.push(`layout.${key}: missing required layout token`);
+}
+
+// 3b-2. Validate breakpoint tokens
+const requiredBreakpoints = ['tablet', 'desktop'];
+for (const key of requiredBreakpoints) {
+  if (!tokens.breakpoint?.[key])
+    errors.push(`breakpoint.${key}: missing required breakpoint token`);
 }
 
 // 3c. Validate stack tokens

@@ -19,14 +19,20 @@ Base unit 4px.
 | `--space-9` | 96px |
 | `--space-10` | 128px |
 
-Fluid layout tokens (Assumed from the prototype):
+Layout tokens (verified from ollyo.com DevTools, see `ollyo-layout-reference.md`):
 
-| Token | Value | Use |
-|---|---|---|
-| `--layout-pad` | `clamp(16px, 4vw, 48px)` | Horizontal page padding |
-| `--layout-section-y` | `clamp(56px, 9vw, 120px)` | Section vertical padding |
-| `--layout-gap` | 16px | Card and tile gaps |
-| `--layout-gap-wide` | 24px | Column gaps |
+| Token | Value | Use | Source |
+|---|---|---|---|
+| `--layout-container-max` | 1539px | Max container width (> 991px) | Verified (ollyo.com) |
+| `--layout-container-max-narrow` | 800px | Max container width ($\le$ 991px) | Verified (ollyo.com) |
+| `--layout-pad` | 20px | Horizontal container padding | Verified (ollyo.com) |
+| `--layout-hero-top` | 200px | Hero distance from top of page | Verified (ollyo.com) |
+| `--layout-hero-top-narrow` | 142px | Hero distance from top of page ($\le$ 991px) | Verified (ollyo.com) |
+| `--layout-hero-bottom` | 120px | Hero bottom padding | Verified (ollyo.com) |
+| `--layout-section-y` | `clamp(56px, 9vw, 120px)` | Section vertical padding | Assumed |
+| `--layout-section-y-compact` | `clamp(24px, 4vw, 48px)` | Compact vertical padding | Assumed |
+| `--layout-gap` | 16px | Card and tile gaps | Assumed |
+| `--layout-gap-wide` | 24px | Column gaps | Assumed |
 
 ## 2. Radius
 

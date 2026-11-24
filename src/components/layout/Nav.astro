@@ -1,5 +1,6 @@
 ---
 import Logo from '../primitives/Logo.astro';
+import Container from '../layout-primitives/Container.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import MenuOverlay from './MenuOverlay.astro';
 
@@ -25,7 +26,7 @@ const {
 ---
 
 <header class:list={['nav-header', className]}>
-  <div class="nav-container">
+  <Container class="nav-container">
     <div class="nav-logo">
       <Logo brandPrimary={brandPrimary} brandSecondary={brandSecondary} />
     </div>
@@ -73,7 +74,7 @@ const {
         </span>
       </button>
     </div>
-  </div>
+  </Container>
 
   <MenuOverlay links={navLinks} closeAriaLabel="Close menu" />
 </header>
@@ -114,7 +115,6 @@ const {
 
   .nav-container {
     height: 100%;
-    padding: 0 var(--layout-pad);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -149,6 +149,8 @@ const {
     transition: color var(--motion-fast) var(--ease-out);
     display: inline-flex;
     align-items: center;
+    padding: var(--space-2) var(--space-2);
+    min-height: 32px;
   }
 
   .roll-wrapper {

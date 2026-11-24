@@ -2,6 +2,7 @@
 // Shared Block: Process (used on Home, Work, Case study, and Contact)
 // 4-step sequential reveal layout per docs/01-design/page-specs.md
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import SlashLabel from '../primitives/SlashLabel.astro';
 import ProcessStep from '../content/ProcessStep.astro';
@@ -28,17 +29,19 @@ const {
 ---
 
 <Section id="process" surface={surface} size="default" class={className}>
-  <Stack gap="section">
-    <div class="block-header">
-      <SlashLabel label={label} variant="on-light" />
-    </div>
+  <Container>
+    <Stack gap="section">
+      <div class="block-header">
+        <SlashLabel label={label} variant="on-light" />
+      </div>
 
-    <div class="process-grid" data-motion-container="reveal">
-      {items.map((item, index) => (
-        <ProcessStep stepNumber={index + 1} title={item.title} text={item.text} />
-      ))}
-    </div>
-  </Stack>
+      <div class="process-grid" data-motion-container="reveal">
+        {items.map((item, index) => (
+          <ProcessStep stepNumber={index + 1} title={item.title} text={item.text} />
+        ))}
+      </div>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

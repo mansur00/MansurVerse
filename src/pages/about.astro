@@ -3,6 +3,7 @@
 // Renders sections A1 to A7: intro with spotlight portrait, bio scrub, skills, experience, and shared blocks.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/layout-primitives/Section.astro';
+import Container from '../components/layout-primitives/Container.astro';
 import Grid from '../components/layout-primitives/Grid.astro';
 import Cell from '../components/layout-primitives/Cell.astro';
 import Stack from '../components/layout-primitives/Stack.astro';
@@ -32,60 +33,68 @@ const formattedSkills = skillsData.items.map((skill, idx) => ({
 >
   <!-- A1: Intro Section (Portrait & Bio) -->
   <Section surface="base" size="default" class="about-intro-section" aria-label="About Intro">
-    <Grid>
-      <Cell placement="half-a" from="desktop">
-        <div class="about-portrait-wrapper" data-spotlight="true" data-motion="spotlight-portrait">
-          <img
-            src={profileData.portrait.image}
-            alt={profileData.portrait.alt}
-            class="about-portrait base-layer"
-            loading="eager"
-          />
-          <div class="portrait-color-layer" aria-hidden="true">
+    <Container>
+      <Grid>
+        <Cell placement="half-a" from="desktop">
+          <div
+            class="about-portrait-wrapper"
+            data-spotlight="true"
+            data-motion="spotlight-portrait"
+          >
             <img
               src={profileData.portrait.image}
-              alt=""
-              class="about-portrait color-layer"
+              alt={profileData.portrait.alt}
+              class="about-portrait base-layer"
               loading="eager"
             />
+            <div class="portrait-color-layer" aria-hidden="true">
+              <img
+                src={profileData.portrait.image}
+                alt=""
+                class="about-portrait color-layer"
+                loading="eager"
+              />
+            </div>
           </div>
-        </div>
-      </Cell>
+        </Cell>
 
-      <Cell placement="half-b" from="desktop">
-        <Stack gap="loose">
-          <SlashLabel label="About" variant="on-light" />
-          <h1 class="about-title text-display-page">Designer who codes.</h1>
+        <Cell placement="half-b" from="desktop">
+          <Stack gap="loose">
+            <SlashLabel label="About" variant="on-light" />
+            <h1 class="about-title text-display-page">Designer who codes.</h1>
 
-          <div class="bio-paragraphs">
-            {profileData.bio.map((paragraph) => (
-              <p class="bio-text text-body" data-motion="bio-scrub">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+            <div class="bio-paragraphs">
+              {profileData.bio.map((paragraph) => (
+                <p class="bio-text text-body" data-motion="bio-scrub">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
 
-          <!-- A2: Skills -->
-          <div class="about-skills-block">
-            <SkillChips skills={formattedSkills} surface="base" />
-          </div>
-        </Stack>
-      </Cell>
-    </Grid>
+            <!-- A2: Skills -->
+            <div class="about-skills-block">
+              <SkillChips skills={formattedSkills} surface="base" />
+            </div>
+          </Stack>
+        </Cell>
+      </Grid>
+    </Container>
   </Section>
 
   <!-- A3: Experience Section -->
   <Section surface="base" size="default" class="experience-section" aria-label="Experience">
-    <Stack gap="section">
-      <SlashLabel label="Experience" variant="on-light" />
-      <h2 class="experience-heading text-heading-section">Experience</h2>
+    <Container>
+      <Stack gap="section">
+        <SlashLabel label="Experience" variant="on-light" />
+        <h2 class="experience-heading text-heading-section">Experience</h2>
 
-      <div class="experience-list">
-        {experienceData.items.map((exp) => (
-          <ExperienceRow period={exp.period} role={exp.role} company={exp.place} />
-        ))}
-      </div>
-    </Stack>
+        <div class="experience-list">
+          {experienceData.items.map((exp) => (
+            <ExperienceRow period={exp.period} role={exp.role} company={exp.place} />
+          ))}
+        </div>
+      </Stack>
+    </Container>
   </Section>
 
   <!-- A4: Values Block -->
