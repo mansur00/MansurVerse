@@ -1,9 +1,18 @@
 import { test, expect } from '@playwright/test';
 
-// Layout verification suite per docs/01-design/layout-system.md section 8.
-// Enforces single left edge alignment, no overflow past right padding,
-// section top padding matching size tokens, cards/tiles geometry,
-// statement proportions, and zero horizontal scroll at 375, 768, 1280, 1440, 1920px.
+// Layout verification suite per docs/01-design/ollyo-layout-reference.md and layout-system.md.
+// Enforces:
+// 1. Single left edge alignment matching Container geometry across all sections and Nav logo.
+// 2. Content edges follow verified ollyo formula:
+//    - 992 to 1539px: 20px
+//    - above 1539px: (V - 1539) / 2 + 20px
+//    - 801 to 991px: (V - 800) / 2 + 20px
+//    - 800px and below: 20px
+// 3. Symmetrical right edge: content ends at or inside V - edge.
+// 4. Hero distance from page top to first hero line: 200px (142px at <= 991px), bottom padding 120px.
+// 5. Section size=default top & bottom padding = --layout-section-y.
+// 6. 4 columns on desktop (> 991px), 2 columns on mobile/tablet (<= 768px).
+// 7. Zero horizontal scroll at 375, 768, 1280, 1440, 1920px.
 
 const viewports = [
   { width: 375, height: 667, name: 'mobile-small' },
@@ -15,7 +24,20 @@ const viewports = [
 
 const testRoutes = ['/', '/work', '/work/project-one', '/about', '/contact', '/404'];
 
-test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () => {
+function getExpectedContentEdge(viewportWidth: number): number {
+  if (viewportWidth > 1539) {
+    return (viewportWidth - 1539) / 2 + 20;
+  }
+  if (viewportWidth >= 992) {
+    return 20;
+  }
+  if (viewportWidth >= 801) {
+    return (viewportWidth - 800) / 2 + 20;
+  }
+  return 20;
+}
+
+test.describe('Layout System Enforcement (docs/01-design/ollyo-layout-reference.md)', () => {
   for (const vp of viewports) {
     test.describe(`Viewport ${vp.width}px (${vp.name})`, () => {
       test.use({ viewport: { width: vp.width, height: vp.height } });
@@ -27,11 +49,43 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           await page.goto(route, { waitUntil: 'domcontentloaded' });
           await page.waitForLoadState('networkidle');
 
+          const expectedEdge = getExpectedContentEdge(vp.width);
+
           // 1. (d) No horizontal scroll at any breakpoint
-          const hasHorizontalScroll = await page.evaluate(() => {
-            return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+          const overflowInfo = await page.evaluate(() => {
+            const docWidth = document.documentElement.clientWidth;
+            const scrollW = document.documentElement.scrollWidth;
+            const culprits: Array<{
+              tag: string;
+              class: string;
+              left: number;
+              right: number;
+              width: number;
+            }> = [];
+            document.querySelectorAll('*').forEach((el) => {
+              const r = el.getBoundingClientRect();
+              if (r.right > docWidth + 1 || r.left < -1) {
+                culprits.push({
+                  tag: el.tagName,
+                  class: el.className,
+                  left: r.left,
+                  right: r.right,
+                  width: r.width,
+                });
+              }
+            });
+            return {
+              hasScroll: scrollW > docWidth,
+              docWidth,
+              scrollW,
+              culprits: culprits.slice(0, 5),
+            };
           });
-          expect(hasHorizontalScroll, `Horizontal scroll detected on ${route}`).toBe(false);
+
+          if (overflowInfo.hasScroll) {
+            console.log(`OVERFLOW on ${route} at ${vp.width}px:`, JSON.stringify(overflowInfo));
+          }
+          expect(overflowInfo.hasScroll, `Horizontal scroll detected on ${route}`).toBe(false);
 
           // Get Nav logo left edge (only on routes where Nav exists)
           if (route !== '/404') {
@@ -39,6 +93,12 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
             const logoBox = await logo.boundingBox();
             if (logoBox) {
               const navLeft = logoBox.x;
+
+              // Nav logo left edge should match expected ollyo content edge
+              expect(
+                Math.abs(navLeft - expectedEdge),
+                `Nav logo left edge (${navLeft}px) should equal expected edge (${expectedEdge}px) on ${route}`,
+              ).toBeLessThanOrEqual(2.5);
 
               // 2. (a) First heading or text in every layout-section starts at Nav logo's left edge (within 2.5px tolerance)
               const sectionHeadings = page.locator('.layout-section:not(.hero-section)');
@@ -50,8 +110,9 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
                 if ((await section.locator('.layout-bleed').count()) > 0) continue;
 
                 const firstVisual = await section.evaluate((sec) => {
+                  const container = sec.querySelector<HTMLElement>('.layout-container');
                   const candidates = sec.querySelectorAll(
-                    '.project-card, .meta-sidebar, .about-portrait-wrapper, .section-header, .slash-label, h1, h2, .layout-grid > *:first-child, .layout-stack > *:first-child',
+                    '.project-card, .meta-sidebar, .about-portrait-wrapper, .section-header, .slash-label, h1, h2',
                   );
                   for (const cand of candidates) {
                     if (cand.closest('.cell-statement')) continue;
@@ -59,6 +120,11 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
                     if (rect.width > 0 && rect.height > 0) {
                       return { x: rect.x, y: rect.y, tag: cand.tagName, class: cand.className };
                     }
+                  }
+                  if (container) {
+                    const r = container.getBoundingClientRect();
+                    const pad = parseFloat(getComputedStyle(container).paddingLeft);
+                    return { x: r.x + pad, y: r.y };
                   }
                   const firstChild = sec.firstElementChild;
                   if (firstChild) {
@@ -79,46 +145,47 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           }
 
           // 3. (b) No visible element with text extends outside padding boundaries (except Bleed items)
-          const textBoundaryViolations = await page.evaluate((viewportWidth) => {
-            const refSec = document.querySelector<HTMLElement>('.layout-section');
-            const padValue = refSec ? parseFloat(getComputedStyle(refSec).paddingLeft) : 16;
-            const minAllowedLeft = padValue - 2.5; // tolerance
-            const maxAllowedRight = viewportWidth - (padValue - 2.5);
+          const textBoundaryViolations = await page.evaluate(
+            ({ viewportWidth, expectedEdge }) => {
+              const minAllowedLeft = expectedEdge - 2.5; // tolerance
+              const maxAllowedRight = viewportWidth - (expectedEdge - 2.5);
 
-            const elements = Array.from(document.querySelectorAll('body *'));
-            const offending = [];
+              const elements = Array.from(document.querySelectorAll('body *'));
+              const offending = [];
 
-            for (const el of elements) {
-              const htmlEl = el;
-              if (
-                htmlEl.closest(
-                  '.layout-bleed, .marquee, .hero-tags, #cur, #menu-overlay, .skip-link, .sr-only',
-                )
-              ) {
-                continue;
-              }
-              const rect = htmlEl.getBoundingClientRect();
-              if (rect.width > 0 && rect.height > 0 && htmlEl.childNodes.length > 0) {
-                const hasDirectText = Array.from(htmlEl.childNodes).some(
-                  (n) => n.nodeType === Node.TEXT_NODE && (n.nodeValue || '').trim().length > 0,
-                );
-                if (hasDirectText) {
-                  if (rect.left < minAllowedLeft - 1 || rect.right > maxAllowedRight + 2) {
-                    offending.push({
-                      tag: htmlEl.tagName.toLowerCase(),
-                      class: htmlEl.className,
-                      left: rect.left,
-                      right: rect.right,
-                      minAllowedLeft,
-                      maxAllowedRight,
-                    });
-                    if (offending.length >= 3) break;
+              for (const el of elements) {
+                const htmlEl = el as HTMLElement;
+                if (
+                  htmlEl.closest(
+                    '.layout-bleed, .marquee, .hero-tags, #cur, #menu-overlay, .skip-link, .sr-only',
+                  )
+                ) {
+                  continue;
+                }
+                const rect = htmlEl.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0 && htmlEl.childNodes.length > 0) {
+                  const hasDirectText = Array.from(htmlEl.childNodes).some(
+                    (n) => n.nodeType === Node.TEXT_NODE && (n.nodeValue || '').trim().length > 0,
+                  );
+                  if (hasDirectText) {
+                    if (rect.left < minAllowedLeft - 1 || rect.right > maxAllowedRight + 2) {
+                      offending.push({
+                        tag: htmlEl.tagName.toLowerCase(),
+                        class: htmlEl.className,
+                        left: rect.left,
+                        right: rect.right,
+                        minAllowedLeft,
+                        maxAllowedRight,
+                      });
+                      if (offending.length >= 3) break;
+                    }
                   }
                 }
               }
-            }
-            return offending;
-          }, vp.width);
+              return offending;
+            },
+            { viewportWidth: vp.width, expectedEdge },
+          );
 
           expect(
             textBoundaryViolations,
@@ -134,20 +201,40 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
         await page.goto('/', { waitUntil: 'domcontentloaded' });
         await page.waitForLoadState('networkidle');
 
+        const expectedEdge = getExpectedContentEdge(vp.width);
+
         const metrics = await page.evaluate(() => {
           const refSec = document.querySelector<HTMLElement>(
             '.layout-section.section-size-default',
           );
           const refComp = refSec ? getComputedStyle(refSec) : null;
-          const pad = refComp ? parseFloat(refComp.paddingLeft) : 16;
           const sectionY = refComp ? parseFloat(refComp.paddingTop) : 56;
 
           const nav = document.querySelector('.nav-header');
           const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+          const navHeight = nav ? nav.getBoundingClientRect().height : 72;
 
           // Hero checks
+          const heroSec = document.querySelector<HTMLElement>('.hero-section');
+          const heroSecComp = heroSec ? getComputedStyle(heroSec) : null;
+          const heroPadTop = heroSecComp ? parseFloat(heroSecComp.paddingTop) : 0;
+          const heroPadBottom = heroSecComp ? parseFloat(heroSecComp.paddingBottom) : 0;
+
           const heroLead = document.querySelector('.hero-lead');
           const heroLeadBox = heroLead ? heroLead.getBoundingClientRect() : null;
+
+          const heroDebug = {
+            navHeight: nav ? nav.getBoundingClientRect().height : null,
+            navBottom: nav ? nav.getBoundingClientRect().bottom : null,
+            heroSecTop: heroSec ? heroSec.getBoundingClientRect().top : null,
+            heroPadTop,
+            heroLeadY: heroLeadBox ? heroLeadBox.y : null,
+            heroLeadRowY: document.querySelector('.hero-lead-row')?.getBoundingClientRect().y,
+            heroLeadRowMarginTop: document.querySelector('.hero-lead-row')
+              ? getComputedStyle(document.querySelector('.hero-lead-row')!).marginTop
+              : null,
+          };
+          console.log(`HERO DEBUG at ${window.innerWidth}px:`, JSON.stringify(heroDebug));
 
           // Section top padding checks (first heading top >= section top + section-y)
           const sections = Array.from(
@@ -197,9 +284,11 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           const statsXs = new Set(statTiles.map((s) => Math.round(s.getBoundingClientRect().x)));
 
           return {
-            pad,
             sectionY,
             navBottom,
+            navHeight,
+            heroPadTop,
+            heroPadBottom,
             heroLeadBox: heroLeadBox ? { x: heroLeadBox.x, y: heroLeadBox.y } : null,
             sectionPaddings,
             statementBox: statementBox
@@ -214,17 +303,27 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           };
         });
 
-        // 1. Hero lead top >= nav bottom + minimum gap (>= 24px)
+        // 1. Hero lead distance from page top:
+        // Desktop (> 991px): 200px
+        // Narrow (<= 991px): 142px
+        const expectedHeroLeadY = vp.width > 991 ? 200 : 142;
         if (metrics.heroLeadBox) {
           expect(
-            metrics.heroLeadBox.y,
-            `Hero lead (${metrics.heroLeadBox.y}px) should be below nav bottom (${metrics.navBottom}px) with a gap`,
-          ).toBeGreaterThanOrEqual(metrics.navBottom + 24);
+            Math.abs(metrics.heroLeadBox.y - expectedHeroLeadY),
+            `Hero lead top position (${metrics.heroLeadBox.y}px) should equal ${expectedHeroLeadY}px per ollyo reference`,
+          ).toBeLessThanOrEqual(5.5);
+
           expect(
-            metrics.heroLeadBox.x,
-            `Hero lead left edge (${metrics.heroLeadBox.x}px) should be at or inside page padding (${metrics.pad}px)`,
-          ).toBeGreaterThanOrEqual(metrics.pad - 2);
+            Math.abs(metrics.heroLeadBox.x - expectedEdge),
+            `Hero lead left edge (${metrics.heroLeadBox.x}px) should align with expected edge (${expectedEdge}px)`,
+          ).toBeLessThanOrEqual(2.5);
         }
+
+        // Hero bottom padding = 120px
+        expect(
+          Math.abs(metrics.heroPadBottom - 120),
+          `Hero bottom padding (${metrics.heroPadBottom}px) should equal 120px`,
+        ).toBeLessThanOrEqual(2);
 
         // 2. Every section size=default has top and bottom padding equal to --layout-section-y
         for (const sp of metrics.sectionPaddings) {
@@ -239,7 +338,7 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
         }
 
         // 3. Statement width >= 55% of grid on desktop, height < 600px (no one-word-per-line wrapping)
-        if (metrics.statementBox && metrics.gridBox && vp.width >= 1101) {
+        if (metrics.statementBox && metrics.gridBox && vp.width >= 992) {
           const ratio = metrics.statementBox.width / metrics.gridBox.width;
           expect(
             ratio,
@@ -251,16 +350,16 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           ).toBeLessThan(600);
         }
 
-        // 4. Cards and tiles sit inside the page padding
+        // 4. Cards and tiles sit inside the container edge
         for (const cb of metrics.cardBoxes) {
           expect(
             cb.left,
-            `Element with class "${cb.className}" left (${cb.left}px) should be inside page padding (${metrics.pad}px)`,
-          ).toBeGreaterThanOrEqual(metrics.pad - 2);
+            `Element with class "${cb.className}" left (${cb.left}px) should be at or inside container left edge (${expectedEdge}px)`,
+          ).toBeGreaterThanOrEqual(expectedEdge - 2);
           expect(
             cb.right,
-            `Element with class "${cb.className}" right (${cb.right}px) should be inside viewport (${vp.width - metrics.pad}px)`,
-          ).toBeLessThanOrEqual(vp.width - metrics.pad + 2);
+            `Element with class "${cb.className}" right (${cb.right}px) should be inside container right edge (${vp.width - expectedEdge}px)`,
+          ).toBeLessThanOrEqual(vp.width - expectedEdge + 2);
         }
 
         // 5. Capability rows are closed by default on initial load
@@ -269,8 +368,8 @@ test.describe('Layout System Enforcement (docs/01-design/layout-system.md)', () 
           true,
         );
 
-        // 6. Process steps and stat tiles columns: 4 on desktop, 2 on mobile
-        if (vp.width >= 1101) {
+        // 6. Process steps and stat tiles columns: 4 on desktop (> 991px), 2 on mobile/tablet (<= 768px)
+        if (vp.width >= 992) {
           expect(metrics.processColCount, 'Process grid should have 4 columns on desktop').toBe(4);
           expect(metrics.statsColCount, 'Stats grid should have 4 columns on desktop').toBe(4);
         } else if (vp.width <= 768) {

@@ -3,6 +3,7 @@
 // Renders sections K1 to K4: form with blur validation, availability card, social links, and shared blocks.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/layout-primitives/Section.astro';
+import Container from '../components/layout-primitives/Container.astro';
 import Grid from '../components/layout-primitives/Grid.astro';
 import Cell from '../components/layout-primitives/Cell.astro';
 import Stack from '../components/layout-primitives/Stack.astro';
@@ -22,59 +23,61 @@ import { siteConfig } from '../config/site';
 >
   <!-- K1: Header & K2: Form and Info -->
   <Section surface="base" size="default" class="contact-hero-section" aria-label="Contact">
-    <Grid>
-      <Cell placement="half-a" from="desktop">
-        <Stack gap="loose" class="contact-main-col">
-          <SlashLabel label="Get in touch" variant="on-light" />
-          <h1 class="contact-title text-display-page">Let’s work together.</h1>
-          <div class="contact-form-wrapper">
-            <Form data-fallback-email={profileData.email} />
-          </div>
-        </Stack>
-      </Cell>
-
-      <Cell placement="half-b" from="desktop">
-        <Stack gap="loose" class="contact-info-col">
-          <div class="availability-card">
-            <div class="status-indicator">
-              <span class="status-dot" aria-hidden="true"></span>
-              <span class="status-text text-label">{profileData.availability.label}</span>
+    <Container>
+      <Grid>
+        <Cell placement="half-a" from="desktop">
+          <Stack gap="loose" class="contact-main-col">
+            <SlashLabel label="Get in touch" variant="on-light" />
+            <h1 class="contact-title text-display-page">Let’s work together.</h1>
+            <div class="contact-form-wrapper">
+              <Form data-fallback-email={profileData.email} />
             </div>
+          </Stack>
+        </Cell>
 
-            <p class="availability-desc text-body">
-              Available for remote contracts, design systems, and frontend architecture.
-            </p>
+        <Cell placement="half-b" from="desktop">
+          <Stack gap="loose" class="contact-info-col">
+            <div class="availability-card">
+              <div class="status-indicator">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span class="status-text text-label">{profileData.availability.label}</span>
+              </div>
 
-            <div class="direct-email-row">
-              <Button
-                href={`mailto:${profileData.email}`}
-                variant="primary"
-                data-copy={profileData.email}
-                data-motion="copy-clipboard"
-              >
-                {profileData.email}
-              </Button>
-            </div>
-          </div>
+              <p class="availability-desc text-body">
+                Available for remote contracts, design systems, and frontend architecture.
+              </p>
 
-          <div class="social-links-block">
-            <span class="social-heading text-label">Elsewhere</span>
-            <div class="social-links-list">
-              {profileData.socials.map((social) => (
-                <a
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-link text-body"
+              <div class="direct-email-row">
+                <Button
+                  href={`mailto:${profileData.email}`}
+                  variant="primary"
+                  data-copy={profileData.email}
+                  data-motion="copy-clipboard"
                 >
-                  {social.label} ↗
-                </a>
-              ))}
+                  {profileData.email}
+                </Button>
+              </div>
             </div>
-          </div>
-        </Stack>
-      </Cell>
-    </Grid>
+
+            <div class="social-links-block">
+              <span class="social-heading text-label">Elsewhere</span>
+              <div class="social-links-list">
+                {profileData.socials.map((social) => (
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link text-body"
+                  >
+                    {social.label} ↗
+                  </a>
+                ))}
+              </div>
+            </div>
+          </Stack>
+        </Cell>
+      </Grid>
+    </Container>
   </Section>
 
   <!-- K3: Process Block -->

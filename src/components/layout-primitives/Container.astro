@@ -1,0 +1,33 @@
+---
+// Container primitive per docs/01-design/ollyo-layout-reference.md and docs/01-design/layout-system.md.
+// Centers content and bounds it to the layout container width.
+// Sets horizontal padding var(--layout-pad).
+// Container is the ONLY element allowed to use auto margins (margin-inline: auto).
+interface Props {
+  as?: 'div' | 'header' | 'footer' | 'nav' | 'main' | 'section' | undefined;
+  class?: string | undefined;
+  id?: string | undefined;
+}
+
+const { as: Component = 'div', class: className = '', id } = Astro.props;
+---
+
+<Component id={id} class:list={['layout-container', className]}>
+  <slot />
+</Component>
+
+<style>
+  .layout-container {
+    width: 100%;
+    max-width: var(--layout-container-max);
+    margin-inline: auto;
+    padding-inline: var(--layout-pad);
+    box-sizing: border-box;
+  }
+
+  @media (width <= 991px) {
+    .layout-container {
+      max-width: var(--layout-container-max-narrow);
+    }
+  }
+</style>

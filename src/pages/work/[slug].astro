@@ -4,6 +4,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Section from '../../components/layout-primitives/Section.astro';
+import Container from '../../components/layout-primitives/Container.astro';
 import Grid from '../../components/layout-primitives/Grid.astro';
 import Cell from '../../components/layout-primitives/Cell.astro';
 import Stack from '../../components/layout-primitives/Stack.astro';
@@ -63,48 +64,52 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
 >
   <!-- C1: Header -->
   <Section surface="base" size="default" class="case-header-section">
-    <Stack gap="loose">
-      <SlashLabel label="Case study" variant="on-light" />
-      <h1 class="case-title text-display-page">{project.data.title}</h1>
+    <Container>
+      <Stack gap="loose">
+        <SlashLabel label="Case study" variant="on-light" />
+        <h1 class="case-title text-display-page">{project.data.title}</h1>
 
-      <Cluster gap="tight" class="case-meta-chips">
-        <Chip variant="accent">{project.data.category}</Chip>
-        <Chip variant="outlined">{String(project.data.year)}</Chip>
-        <Chip variant="filled">{project.data.role}</Chip>
-      </Cluster>
+        <Cluster gap="tight" class="case-meta-chips">
+          <Chip variant="accent">{project.data.category}</Chip>
+          <Chip variant="outlined">{String(project.data.year)}</Chip>
+          <Chip variant="filled">{project.data.role}</Chip>
+        </Cluster>
 
-      <div class="case-hero-art" transition:name={`project-art-${project.id}`}>
-        <img
-          src={project.data.cover.image}
-          alt={project.data.cover.alt}
-          class="case-cover-image"
-          loading="eager"
-        />
-      </div>
-    </Stack>
+        <div class="case-hero-art" transition:name={`project-art-${project.id}`}>
+          <img
+            src={project.data.cover.image}
+            alt={project.data.cover.alt}
+            class="case-cover-image"
+            loading="eager"
+          />
+        </div>
+      </Stack>
+    </Container>
   </Section>
 
   <!-- C2: Body Section with MetaSidebar & MDX Body -->
   <Section surface="base" size="none" class="case-body-section" aria-label="Case Study Details">
-    <Grid>
-      <Cell placement="meta" from="desktop">
-        <aside class="case-sidebar">
-          <MetaSidebar
-            role={project.data.role}
-            year={String(project.data.year)}
-            tools={project.data.tools}
-            links={sidebarLinks}
-            sections={sidebarSections}
-          />
-        </aside>
-      </Cell>
+    <Container>
+      <Grid>
+        <Cell placement="meta" from="desktop">
+          <aside class="case-sidebar">
+            <MetaSidebar
+              role={project.data.role}
+              year={String(project.data.year)}
+              tools={project.data.tools}
+              links={sidebarLinks}
+              sections={sidebarSections}
+            />
+          </aside>
+        </Cell>
 
-      <Cell placement="body" from="desktop">
-        <article class="case-content">
-          <Content />
-        </article>
-      </Cell>
-    </Grid>
+        <Cell placement="body" from="desktop">
+          <article class="case-content">
+            <Content />
+          </article>
+        </Cell>
+      </Grid>
+    </Container>
   </Section>
 
   <!-- C3: Compare Slider (if project has compare images) -->
@@ -115,16 +120,18 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
       class="case-compare-section"
       aria-label="Before and After Comparison"
     >
-      <Stack gap="loose">
-        <SlashLabel label="Comparison" variant="on-light" />
-        <h2 class="compare-heading text-heading-section">Before and After</h2>
-        <CompareSlider
-          beforeImage={project.data.compare.before.image}
-          afterImage={project.data.compare.after.image}
-          beforeLabel={project.data.compare.before.alt}
-          afterLabel={project.data.compare.after.alt}
-        />
-      </Stack>
+      <Container>
+        <Stack gap="loose">
+          <SlashLabel label="Comparison" variant="on-light" />
+          <h2 class="compare-heading text-heading-section">Before and After</h2>
+          <CompareSlider
+            beforeImage={project.data.compare.before.image}
+            afterImage={project.data.compare.after.image}
+            beforeLabel={project.data.compare.before.alt}
+            afterLabel={project.data.compare.after.alt}
+          />
+        </Stack>
+      </Container>
     </Section>
   )}
 
@@ -140,26 +147,28 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
 
   <!-- C6: More Work -->
   <Section surface="base" size="default" class="case-more-section" aria-label="More Work">
-    <Stack gap="section">
-      <SlashLabel label="More work" variant="on-light" />
-      <h2 class="more-heading text-heading-section">Selected Projects</h2>
-      <div class="more-projects-grid">
-        {otherProjects.map((p, idx) => (
-          <ProjectCard
-            title={p.data.title}
-            number={idx + 1}
-            description={p.data.summary}
-            category={p.data.category}
-            year={String(p.data.year)}
-            href={`/work/${p.id}`}
-            accent={p.data.accent}
-            imageSrc={p.data.cover.image}
-            imageAlt={p.data.cover.alt}
-            variant="grid"
-          />
-        ))}
-      </div>
-    </Stack>
+    <Container>
+      <Stack gap="section">
+        <SlashLabel label="More work" variant="on-light" />
+        <h2 class="more-heading text-heading-section">Selected Projects</h2>
+        <div class="more-projects-grid">
+          {otherProjects.map((p, idx) => (
+            <ProjectCard
+              title={p.data.title}
+              number={idx + 1}
+              description={p.data.summary}
+              category={p.data.category}
+              year={String(p.data.year)}
+              href={`/work/${p.id}`}
+              accent={p.data.accent}
+              imageSrc={p.data.cover.image}
+              imageAlt={p.data.cover.alt}
+              variant="grid"
+            />
+          ))}
+        </div>
+      </Stack>
+    </Container>
   </Section>
 
   <!-- C7: Next Project Navigation & CTA Band -->
@@ -172,14 +181,16 @@ const sidebarLinks = (project.data.links ?? []).map((l) => ({
       data-pull-next="true"
       data-next-url={`/work/${nextProject.id}`}
     >
-      <Stack gap="tight" class="case-next-container">
-        <div class="pull-next-meter" aria-hidden="true">
-          <div class="pull-next-progress" />
-        </div>
-        <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
-          Next project: {nextProject.data.title}
-        </Button>
-      </Stack>
+      <Container>
+        <Stack gap="tight" class="case-next-container">
+          <div class="pull-next-meter" aria-hidden="true">
+            <div class="pull-next-progress" />
+          </div>
+          <Button href={`/work/${nextProject.id}`} variant="primary" showArrow={true}>
+            Next project: {nextProject.data.title}
+          </Button>
+        </Stack>
+      </Container>
     </Section>
   )}
 

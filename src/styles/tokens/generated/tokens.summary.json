@@ -848,8 +848,8 @@
     "in-out": "cubic-bezier(0.6, 0, 0.2, 1)"
   },
   "breakpoint": {
-    "tablet": "721px",
-    "desktop": "1101px"
+    "tablet": "768px",
+    "desktop": "992px"
   },
   "components": {
     "card-bg": "{color.bg-card}",
@@ -875,7 +875,12 @@
     "stat-tile-text": "{color.text-on-accent}"
   },
   "layout": {
-    "pad": "clamp(16px, 4vw, 48px)",
+    "container-max": "1539px",
+    "container-max-narrow": "800px",
+    "pad": "20px",
+    "hero-top": "200px",
+    "hero-top-narrow": "142px",
+    "hero-bottom": "120px",
     "section-y": "clamp(56px, 9vw, 120px)",
     "section-y-compact": "clamp(24px, 4vw, 48px)",
     "gap": "16px",

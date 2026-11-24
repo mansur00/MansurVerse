@@ -48,5 +48,6 @@ jobs:
         run: |
           sleep 30
           BASE_URL=https://mansurverse.vercel.app pnpm exec playwright test tests/e2e/layout.spec.ts tests/e2e/smoke.spec.ts
+
 # Later phases add: Playwright e2e and a11y (Phase 4), Lighthouse and size checks (Phase 7), preview deploys (Phase 8).
 # Check for newer major versions of the actions above when setting up.

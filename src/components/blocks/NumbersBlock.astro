@@ -2,6 +2,7 @@
 // Shared Block: Numbers (used on Home, About, and Case study results)
 // Feature surface with subtle dot grid texture and staggered StatTiles per docs/01-design/page-specs.md
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import StatTile from '../content/StatTile.astro';
 import statsData from '../../content/stats.json';
@@ -30,36 +31,38 @@ const {
 ---
 
 <Section id="numbers" surface="feature-dots" size="default" class={className}>
-  <Stack gap="section">
-    <div class="numbers-header">
-      <h2 class="numbers-heading text-heading-section">
-        {headingLines.map((line, idx) => (
-          <span class="heading-line">
-            {line}
-            {idx < headingLines.length - 1 && <br />}
-          </span>
-        ))}
-      </h2>
-      {lead && <p class="numbers-lead text-body">{lead}</p>}
-    </div>
+  <Container>
+    <Stack gap="section">
+      <div class="numbers-header">
+        <h2 class="numbers-heading text-heading-section">
+          {headingLines.map((line, idx) => (
+            <span class="heading-line">
+              {line}
+              {idx < headingLines.length - 1 && <br />}
+            </span>
+          ))}
+        </h2>
+        {lead && <p class="numbers-lead text-body">{lead}</p>}
+      </div>
 
-    <div class="stats-grid">
-      {stats.map((s, index) => {
-        const formattedNumber = `${s.value}${s.suffix}`;
-        const variant = s.tone ?? (index % 2 === 0 ? 'lime' : 'white');
-        const staggered = index % 2 === 1;
+      <div class="stats-grid">
+        {stats.map((s, index) => {
+          const formattedNumber = `${s.value}${s.suffix}`;
+          const variant = s.tone ?? (index % 2 === 0 ? 'lime' : 'white');
+          const staggered = index % 2 === 1;
 
-        return (
-          <StatTile
-            number={formattedNumber}
-            caption={s.label}
-            variant={variant}
-            staggered={staggered}
-          />
-        );
-      })}
-    </div>
-  </Stack>
+          return (
+            <StatTile
+              number={formattedNumber}
+              caption={s.label}
+              variant={variant}
+              staggered={staggered}
+            />
+          );
+        })}
+      </div>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

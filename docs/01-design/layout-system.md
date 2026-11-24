@@ -1,49 +1,43 @@
 # Layout System
 
-> The single global system for page layout, spacing and placement. It exists because the Phase 4 preview showed text, forms, cards and buttons touching the viewport edges and sections running into each other: each page and block laid itself out, and nothing applied the layout tokens. From now on **no page, block or component decides its own outer spacing or width**. Layout comes only from the tokens and primitives in this document. Read with `ui-layout.md` (patterns and wireframes), `spacing-radius-shadow.md` (token values) and `AGENTS.md`. Last updated: 2026-11-21.
+> The single global system for page layout, spacing and placement, verified and adopted from ollyo.com layout DevTools measurements (see `ollyo-layout-reference.md`). Layout comes strictly from the tokens and primitives in this document. From now on **no page, block or component decides its own outer spacing or width**. Read with `ollyo-layout-reference.md`, `ui-layout.md`, `spacing-radius-shadow.md` and `AGENTS.md`. Last updated: 2026-11-24.
 
 ## 1. Principles
 
-1. **One owner per concern.** `Section` owns the page's horizontal and vertical padding. `Grid` owns column placement. `Stack` owns vertical gaps. Components own only their internal spacing.
+1. **One owner per concern.** `Section` owns full-bleed background surfaces and vertical padding. `Container` owns the centered layout width and horizontal padding. `Grid` owns column placement. `Stack` owns vertical gaps. Components own only their internal spacing.
 2. **No outer spacing on components.** A component never sets its own outer margin, outer padding or width relative to the page. Its parent decides where it sits and how much room it gets.
-3. **Everything aligns to one left edge.** The Nav logo, every section's first heading, the footer content and every card row start at the same left edge: `--layout-pad` from the viewport. Right edges follow the same rule.
+3. **Everything aligns to one left edge.** The Nav logo, every section's first heading, the footer content and every card row start at the same left edge inside `Container`. Right edges follow the same symmetrical rule.
 4. **Tokens or primitives, never raw numbers.** No `px`, `rem`, `em`, `vw`, `vh` or `%` literals for spacing, gaps, offsets or widths in components or pages.
-5. **Full-bleed is designed, not accidental.** Only the items listed in section 4.4 may reach the viewport edge.
-6. **Pages only compose.** A page file contains primitives, blocks and components. It has no `<style>` block and no layout classes of its own.
+5. **Full-bleed is designed, not accidental.** Only items inside `Section` without `Container` (or via `Bleed`) reach the viewport edge.
+6. **Pages only compose.** A page file contains primitives, blocks and components. It has no layout classes or custom margins of its own.
 
 ## 2. Tokens
 
-Existing (`tokens.json`, group `layout` and `space`):
+Layout group (`tokens.json`, group `layout` and `breakpoint`):
 
-| Token | Value | Use |
-|---|---|---|
-| `--layout-pad` | `clamp(16px, 4vw, 48px)` | Horizontal page padding, set only by `Section` (and Nav and Footer through the same primitive) |
-| `--layout-section-y` | `clamp(56px, 9vw, 120px)` | Vertical section padding |
-| `--layout-gap` | 16px | Gap between cards and tiles |
-| `--layout-gap-wide` | 24px | Gap between columns (the gutter) |
-| `--layout-nav-height` | 72px | Scroll padding and sticky offsets |
-| `--space-1` to `--space-10` | 4px to 128px | Internal component spacing |
+| Token | Value | Use | Source |
+|---|---|---|---|
+| `--layout-container-max` | `1539px` | Maximum container width for viewports > 991px | Verified (ollyo.com) |
+| `--layout-container-max-narrow` | `800px` | Maximum container width for viewports $\le$ 991px | Verified (ollyo.com) |
+| `--layout-pad` | `20px` | Fixed horizontal padding inside `Container` | Verified (ollyo.com) |
+| `--layout-hero-top` | `200px` | Page top to first hero line (> 991px) | Verified (ollyo.com) |
+| `--layout-hero-top-narrow` | `142px` | Page top to first hero line ($\le$ 991px) | Verified (ollyo.com) |
+| `--layout-hero-bottom` | `120px` | Hero bottom padding | Verified (ollyo.com) |
+| `--layout-section-y` | `clamp(56px, 9vw, 120px)` | Vertical section padding | Assumed |
+| `--layout-section-y-compact` | `clamp(24px, 4vw, 48px)` | Marquee and thin bands | Assumed |
+| `--layout-gap` | `16px` | Gap between cards and tiles | Assumed |
+| `--layout-gap-wide` | `24px` | Gap between columns (the gutter) | Assumed |
+| `--layout-nav-height` | `72px` | In-flow sticky nav height | Assumed |
+| `--layout-columns` | `12` | Grid column count | Assumed |
+| `--breakpoint-desktop` | `992px` | Desktop min-width (narrow range upper bound is 991px) | Verified (ollyo.com) |
+| `--breakpoint-tablet` | `768px` | Tablet min-width | Assumed |
 
-New tokens to add to `tokens.json` (values are Assumed from the prototype; verify against ollyo, O-01):
-
-| Token | Value | Use |
-|---|---|---|
-| `--layout-section-y-compact` | `clamp(24px, 4vw, 48px)` | Marquee and thin bands |
-| `--layout-columns` | 12 | Grid column count |
-| `--stack-tight` | `var(--space-2)` | Label to its sibling, chips in a row |
-| `--stack-base` | `var(--space-4)` | Paragraph to paragraph, title to description |
-| `--stack-loose` | `var(--space-6)` | Heading to content |
-| `--stack-section` | `var(--space-7)` | Section header block to the section body |
-| `--measure-body` | `60ch` | Reading width for body text |
-| `--measure-narrow` | `34ch` | Intro and value text |
-| `--measure-statement` | `22ch` | Statement sentence |
-
-Placement group (new, in `tokens.json` as `placement`, desktop values; mobile always spans all 12):
+Placement group (`tokens.json` as `placement`, desktop values; narrow always spans all 12):
 
 | Name | Start | Span | Used for |
 |---|---|---|---|
 | `full` | 1 | 12 | Full-width content |
-| `statement` | 4 | 7 | Home statement (starts about a quarter in) |
+| `statement` | 4 | 7 | Home statement (spans cols 4 to 10 on desktop, full width on narrow) |
 | `intro` | 7 | 6 | Hero intro text, right column |
 | `label` | 1 | 4 | Label side of label/description rows |
 | `text` | 5 | 8 | Description side of label/description rows |
@@ -51,13 +45,15 @@ Placement group (new, in `tokens.json` as `placement`, desktop values; mobile al
 | `meta` | 1 | 3 | Case-study sidebar |
 | `body` | 4 | 9 | Case-study body |
 
-`tokens:build` generates these as CSS variables and utility classes; `tokens:check` fails on a missing or invalid entry.
-
 ## 3. Rhythm Rules
 
 - Vertical order inside a section: SlashLabel, then heading (`--stack-tight` between), then content (`--stack-loose` between the heading and the content). The whole header block is separated from the section body by `--stack-section`.
-- Gaps between sibling cards and tiles use `--layout-gap`; gaps between columns use `--layout-gap-wide`. Columns must never touch: every multi-column layout uses `Grid`, which applies the gutter.
-- Text blocks use a `--measure-*` token for `max-width`, never a literal.
+- Content left and right edges derived formula:
+  - $992\text{px} \le V \le 1539\text{px} \implies \text{edge} = 20\text{px}$
+  - $V > 1539\text{px} \implies \text{edge} = (V - 1539) / 2 + 20\text{px}$ (e.g., 210.5px at 1440/1920)
+  - $801\text{px} \le V \le 991\text{px} \implies \text{edge} = (V - 800) / 2 + 20\text{px}$
+  - $V \le 800\text{px} \implies \text{edge} = 20\text{px}$
+  - Right edge is symmetrical: content ends at $V - \text{edge}$.
 
 ## 4. Primitives
 
@@ -65,53 +61,49 @@ All live in `src/components/layout-primitives/` and are listed on `/styleguide` 
 
 ### 4.1 Section
 
-The only element that sets page padding.
+Full-bleed background surface and vertical padding ONLY.
 
 | Prop | Values | Notes |
 |---|---|---|
-| `surface` | `base`, `alt`, `feature`, `feature-dots` | Full-bleed background; also sets the text and divider colour tokens for that surface (see `design-system.md` section 3) |
-| `size` | `default`, `compact`, `none` | `default` uses `--layout-section-y`; `compact` the compact token; `none` for the hero and footer, which set their own block padding with tokens |
+| `surface` | `base`, `alt`, `feature`, `feature-dots` | Full-bleed background |
+| `size` | `default`, `compact`, `hero`, `none` | `default` uses `--layout-section-y`; `compact` uses `--layout-section-y-compact`; `hero` uses `--layout-hero-top` minus nav height; `none` removes vertical padding |
 | `as`, `id`, `aria-labelledby` | | Semantic element and anchor |
 
-Behaviour: `padding-inline: var(--layout-pad)`; `padding-block` from `size`; content area is the full width inside the padding (no centred max-width box, no auto margins). Nav and Footer use the same inline padding through `Section` (or the same token) so their edges match.
+### 4.2 Container
 
-### 4.2 Grid and Cell
+The ONLY element allowed to use auto margins (`margin-inline: auto`).
 
-`Grid` renders a 12-column grid with `column-gap: var(--layout-gap-wide)` and `row-gap: var(--layout-gap)`. `Cell` takes `placement` (a name from section 2) and optional `from` (`tablet` or `desktop`) so it can collapse. Below the `tablet` breakpoint every `Cell` spans all 12 columns. No literal column numbers in components; placements are names.
+| Prop | Values | Notes |
+|---|---|---|
+| `as` | `div`, `header`, `footer`, `nav`, `main`, `section` | Semantic element |
+| `class` | string | Optional class name |
 
-### 4.3 Stack and Cluster
+Behaviour: `width: 100%`, `max-width: var(--layout-container-max)` (800px at $\le 991$px), `margin-inline: auto`, `padding-inline: var(--layout-pad)`. Nav, Footer, and all page sections place content inside `Container`.
 
-`Stack` is a vertical flow with a `gap` prop of `tight`, `base`, `loose` or `section` mapped to the stack tokens. `Cluster` is a wrapping row (chips, tags, links) with `gap` from the same tokens.
+### 4.3 Grid and Cell
 
-### 4.4 Bleed
+`Grid` renders a 12-column grid with `column-gap: var(--layout-gap-wide)` and `row-gap: var(--layout-gap)`. `Cell` takes `placement` and optional `from` (`tablet` or `desktop`).
 
-The only way to leave the padding box. Allowed uses, exhaustive:
+### 4.4 Stack and Cluster
 
-| Use | Notes |
-|---|---|
-| Section backgrounds | Provided by `Section` |
-| Marquee | Runs edge to edge inside its `Section` |
-| Art inside a project card | Bleeds inside the card only, never past the card |
-| Hero digit field | Background layer |
-| Stat tiles row on the Numbers section, if the design calls for it | Must be logged in `page-specs.md` |
+`Stack` is a vertical flow (`tight`, `base`, `loose`, `section`). `Cluster` is a wrapping row with gaps from the same tokens.
 
-Anything else needing to bleed requires a decision-log entry.
+### 4.5 Bleed
+
+The only way to leave the container padding box for full-width elements (e.g. Marquee).
 
 ## 5. Rules (the checklist agents follow)
 
 **Must**
-- Wrap every page section in `Section`; use `Grid`, `Cell`, `Stack` and `Cluster` for everything inside it.
-- Put multiple columns in a `Grid`; give text a `--measure-*` width.
+- Wrap every section's content in `Container`.
+- Put multi-column layouts in `Grid`.
 - Keep component-internal spacing on `--space-*` tokens.
-- Keep first headings and text on the same left edge as the Nav logo.
+- Keep first headings and text aligned to the `Container` left edge.
 
 **Must not**
-- Set `padding`, `margin`, `gap`, `inset`, `top/right/bottom/left`, `width` or `max-width` with literal units on a page or in a block.
-- Use negative margins outside `Bleed`.
-- Add `max-width` plus `margin: 0 auto` containers (no centred boxes; the system is left-aligned and asymmetric).
-- Put a `<style>` block with layout in a page file.
-- Use `100vw` for widths (it causes horizontal scroll); use the grid or `100%`.
-- Give a component an outer margin.
+- Use `margin: 0 auto` or `margin-inline: auto` anywhere outside `Container.astro`.
+- Set literal widths or padding.
+- Break alignment between Nav, content sections, and Footer.
 
 Exceptions: decorative art positioning inside `ProjectCard`, `PixelShape` and `KeywordTag` may use percentages; these files are allow-listed in `stylelint.config.mjs` and named in `decision-log.md`.
 

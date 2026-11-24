@@ -1,5 +1,6 @@
 ---
 import Section from '../layout-primitives/Section.astro';
+import Container from '../layout-primitives/Container.astro';
 import Stack from '../layout-primitives/Stack.astro';
 import Divider from '../primitives/Divider.astro';
 import MotionToggle from './MotionToggle.astro';
@@ -28,56 +29,58 @@ const {
 ---
 
 <Section as="footer" surface="base" size="default" class:list={['footer', className]}>
-  <Stack gap="section" class="footer-stack">
-    <div class="footer-columns">
-      <div class="footer-col">
-        <span class="col-title text-label">{pagesTitle}</span>
-        <ul class="col-list">
-          {pages.map((item) => (
-            <li>
-              <a href={item.href} class="footer-link text-body">
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+  <Container>
+    <Stack gap="section" class="footer-stack">
+      <div class="footer-columns">
+        <div class="footer-col">
+          <span class="col-title text-label">{pagesTitle}</span>
+          <ul class="col-list">
+            {pages.map((item) => (
+              <li>
+                <a href={item.href} class="footer-link text-body">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <div class="footer-col">
-        <span class="col-title text-label">{elsewhereTitle}</span>
-        <ul class="col-list">
-          {socials.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="footer-link text-body"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {item.label} ↗
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div class="footer-col">
+          <span class="col-title text-label">{elsewhereTitle}</span>
+          <ul class="col-list">
+            {socials.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="footer-link text-body"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.label} ↗
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      <div class="footer-col">
-        <span class="col-title text-label">{localTimeLabel}</span>
-        <div class="time-block">
-          <time class="time-value text-body" data-timezone={timeZone}>
-            {timeZone}
-          </time>
+        <div class="footer-col">
+          <span class="col-title text-label">{localTimeLabel}</span>
+          <div class="time-block">
+            <time class="time-value text-body" data-timezone={timeZone}>
+              {timeZone}
+            </time>
+          </div>
         </div>
       </div>
-    </div>
 
-    <Divider variant="on-base" class="footer-divider" />
+      <Divider variant="on-base" class="footer-divider" />
 
-    <div class="footer-bottom">
-      <p class="copyright text-body-small">{copyright}</p>
-      <MotionToggle />
-    </div>
-  </Stack>
+      <div class="footer-bottom">
+        <p class="copyright text-body-small">{copyright}</p>
+        <MotionToggle />
+      </div>
+    </Stack>
+  </Container>
 </Section>
 
 <style>

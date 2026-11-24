@@ -75,7 +75,7 @@ try {
         scanForMarginAuto(
           new URL(entry.name + '/', dirUrl.href.endsWith('/') ? dirUrl : dirUrl.href + '/'),
         );
-      } else if (entry.name.endsWith('.astro')) {
+      } else if (entry.name.endsWith('.astro') && entry.name !== 'Container.astro') {
         const content = readFileSync(entryUrl, 'utf-8');
         if (/margin\s*:\s*0\s+auto/i.test(content) || /margin-inline\s*:\s*auto/i.test(content)) {
           errors.push(
@@ -87,22 +87,20 @@ try {
   };
   scanForMarginAuto(srcDirPath);
 
-  // Check Nav and Footer use var(--layout-pad) for horizontal alignment
+  // Check Nav and Footer use Container for horizontal alignment
   const navPath = new URL('../src/components/layout/Nav.astro', import.meta.url);
   if (existsSync(navPath)) {
     const navContent = readFileSync(navPath, 'utf-8');
-    if (!navContent.includes('var(--layout-pad)')) {
-      errors.push('Nav.astro: must use var(--layout-pad) so left edge matches layout Section');
+    if (!navContent.includes('Container') && !navContent.includes('var(--layout-pad)')) {
+      errors.push('Nav.astro: must use Container so left edge matches layout Section');
     }
   }
 
   const footerPath = new URL('../src/components/layout/Footer.astro', import.meta.url);
   if (existsSync(footerPath)) {
     const footerContent = readFileSync(footerPath, 'utf-8');
-    if (!footerContent.includes('Section') && !footerContent.includes('var(--layout-pad)')) {
-      errors.push(
-        'Footer.astro: must use Section or var(--layout-pad) so left edge matches layout Section',
-      );
+    if (!footerContent.includes('Container') && !footerContent.includes('var(--layout-pad)')) {
+      errors.push('Footer.astro: must use Container so left edge matches layout Section');
     }
   }
 } catch (error) {

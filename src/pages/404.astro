@@ -3,6 +3,7 @@
 // Served for all unrecognized routes.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/layout-primitives/Section.astro';
+import Container from '../components/layout-primitives/Container.astro';
 import Stack from '../components/layout-primitives/Stack.astro';
 import SlashLabel from '../components/primitives/SlashLabel.astro';
 import Button from '../components/primitives/Button.astro';
@@ -11,16 +12,18 @@ import { siteConfig } from '../config/site';
 
 <BaseLayout title={`404 | ${siteConfig.brand.primary}${siteConfig.brand.secondary}`} noindex={true}>
   <Section surface="base" size="default" class="not-found-section" aria-label="Page Not Found">
-    <Stack gap="base" class="not-found-stack">
-      <SlashLabel label="404" variant="on-light" />
-      <h1 class="not-found-title text-display-hero">404</h1>
-      <p class="not-found-text text-body">{siteConfig.notFound.text}</p>
-      <div class="not-found-action">
-        <Button href={siteConfig.notFound.button.href} variant="primary" showArrow={true}>
-          {siteConfig.notFound.button.label}
-        </Button>
-      </div>
-    </Stack>
+    <Container>
+      <Stack gap="base" class="not-found-stack">
+        <SlashLabel label="404" variant="on-light" />
+        <h1 class="not-found-title text-display-hero">404</h1>
+        <p class="not-found-text text-body">{siteConfig.notFound.text}</p>
+        <div class="not-found-action">
+          <Button href={siteConfig.notFound.button.href} variant="primary" showArrow={true}>
+            {siteConfig.notFound.button.label}
+          </Button>
+        </div>
+      </Stack>
+    </Container>
   </Section>
 </BaseLayout>
 

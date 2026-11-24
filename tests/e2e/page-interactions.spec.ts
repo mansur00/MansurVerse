@@ -29,11 +29,11 @@ test.describe('Phase 5d Page Interactions Suite', () => {
 
     await expect(secondChip).toHaveAttribute('aria-pressed', 'true');
 
-    // Wait for Flip transition
-    await page.waitForTimeout(600);
+    // Wait for Flip transition to complete
+    await page.waitForTimeout(800);
 
     // Visible cards should all match category
-    const visibleCards = page.locator('.projects-grid .project-card:visible');
+    const visibleCards = page.locator('.projects-grid .project-card:not([style*="display: none"])');
     const visibleCount = await visibleCards.count();
 
     for (let i = 0; i < visibleCount; i++) {

@@ -1,9 +1,10 @@
 ---
-// Section primitive per docs/01-design/layout-system.md section 4.1.
-// The ONLY element that sets page padding.
+// Section primitive per docs/01-design/ollyo-layout-reference.md and docs/01-design/layout-system.md.
+// Full-bleed background surface and vertical padding ONLY.
+// Side padding and horizontal bounds are provided by Container.astro.
 interface Props {
   surface?: 'base' | 'alt' | 'feature' | 'feature-dots' | undefined;
-  size?: 'default' | 'compact' | 'none' | undefined;
+  size?: 'default' | 'compact' | 'hero' | 'none' | undefined;
   as?: 'section' | 'div' | 'header' | 'footer' | 'nav' | 'aside' | 'main' | undefined;
   id?: string | undefined;
   'aria-label'?: string | undefined;
@@ -38,7 +39,6 @@ const isFeature = surface === 'feature' || surface === 'feature-dots';
   .layout-section {
     width: 100%;
     box-sizing: border-box;
-    padding-inline: var(--layout-pad);
     position: relative;
   }
 
@@ -48,6 +48,17 @@ const isFeature = surface === 'feature' || surface === 'feature-dots';
 
   .section-size-compact {
     padding-block: var(--layout-section-y-compact);
+  }
+
+  .section-size-hero {
+    padding-top: calc(var(--layout-hero-top) - var(--layout-nav-height));
+    padding-bottom: var(--layout-hero-bottom);
+  }
+
+  @media (width <= 991px) {
+    .section-size-hero {
+      padding-top: calc(var(--layout-hero-top-narrow) - var(--layout-nav-height));
+    }
   }
 
   .section-size-none {
