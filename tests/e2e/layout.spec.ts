@@ -204,11 +204,11 @@ test.describe('Layout System Enforcement (docs/01-design/ollyo-layout-reference.
         const expectedEdge = getExpectedContentEdge(vp.width);
 
         const metrics = await page.evaluate(() => {
-          const refSec = document.querySelector<HTMLElement>(
-            '.layout-section.section-size-default',
-          );
-          const refComp = refSec ? getComputedStyle(refSec) : null;
-          const sectionY = refComp ? parseFloat(refComp.paddingTop) : 56;
+          const probe = document.createElement('div');
+          probe.style.height = 'var(--layout-section-y)';
+          document.body.appendChild(probe);
+          const sectionY = parseFloat(getComputedStyle(probe).height) || 56;
+          probe.remove();
 
           const nav = document.querySelector('.nav-header');
           const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
@@ -326,7 +326,15 @@ test.describe('Layout System Enforcement (docs/01-design/ollyo-layout-reference.
         ).toBeLessThanOrEqual(2);
 
         // 2. Every section size=default has top and bottom padding equal to --layout-section-y
+        expect(
+          metrics.sectionY,
+          'Expected --layout-section-y to resolve to >= 56px',
+        ).toBeGreaterThanOrEqual(56);
         for (const sp of metrics.sectionPaddings) {
+          expect(
+            sp.padTop,
+            `Section "${sp.id}" top padding should be >= 56px`,
+          ).toBeGreaterThanOrEqual(56);
           expect(
             Math.abs(sp.padTop - metrics.sectionY),
             `Section "${sp.id}" top padding (${sp.padTop}px) should equal --layout-section-y (${metrics.sectionY}px)`,
