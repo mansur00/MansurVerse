@@ -104,6 +104,15 @@ const surfaceClass = surface === 'feature' ? 'btn-on-feature' : '';
       opacity var(--motion-fast) var(--ease-out),
       transform var(--motion-fast) var(--ease-out);
     white-space: nowrap;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .btn-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .btn-primary {
@@ -184,6 +193,7 @@ const surfaceClass = surface === 'feature' ? 'btn-on-feature' : '';
   .btn-arrow {
     display: inline-block;
     line-height: 1;
+    flex-shrink: 0;
     transition: transform var(--motion-fast) var(--ease-out);
   }
 

@@ -18,7 +18,11 @@ test.describe('Production Smoke Suite', () => {
 
           page.on('console', (msg) => {
             if (msg.type() === 'error') {
-              errors.push(`[Console Error on ${route}] ${msg.text()}`);
+              const text = msg.text();
+              if (route === '/404' && text.includes('status of 404')) {
+                return;
+              }
+              errors.push(`[Console Error on ${route}] ${text}`);
             }
           });
 
